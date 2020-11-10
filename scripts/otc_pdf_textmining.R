@@ -34,9 +34,8 @@ library(pdftools)
 ####** PDF WORK: MSU **####
 
 # find the pdf folder and list them all
-#### make sure this is set for the hpcc ####
-pdf_folder <- "/mnt/home/dobsonk2/pdfs"
-msu.pdfs<-list.files(path=pdf_folder,pattern="pdf$")
+pdf_folder <- "/mnt/home/dobsonk2/otc_papers"
+msu.pdfs <- list.files(path=pdf_folder,pattern="pdf$")
 
 # function to read in PDFs and maintain layout:
 Rpdf <- readPDF(control = list(text = "-layout"))
@@ -84,5 +83,4 @@ otc.msu$priority[otc.msu$passiveotc>0]<-1
 otc.msu <- subset(otc.msu, select = c("docs", "priority"))
 
 # save output
-#### make sure this is set for the hpcc ####
 write.csv(otc.msu,file="~/otc_papers_msu.csv")
