@@ -29,6 +29,8 @@
 rm(list=ls())
 
 # load packages
+install.packages("tm")
+install.packages("pdftools")
 library(tm)
 library(pdftools)
 
