@@ -29,8 +29,6 @@
 rm(list=ls())
 
 # load packages
-install.packages("tm", repos="http://cran.rstudio.com/")
-install.packages("pdftools", repos="http://cran.rstudio.com/")
 library(tm)
 library(pdftools)
 
