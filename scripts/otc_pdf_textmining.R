@@ -29,7 +29,6 @@
 rm(list=ls())
 
 # load packages
-install.packages("tm", repos = "https://cloud.r-project.org")
 library(tm)
 library(pdftools)
 
