@@ -93,7 +93,7 @@ if (length(args) == 2) {
   
   # since there were arguments on the command line use those to run the function
   otc_results <- scan_pdfs(args[1])
-  write.csv(otc_results, file=-args[2])
+  write.csv(otc_results, file=args[2])
   
 } else {
   # no command line arguments.  Optional but you could print a message about that
