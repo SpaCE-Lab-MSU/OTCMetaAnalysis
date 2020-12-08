@@ -35,6 +35,8 @@ library(pdftools)
 # function to scan pdfs
 scan_pdfs <- function(pdf_folder){
   
+  tryCatch({
+  
   # list all files in the pdf folder
   msu.pdfs <- list.files(path=pdf_folder,pattern="pdf$")
   
@@ -83,6 +85,8 @@ scan_pdfs <- function(pdf_folder){
   # keep only the paper names + priority columns
   otc.msu <- subset(otc.msu, priority == 1)
   otc.msu <- subset(otc.msu, select = c("docs", "priority"))
+  
+  }, error=function(e){})
   
   return(otc.msu)
 }
