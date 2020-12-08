@@ -86,9 +86,9 @@ scan_pdfs <- function(pdf_folder){
   otc.msu <- subset(otc.msu, priority == 1)
   otc.msu <- subset(otc.msu, select = c("docs", "priority"))
   
-  }, error=function(e){})
-  
   return(otc.msu)
+  
+  }, error=function(e){})
 }
 
 # set arguments
