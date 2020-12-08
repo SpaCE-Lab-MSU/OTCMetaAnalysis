@@ -47,6 +47,8 @@ scan_pdfs <- function(pdf_folder){
   msu.pdfs.data <- Corpus(URISource(msu.pdfs), 
                           readerControl = list(reader = Rpdf))
   
+  }, error=function(e){})
+  
   # search through the papers for specific terms
   otc.msu <- DocumentTermMatrix(msu.pdfs.data,
                                 list(dictionary = c("chamber","chambers",
@@ -87,8 +89,7 @@ scan_pdfs <- function(pdf_folder){
   otc.msu <- subset(otc.msu, select = c("docs", "priority"))
   
   return(otc.msu)
-  
-  }, error=function(e){})
+
 }
 
 # set arguments
