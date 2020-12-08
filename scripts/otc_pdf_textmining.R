@@ -31,6 +31,7 @@ rm(list=ls())
 # load packages
 library(tm)
 library(pdftools)
+library(tidyverse)
 
 # function to scan pdfs
 scan_pdfs <- function(pdf_folder){
