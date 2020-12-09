@@ -35,22 +35,18 @@ library(pdftools)
 # function to scan pdfs
 scan_pdfs <- function(pdf_folder){
   
-  tryCatch({
-  
   # list all files in the pdf folder
-  msu.pdfs <- list.files(path=pdf_folder,pattern="pdf$")
+  msu.pdfs <- tryCatch(list.files(path=pdf_folder,pattern="pdf$"), error=function(e) e)
   
   # function to read in PDFs and maintain layout
-  Rpdf <- readPDF(control = list(text = "-layout"))
+  Rpdf <- tryCatch(readPDF(control = list(text = "-layout")), error=function(e) e)
   
   # read in the PDFs, convert to text
-  msu.pdfs.data <- Corpus(URISource(msu.pdfs), 
-                          readerControl = list(reader = Rpdf))
-  
-  }, error=function(e){})
+  msu.pdfs.data <- tryCatch(Corpus(URISource(msu.pdfs), 
+                          readerControl = list(reader = Rpdf)), error=function(e) e)
   
   # search through the papers for specific terms
-  otc.msu <- DocumentTermMatrix(msu.pdfs.data,
+  otc.msu <- tryCatch(DocumentTermMatrix(msu.pdfs.data,
                                 list(dictionary = c("chamber","chambers",
                                                     "open-top","open top",
                                                     "warming chamber","warming chambers",
@@ -61,7 +57,7 @@ scan_pdfs <- function(pdf_folder){
                                                     "seedling","seedlings","sapling","saplings",
                                                     "shrub","shrubs","grass","grasses",
                                                     "sedge","sedges","forb","forbs",
-                                                    "tree","trees","vegetation")))
+                                                    "tree","trees","vegetation"))), error=function(e) e)
   
   otc.msu <- otc.msu[slam::row_sums(otc.msu) > 0,
                      slam::col_sums(otc.msu) > 0]
