@@ -36,17 +36,17 @@ library(pdftools)
 scan_pdfs <- function(pdf_folder){
   
   # list all files in the pdf folder
-  msu.pdfs <- tryCatch(list.files(path=pdf_folder,pattern="pdf$"), error=function(e) e)
+  msu.pdfs <- list.files(path=pdf_folder,pattern="pdf$")
   
   # function to read in PDFs and maintain layout
-  Rpdf <- tryCatch(readPDF(control = list(text = "-layout")), error=function(e) e)
+  Rpdf <- readPDF(control = list(text = "-layout"))
   
   # read in the PDFs, convert to text
-  msu.pdfs.data <- tryCatch(Corpus(URISource(msu.pdfs), 
-                          readerControl = list(reader = Rpdf)), error=function(e) e)
+  msu.pdfs.data <- Corpus(URISource(msu.pdfs), 
+                          readerControl = list(reader = Rpdf))
   
   # search through the papers for specific terms
-  otc.msu <- tryCatch(DocumentTermMatrix(msu.pdfs.data,
+  otc.msu <- DocumentTermMatrix(msu.pdfs.data,
                                 list(dictionary = c("chamber","chambers",
                                                     "open-top","open top",
                                                     "warming chamber","warming chambers",
@@ -57,12 +57,12 @@ scan_pdfs <- function(pdf_folder){
                                                     "seedling","seedlings","sapling","saplings",
                                                     "shrub","shrubs","grass","grasses",
                                                     "sedge","sedges","forb","forbs",
-                                                    "tree","trees","vegetation"))), error=function(e) e)
+                                                    "tree","trees","vegetation")))
   
-  otc.msu <- tryCatch(otc.msu[slam::row_sums(otc.msu) > 0,
-                     slam::col_sums(otc.msu) > 0], error=function(e) e)
+  otc.msu <- otc.msu[slam::row_sums(otc.msu) > 0,
+                     slam::col_sums(otc.msu) > 0]
   
-  otc.msu <- tryCatch(data.frame(docs = row.names(otc.msu), as.matrix(otc.msu), row.names = NULL), error=function(e) e)
+  otc.msu <- data.frame(docs = row.names(otc.msu), as.matrix(otc.msu), row.names = NULL)
   
   # column headers with spaces become (.) or with dashes become (.1):
   names(otc.msu)
