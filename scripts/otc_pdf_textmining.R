@@ -59,10 +59,10 @@ scan_pdfs <- function(pdf_folder){
                                                     "sedge","sedges","forb","forbs",
                                                     "tree","trees","vegetation"))), error=function(e) e)
   
-  otc.msu <- otc.msu[slam::row_sums(otc.msu) > 0,
-                     slam::col_sums(otc.msu) > 0]
+  otc.msu <- tryCatch(otc.msu[slam::row_sums(otc.msu) > 0,
+                     slam::col_sums(otc.msu) > 0], error=function(e) e)
   
-  otc.msu <- data.frame(docs = row.names(otc.msu), as.matrix(otc.msu), row.names = NULL)
+  otc.msu <- tryCatch(data.frame(docs = row.names(otc.msu), as.matrix(otc.msu), row.names = NULL), error=function(e) e)
   
   # column headers with spaces become (.) or with dashes become (.1):
   names(otc.msu)
