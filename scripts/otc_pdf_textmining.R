@@ -39,11 +39,14 @@ scan_pdfs <- function(pdf_folder){
   msu.pdfs <- list.files(path=pdf_folder,pattern="pdf$")
   
   # function to read in PDFs and maintain layout
-  Rpdf <- readPDF(control = list(text = "-layout"))
+  #Rpdf <- readPDF(control = list(text = "-layout"))
   
   # read in the PDFs, convert to text
-  msu.pdfs.data <- Corpus(URISource(msu.pdfs), 
-                          readerControl = list(reader = Rpdf))
+  #msu.pdfs.data <- Corpus(URISource(msu.pdfs), 
+  #                        readerControl = list(reader = Rpdf))
+  
+  # trying to read in PDFs and convert to text through pdftools
+  msu.pdfs.data <- pdf_text(msu.pdfs)
   
   # search through the papers for specific terms
   otc.msu <- DocumentTermMatrix(msu.pdfs.data,
@@ -103,4 +106,3 @@ if (length(args) == 2) {
   
   print("This script requires two parameters :otc_pdf_textmining.R  <path to folder with pdfs> <path and name of output file>")
 }
-
