@@ -42,7 +42,7 @@ scan_pdfs <- function(pdf_folder){
   #Rpdf <- readPDF(control = list(text = "-layout"))
   
   # trying to read in PDFs and convert to text through pdftools
-  Rpdf <- pdf_text(msu.pdfs)
+  Rpdf <- pdf_text(pdf=msu.pdfs)
   
   # read in the PDFs, convert to text
   msu.pdfs.data <- Corpus(URISource(msu.pdfs), 
