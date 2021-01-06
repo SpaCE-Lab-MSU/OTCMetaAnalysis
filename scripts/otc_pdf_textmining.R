@@ -41,12 +41,12 @@ scan_pdfs <- function(pdf_folder){
   # function to read in PDFs and maintain layout
   #Rpdf <- readPDF(control = list(text = "-layout"))
   
-  # read in the PDFs, convert to text
-  #msu.pdfs.data <- Corpus(URISource(msu.pdfs), 
-  #                        readerControl = list(reader = Rpdf))
-  
   # trying to read in PDFs and convert to text through pdftools
-  msu.pdfs.data <- pdf_text(msu.pdfs)
+  Rpdf <- pdf_text(msu.pdfs)
+  
+  # read in the PDFs, convert to text
+  msu.pdfs.data <- Corpus(URISource(msu.pdfs), 
+                          readerControl = list(reader = Rpdf))
   
   # search through the papers for specific terms
   otc.msu <- DocumentTermMatrix(msu.pdfs.data,
