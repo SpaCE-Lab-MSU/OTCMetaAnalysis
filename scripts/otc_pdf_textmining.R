@@ -38,15 +38,22 @@ scan_pdfs <- function(pdf_folder){
   # list all files in the pdf folder
   msu.pdfs <- list.files(path=pdf_folder,pattern="pdf$")
   
-  # function to read in PDFs and maintain layout
-  #Rpdf <- readPDF(control = list(text = "-layout"))
-  
-  # trying to read in PDFs and convert to text through pdftools
-  Rpdf <- pdf_text(pdf=msu.pdfs)
+  # make pdf reader
+  reader <- readPDF(engine="xpdf")
   
   # read in the PDFs, convert to text
   msu.pdfs.data <- Corpus(URISource(msu.pdfs), 
-                          readerControl = list(reader = Rpdf))
+                          readerControl = list(reader = reader, language = "en"))
+  
+  # function to read in PDFs and maintain layout
+  #Rpdf <- readPDF(control = list(text = "-layout"))
+  
+  ## trying to read in PDFs and convert to text through pdftools
+  ##Rpdf <- pdf_text(pdf=msu.pdfs)
+  
+  # read in the PDFs, convert to text
+  #msu.pdfs.data <- Corpus(URISource(msu.pdfs), 
+  #                        readerControl = list(reader = Rpdf))
   
   # search through the papers for specific terms
   otc.msu <- DocumentTermMatrix(msu.pdfs.data,
