@@ -40,7 +40,9 @@ scan_pdfs <- function(pdf_folder){
   msu.pdfs <- list.files(path=pdf_folder,pattern="pdf$")
   
   # function to read in PDFs and maintain layout
-  Rpdf <- readPDF(control = list(text = "-layout"))
+  Rpdf <- tryCatch(readPDF(control = list(text = "-layout")), error = function(e){
+    message("error in Rpdf")
+  })
   
   # read in the PDFs, convert to text
   msu.pdfs.data <- Corpus(URISource(msu.pdfs), 
