@@ -65,11 +65,15 @@ scan_pdfs <- function(pdf_folder){
                                                       message("error in doc term matrix")
                                                     })
   
-  otc.msu <- otc.msu[slam::row_sums(otc.msu) > 0,
-                     slam::col_sums(otc.msu) > 0]
+  otc.msu <- tryCatch(otc.msu[slam::row_sums(otc.msu) > 0,
+                     slam::col_sums(otc.msu) > 0], error = function(e){
+                       message("error in slam rows")
+                     })
   
-  otc.msu <- data.frame(docs = row.names(otc.msu), as.matrix(otc.msu), row.names = NULL)
-  
+  otc.msu <- tryCatch(data.frame(docs = row.names(otc.msu), as.matrix(otc.msu), row.names = NULL), error = function(e){
+    message("error in data.frame")
+  })
+
   # column headers with spaces become (.) or with dashes become (.1):
   names(otc.msu)
   
