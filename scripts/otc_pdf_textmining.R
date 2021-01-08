@@ -50,7 +50,7 @@ scan_pdfs <- function(pdf_folder){
                           })
   
   # search through the papers for specific terms
-  otc.msu <- DocumentTermMatrix(msu.pdfs.data,
+  otc.msu <- tryCatch(DocumentTermMatrix(msu.pdfs.data,
                                 list(dictionary = c("chamber","chambers",
                                                     "open-top","open top",
                                                     "warming chamber","warming chambers",
@@ -61,7 +61,9 @@ scan_pdfs <- function(pdf_folder){
                                                     "seedling","seedlings","sapling","saplings",
                                                     "shrub","shrubs","grass","grasses",
                                                     "sedge","sedges","forb","forbs",
-                                                    "tree","trees","vegetation")))
+                                                    "tree","trees","vegetation"))), error = function(e){
+                                                      message("error in doc term matrix")
+                                                    })
   
   otc.msu <- otc.msu[slam::row_sums(otc.msu) > 0,
                      slam::col_sums(otc.msu) > 0]
