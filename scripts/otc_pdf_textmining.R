@@ -87,7 +87,7 @@ scan_pdfs <- function(pdf_folder){
   otc.msu$priority[otc.msu$open.top.1>0]<-1
   otc.msu$priority[otc.msu$warming.chamber>0]<-1
   otc.msu$priority[otc.msu$warming.chamber.1>0]<-1
-  otc.msu$passiveotc<-rowSums(cbind(otc.msu$passive, otc.msu$open.top, otc.msu$open.top.1))
+  #otc.msu$passiveotc<-rowSums(cbind(otc.msu$passive, otc.msu$open.top, otc.msu$open.top.1))
   otc.msu$priority[otc.msu$passiveotc>0]<-1
   
   # keep only the paper names + priority columns
