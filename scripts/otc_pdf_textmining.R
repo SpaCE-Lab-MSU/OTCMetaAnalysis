@@ -39,12 +39,12 @@ scan_pdfs <- function(pdf_folder){
   msu.pdfs <- list.files(path=pdf_folder,pattern="pdf$")
   
   # function to read in PDFs and maintain layout
-  Rpdf <- tryCatch(readPDF(control = list(text = "-layout")), error = function(e){
+  Rpdf <- tryCatch(readPDF(), error = function(e){
     message("error in Rpdf")
   })
   
   # read in the PDFs, convert to text
-  msu.pdfs.data <- tryCatch(Corpus(URISource(msu.pdfs, mode=""), 
+  msu.pdfs.data <- tryCatch(Corpus(URISource(msu.pdfs), 
                           readerControl = list(reader = Rpdf)), error = function(e){
                             message("error in Corpus")
                           })
