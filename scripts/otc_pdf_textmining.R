@@ -44,8 +44,10 @@ scan_pdfs <- function(pdf_folder){
   })
   
   # read in the PDFs, convert to text
-  msu.pdfs.data <- Corpus(URISource(msu.pdfs), 
-                          readerControl = list(reader = Rpdf))
+  msu.pdfs.data <- tryCatch(Corpus(URISource(msu.pdfs), 
+                          readerControl = list(reader = Rpdf)), error = function(e){
+                            message("error in Corpus")
+                          })
   
   # search through the papers for specific terms
   otc.msu <- DocumentTermMatrix(msu.pdfs.data,
