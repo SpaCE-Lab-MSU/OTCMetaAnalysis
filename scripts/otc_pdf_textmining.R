@@ -44,7 +44,7 @@ scan_pdfs <- function(pdf_folder){
   })
   
   # read in the PDFs, convert to text
-  msu.pdfs.data <- tryCatch(Corpus(URISource(msu.pdfs), 
+  msu.pdfs.data <- tryCatch(Corpus(URISource(msu.pdfs, mode=""), 
                           readerControl = list(reader = Rpdf)), error = function(e){
                             message("error in Corpus")
                           })
