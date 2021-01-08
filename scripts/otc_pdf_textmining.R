@@ -31,7 +31,6 @@ rm(list=ls())
 # load packages
 library(tm)
 library(pdftools)
-library(Rpoppler)
 
 # function to scan pdfs
 scan_pdfs <- function(pdf_folder){
