@@ -95,7 +95,7 @@ args = commandArgs(trailingOnly=TRUE)
 if (length(args) == 1) {
   
   # since there were arguments on the command line use those to run the function
-  write.csv(otc_results, file=args[1])
+  write.csv(otc.msu, file=args[1])
   
 } else {
   # no command line arguments.  Optional but you could print a message about that
