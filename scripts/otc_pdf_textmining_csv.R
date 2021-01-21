@@ -32,9 +32,10 @@ rm(list=ls())
 library(tm)
 library(pdftools)
 
-pdfs <- read.csv("goodpdfs.csv")
-
-for(i in 1:length(pdfs)){
+loop <- function(csv_file){
+  
+  for(i in (csv_file)){
+    
   # function to scan pdfs
   scan_pdfs <- function(i){
     
@@ -85,21 +86,22 @@ for(i in 1:length(pdfs)){
     otc.msu <- subset(otc.msu, select = c("docs", "priority"))
     
     return(otc.msu)
-    
+  }
   }
 }
 
 # set arguments
 args = commandArgs(trailingOnly=TRUE)
 
-if (length(args) == 1) {
+if (length(args) == 2) {
   
   # since there were arguments on the command line use those to run the function
-  write.csv(otc.msu, file=args[1])
+  otc_results <- loop(args[1])
+  write.csv(otc_results, file=args[2])
   
 } else {
   # no command line arguments.  Optional but you could print a message about that
   # note this message would be printed every time you 'source' the script inside Rstudio
   
-  print("This script requires two parameters :otc_pdf_textmining.R <path and name of output file>")
+  print("This script requires two parameters :otc_pdf_textmining.R  <path to folder with pdfs> <path and name of output file>")
 }
