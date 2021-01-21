@@ -34,7 +34,7 @@ library(pdftools)
 
 pdfs <- read.csv("goodpdfs.csv")
 
-for(i in pdfs){
+for(i in 1:length(pdfs)){
   # function to scan pdfs
   scan_pdfs <- function(i){
     
