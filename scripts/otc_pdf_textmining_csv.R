@@ -42,7 +42,7 @@ scan_pdfs <- function(csv_file){
   Rpdf <- readPDF(engine = "Rpoppler")
   
   # read in the PDFs, convert to text
-  msu.pdfs.data <- Corpus(URISource(i), 
+  msu.pdfs.data <- Corpus(URISource(msu.pdfs), 
                           readerControl = list(reader = Rpdf))
   
   # search through the papers for specific terms
