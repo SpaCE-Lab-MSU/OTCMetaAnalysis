@@ -35,8 +35,8 @@ library(pdftools)
 # function to scan pdfs
 scan_pdfs <- function(csv_file){
   
-  # specify file path from csv file
-  msu.pdfs <- list.files(path=csv_file, pattern="pdf$")
+  # read in filepaths from csv
+  msu.pdfs <- read.csv(csv_file)$FILEPATH   
   
   # function to read in PDFs and maintain layout
   Rpdf <- readPDF(engine = "Rpoppler")
@@ -100,5 +100,5 @@ if (length(args) == 2) {
   # no command line arguments.  Optional but you could print a message about that
   # note this message would be printed every time you 'source' the script inside Rstudio
   
-  print("This script requires two parameters :otc_pdf_textmining.R  <path to folder with pdfs> <path and name of output file>")
+  print("This script requires two parameters :otc_pdf_textmining.R  <path to csv> <path and name of output file>")
 }
