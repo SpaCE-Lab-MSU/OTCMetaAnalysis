@@ -71,8 +71,8 @@ scan_pdfs <- function(pdf_folder){
   # by default, paper is 0 priority unless meets following criteria:
   dim(otc.msu)
   otc.msu$priority<-0
-  otc.msu$priority[otc.msu$open.top.chamber>0]<-1
-  otc.msu$priority[otc.msu$open.top.chamber.1>0]<-1
+  #otc.msu$priority[otc.msu$open.top.chamber>0]<-1
+  #otc.msu$priority[otc.msu$open.top.chamber.1>0]<-1
   #otc.msu$priority[otc.msu$open.top>0]<-1
   #otc.msu$priority[otc.msu$open.top.1>0]<-1
   otc.msu$priority[otc.msu$otc>0]<-1
