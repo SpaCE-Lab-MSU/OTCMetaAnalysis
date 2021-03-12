@@ -1,10 +1,10 @@
 ## TITLE:         OTC Meta Analysis PDF analysis
-## AUTHOR:        P. Zarnetske 
-## COLLABORATORS: K. Dobson, P. Bills, K. Welshofer
+## AUTHOR:        P. Zarnetske, K. Dobson 
+## COLLABORATORS: P. Bills, K. Welshofer
 ## DATA:          Scopus PDFs MSU
-## PROJECT:       "OTC MetaAnalysis Paper"
+## PROJECT:       "OTC MetaAnalysis"
 ## DATE:          June 7, 2016
-##                K. Dobson updated September, 2020
+##                K. Dobson updating in 2021
 
 ## This file reads in PDFs from a Scopus Search of papers containing "climate change" 
 ## and similar terms. It then analyzes the PDFs for their content, specifically
