@@ -83,8 +83,8 @@ scan_pdfs <- function(pdf_folder){
   #otc.msu$priority[otc.msu$passiveotc>0]<-1
   
   # keep only the paper names + priority columns
-  #otc.msu <- subset(otc.msu, priority == 1)
-  #otc.msu <- subset(otc.msu, select = c("docs", "priority"))
+  otc.msu <- subset(otc.msu, priority == 1)
+  otc.msu <- subset(otc.msu, select = c("docs", "priority"))
   
   return(otc.msu)
 
