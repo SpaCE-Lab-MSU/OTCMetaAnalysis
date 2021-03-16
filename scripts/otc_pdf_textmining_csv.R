@@ -71,9 +71,9 @@ scan_pdfs <- function(csv_file){
   # by default, paper is 0 priority unless meets following criteria:
   dim(otc.msu)
   otc.msu$priority<-0
-  otc.msu$priority[(otc.msu$open.top.1>0) & (otc.msu&chamber>0)]<-1
+  otc.msu$priority[(otc.msu$open.top.1>0) & (otc.msu$chamber>0)]<-1
   otc.msu$priority[(otc.msu$open.top>0) & (otc.msu$chamber>0)]<-1
-  otc.msu$priority[(otc.msu$open.top.1>0) & (otc.msu&chambers>0)]<-1
+  otc.msu$priority[(otc.msu$open.top.1>0) & (otc.msu$chambers>0)]<-1
   otc.msu$priority[(otc.msu$open.top>0) & (otc.msu$chambers>0)]<-1
   #otc.msu$priority[otc.msu$open.top>0]<-1
   #otc.msu$priority[otc.msu$open.top.1>0]<-1

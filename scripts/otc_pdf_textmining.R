@@ -48,7 +48,6 @@ scan_pdfs <- function(pdf_folder){
   # search through the papers for specific terms
   otc.msu <- DocumentTermMatrix(msu.pdfs.data,
                                 list(dictionary = c("chamber","chambers",
-                                                    "climate change", "projections",
                                                     "open-top","open top",
                                                     "warming chamber","warming chambers",
                                                     "warming-chamber","warming-chambers",
@@ -72,11 +71,10 @@ scan_pdfs <- function(pdf_folder){
   # by default, paper is 0 priority unless meets following criteria:
   dim(otc.msu)
   otc.msu$priority<-0
-  otc.msu$priority[(otc.msu$climate.change>0) & (otc.msu$projections>0)]<-1
-  #otc.msu$priority[(otc.msu$open.top.1>0) & (otc.msu&chamber>0)]<-1
-  #otc.msu$priority[(otc.msu$open.top>0) & (otc.msu$chamber>0)]<-1
-  #otc.msu$priority[(otc.msu$open.top.1>0) & (otc.msu&chambers>0)]<-1
-  #otc.msu$priority[(otc.msu$open.top>0) & (otc.msu$chambers>0)]<-1
+  otc.msu$priority[(otc.msu$open.top.1>0) & (otc.msu$chamber>0)]<-1
+  otc.msu$priority[(otc.msu$open.top>0) & (otc.msu$chamber>0)]<-1
+  otc.msu$priority[(otc.msu$open.top.1>0) & (otc.msu$chambers>0)]<-1
+  otc.msu$priority[(otc.msu$open.top>0) & (otc.msu$chambers>0)]<-1
   #otc.msu$priority[otc.msu$open.top>0]<-1
   #otc.msu$priority[otc.msu$open.top.1>0]<-1
   #otc.msu$priority[otc.msu$otc>0]<-1
@@ -85,8 +83,8 @@ scan_pdfs <- function(pdf_folder){
   #otc.msu$priority[otc.msu$passiveotc>0]<-1
   
   # keep only the paper names + priority columns
-  otc.msu <- subset(otc.msu, priority == 1)
-  otc.msu <- subset(otc.msu, select = c("docs", "priority"))
+  #otc.msu <- subset(otc.msu, priority == 1)
+  #otc.msu <- subset(otc.msu, select = c("docs", "priority"))
   
   return(otc.msu)
 
