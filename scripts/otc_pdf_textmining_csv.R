@@ -48,10 +48,9 @@ scan_pdfs <- function(csv_file){
   # search through the papers for specific terms
   otc.msu <- DocumentTermMatrix(msu.pdfs.data,
                                 list(dictionary = c("chamber","chambers",
-                                                    "open-top","open top", "otc", "OTC",
-                                                    "open-top chamber", "open top chamber",
+                                                    "open-top","open top",
                                                     "warming chamber","warming chambers",
-                                                    "warming-chamber","warming chambers",
+                                                    "warming-chamber","warming-chambers",
                                                     "passive","passively","passive-","passively-",
                                                     "temperature","temperatures","ITEX","itex",
                                                     "fan","fans","plant","plants",
@@ -72,8 +71,10 @@ scan_pdfs <- function(csv_file){
   # by default, paper is 0 priority unless meets following criteria:
   dim(otc.msu)
   otc.msu$priority<-0
-  otc.msu$priority[otc.msu$open.top.chamber>0]<-1
-  otc.msu$priority[otc.msu$open.top.chamber.1>0]<-1
+  otc.msu$priority[(otc.msu$open.top.1>0) & (otc.msu&chamber>0)]<-1
+  otc.msu$priority[(otc.msu$open.top>0) & (otc.msu$chamber>0)]<-1
+  otc.msu$priority[(otc.msu$open.top.1>0) & (otc.msu&chambers>0)]<-1
+  otc.msu$priority[(otc.msu$open.top>0) & (otc.msu$chambers>0)]<-1
   #otc.msu$priority[otc.msu$open.top>0]<-1
   #otc.msu$priority[otc.msu$open.top.1>0]<-1
   #otc.msu$priority[otc.msu$otc>0]<-1
