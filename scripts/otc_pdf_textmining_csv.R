@@ -49,15 +49,7 @@ scan_pdfs <- function(csv_file){
   otc.msu <- DocumentTermMatrix(msu.pdfs.data,
                                 list(dictionary = c("chamber","chambers",
                                                     "open-top","open top",
-                                                    "warming chamber","warming chambers",
-                                                    "warming-chamber","warming-chambers",
-                                                    "passive","passively","passive-","passively-",
-                                                    "temperature","temperatures","ITEX","itex",
-                                                    "fan","fans","plant","plants",
-                                                    "seedling","seedlings","sapling","saplings",
-                                                    "shrub","shrubs","grass","grasses",
-                                                    "sedge","sedges","forb","forbs",
-                                                    "tree","trees","vegetation")))
+                                                    "warming", "passive","ITEX","itex")))
   
   otc.msu <- otc.msu[slam::row_sums(otc.msu) > 0,
                      slam::col_sums(otc.msu) > 0]
@@ -75,9 +67,12 @@ scan_pdfs <- function(csv_file){
   #otc.msu$priority[(otc.msu$open.top>0) & (otc.msu$chamber>0)]<-1
   #otc.msu$priority[(otc.msu$open.top.1>0) & (otc.msu$chambers>0)]<-1
   #otc.msu$priority[(otc.msu$open.top>0) & (otc.msu$chambers>0)]<-1
-  otc.msu$priority[(otc.msu$itex>0)]<-1
-  otc.msu$priority[(otc.msu$itex>0) & (otc.msu$chamber>0)]<-1
-  otc.msu$priority[(otc.msu$itex>0) & (otc.msu$chambers>0)]<-1
+  #otc.msu$priority[(otc.msu$itex>0)]<-1
+  #otc.msu$priority[(otc.msu$itex>0) & (otc.msu$chamber>0)]<-1
+  #otc.msu$priority[(otc.msu$itex>0) & (otc.msu$chambers>0)]<-1
+  otc.msu$priority[(otc.msu$passive>0) & (otc.msu$warming>0)]<-1
+  otc.msu$priority[(otc.msu$warming>0) & (otc.msu$chamber>0)]<-1
+  otc.msu$priority[(otc.msu$warming>0) & (otc.msu$chambers>0)]<-1
   
   # keep only the paper names + priority columns
   otc.msu <- subset(otc.msu, priority == 1)
