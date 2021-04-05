@@ -6,9 +6,6 @@
 #                 round of textmining; finds papers which are likely to be relevant
 # DATE:           April 2021
 
-# read in packages
-library(tidyverse)
-
 # load in files
 subset1 <- read.csv("otc_search_clean.csv")
 subset2 <- read.csv("passive_search_clean.csv")
