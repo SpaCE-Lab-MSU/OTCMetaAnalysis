@@ -6,7 +6,7 @@
 #                 round of textmining; finds papers which are likely to be relevant
 # DATE:           April 2021
 
-# load in files
+# load in files on HPCC
 subset1 <- read.csv("otc_search_clean.csv")
 subset2 <- read.csv("passive_search_clean.csv")
 subset3 <- read.csv("itex_search_clean.csv")
