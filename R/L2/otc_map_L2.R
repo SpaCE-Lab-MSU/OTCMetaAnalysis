@@ -17,6 +17,7 @@ coord <- read.csv(file.path(MA_dir,"L1/otc_data_coordinates_L1.csv"))
 world <- map_data("world")
 
 # make map
+png("otc_plot_L2.png", units="in", width=10, height=6, res=300)
 ggplot() +
   geom_map(
     data = world, map = world,
@@ -30,3 +31,4 @@ ggplot() +
     color = "red"
   ) +
   theme_classic()
+dev.off()
