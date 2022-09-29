@@ -70,6 +70,9 @@ merged <- merged[order(merged$Pub_number),]
 merged_wider <- merged %>%
   pivot_wider(names_from = Variable, values_from = Yvalue)
 
+# saving as an excel file to edit it with sample sizes
+write_xlsx(merged_wider,file.path(MA_dir, "L1/otc_data_sample_sizes.xlsx"))
+
 # example code for calculating effect sizes (eventually)
 # https://rfunctions.blogspot.com/2016/10/meta-analysis-in-r.html
 esmd <- escalc(measure="MD", m1i=Warmed_Mean, m2i=Ambient_Mean, sd1i=Warmed_Var, sd2i=Ambient_Var, data=merged_wider)
