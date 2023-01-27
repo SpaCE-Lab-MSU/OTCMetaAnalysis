@@ -156,5 +156,5 @@ sample_reorder <- sample_coal[, c("User","Pub_number","Pub_info","Study_year_sta
 
 
 # upload csv file to L2 folder
-write.csv(sample_reorder, file.path(MA_dir,"L2/otc_data_cleaned_L2.csv"))
+write.csv(sample_reorder, file.path(MA_dir,"L2/otc_data_cleaned_L2.csv"), row.names=F)
 
