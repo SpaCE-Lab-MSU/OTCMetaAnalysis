@@ -1,9 +1,9 @@
-# TITLE:          Effect sizes
+# TITLE:          Effect size plots
 # AUTHORS:        Kara Dobson
 # COLLABORATORS:  Phoebe Zarnetske, Pat Bills
-# DATA INPUT:     L1 data sheets from the L1 folder
-# DATA OUTPUT:    Effect sizes
-# DATE:           Sep 2022
+# DATA INPUT:     L2 manipulated data from the L2 folder
+# DATA OUTPUT:    Effect size plots
+# DATE:           Sep 2022; Jan 2023
 
 # clear environment
 rm(list = ls())
@@ -40,10 +40,6 @@ esmd_var_type <- esmd_clean %>%
   filter(Var_type == "Height" | Var_type == "Biomass_above" | Var_type == "Flower_num" |
            Var_type == "Percent_cover" | Var_type == "Nitrogen_above" | Var_type == "Shoot_length")
 
-# running stats
-SMD.ma<-rma.uni(yi,vi,method="REML",data=esmd_var_type)
-summary(SMD.ma)
-
 # basic plot
 forest.rma(SMD.ma)
 
@@ -52,10 +48,10 @@ esmd_var_type_sum <- esmd_var_type %>%
   group_by(Var_type, Func_group_broad) %>%
   summarize(avg = mean(yi, na.rm = TRUE),
             se = std.error(yi, na.rm = TRUE))
-png("perc_cover_effect.png", units="in", width=7, height=5, res=300)
+png("effect.png", units="in", width=8, height=6, res=300)
 ggplot(esmd_var_type_sum, aes(y = Func_group_broad, x = avg)) +
   facet_wrap(.~Var_type) +
-  geom_point(shape = 18, size = 5) +  
+  geom_point(shape = 18, size = 4) +  
   geom_errorbarh(aes(xmin = avg - se, xmax = avg + se), height = 0.25) +
   geom_vline(xintercept = 0, color = "red", linetype = "dashed", cex = 1, alpha = 0.5) +
   #scale_y_continuous(name = "", breaks=1:4, labels = dat$label, trans = "reverse") +
