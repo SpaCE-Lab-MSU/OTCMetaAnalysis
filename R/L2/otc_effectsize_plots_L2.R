@@ -34,22 +34,57 @@ esmd_clean <- esmd %>%
 # https://ecologyforacrowdedplanet.wordpress.com/2013/05/10/using-metafor-and-ggplot-togetherpart-1/
 # example stats: update var_type based on what variable to look at
 unique(esmd_clean$Var_type)
+unique(esmd_clean$Pub_number)
 esmd_clean %>% 
   count(Var_type)
+
 esmd_var_type <- esmd_clean %>%
-  filter(Var_type == "Height" | Var_type == "Biomass_above" | Var_type == "Flower_num" |
-           Var_type == "Percent_cover" | Var_type == "Nitrogen_above" | Var_type == "Shoot_length")
+  filter(Var_type == "Height" | Var_type == "Biomass_above" | Var_type == "Biomass_below" |
+           Var_type == "Percent_cover" | Var_type == "Nitrogen_above" | Var_type == "Shoot_length" |
+           Var_type == "SLA" | Var_type == "Leaf_length" | Var_type == "Flower_num")
+
+esmd_single_var <- esmd_clean %>%
+  filter(Var_type == "Biomass_above")
+
+esmd_var_phen <- esmd_clean %>%
+  filter(Var_type == "Phen_abscission" | Var_type == "Phen_bud_break" | Var_type == "Phen_flwr" |
+           Var_type == "Phen_flwr_lifespan" | Var_type == "Phen_seed_set")
 
 # basic plot
 forest.rma(SMD.ma)
 
-# other forest plot
-esmd_var_type_sum <- esmd_var_type %>%
+# all data sorted by variable type
+esmd_var_type_sum <- esmd_clean %>%
+  group_by(Var_type) %>%
+  summarize(avg = mean(yi, na.rm = TRUE),
+            se = std.error(yi, na.rm = TRUE))
+png("effect.png", units="in", width=8, height=6, res=300)
+ggplot(esmd_var_type_sum, aes(y = reorder(Var_type, -avg, FUN=mean), x = avg)) +
+  #facet_wrap(.~Var_type) +
+  geom_point(shape = 18, size = 4) +  
+  geom_errorbarh(aes(xmin = avg - se, xmax = avg + se), height = 0.25) +
+  geom_vline(xintercept = 0, color = "red", linetype = "dashed", cex = 1, alpha = 0.5) +
+  #scale_y_continuous(name = "", breaks=1:4, labels = dat$label, trans = "reverse") +
+  xlab("Mean effect size (Hedges' g) +/- SE") + 
+  ylab(" ") + 
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        panel.background = element_blank(),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(), 
+        axis.line = element_line(colour = "black"),
+        axis.text.y = element_text(size = 12, colour = "black"),
+        axis.text.x.bottom = element_text(size = 12, colour = "black"),
+        axis.title.x = element_text(size = 12, colour = "black"))
+dev.off()
+
+# selected variables sorted by functional group
+esmd_var_type_sum2 <- esmd_var_type %>%
   group_by(Var_type, Func_group_broad) %>%
   summarize(avg = mean(yi, na.rm = TRUE),
             se = std.error(yi, na.rm = TRUE))
 png("effect.png", units="in", width=8, height=6, res=300)
-ggplot(esmd_var_type_sum, aes(y = Func_group_broad, x = avg)) +
+ggplot(esmd_var_type_sum2, aes(y = Func_group_broad, x = avg)) +
   facet_wrap(.~Var_type) +
   geom_point(shape = 18, size = 4) +  
   geom_errorbarh(aes(xmin = avg - se, xmax = avg + se), height = 0.25) +
