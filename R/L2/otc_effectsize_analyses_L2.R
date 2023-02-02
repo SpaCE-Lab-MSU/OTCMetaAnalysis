@@ -32,16 +32,41 @@ esmd <- escalc(measure="SMD", m1i=Warmed_Mean, m2i=Ambient_Mean, # SMD = Hedge's
 esmd_clean <- esmd %>%
   filter(!is.na(vi))
 
-# https://ecologyforacrowdedplanet.wordpress.com/2013/05/10/using-metafor-and-ggplot-togetherpart-1/
-# example stats: update var_type based on what variable to look at
+
+# is there a significant relationship between the amount warmed by the experiment and our effect sizes?
+# if yes, this indicates that we need to account for this variation in our model (random effect?)
+res.rma.C <- rma(yi, vi, mods = ~ Amount_warmed_C, data=esmd_clean, method="REML")
+res.rma.C
+# no, so we don't need to account for the amount warmed
+
+# is there a significant relationship between the latitude of the experiment and our effect sizes?
+# if yes, this indicates that we need to account for this variation in our model (random effect?)
+res.rma.lat <- rma(yi, vi, mods = ~ Latitude, data=esmd_clean, method="REML")
+res.rma.lat
+# yes, there is an effect of latitude
+
+# is there a significant relationship between year-round warming and our effect sizes?
+# if yes, this indicates that we need to account for this variation in our model (random effect?)
+res.rma.year <- rma(yi, vi, mods = ~ Year_round_warm, data=esmd_clean, method="REML")
+res.rma.year
+# no, so we don't need to account for year-round warming
+
+# is there a significant relationship between months warmed and our effect sizes?
+# if yes, this indicates that we need to account for this variation in our model (random effect?)
+res.rma.months <- rma(yi, vi, mods = ~ Years_warmed, data=esmd_clean, method="REML")
+res.rma.months
+# no, so we don't need to account for months warmed
+
+
+### main stats: update var_type based on what variable to look at
 unique(esmd_clean$Var_type)
 esmd_clean %>% 
   count(Var_type)
-esmd_var_type <- esmd_clean %>%
-  filter(Var_type == "Height" | Var_type == "Biomass_above" | Var_type == "Flower_num" |
-           Var_type == "Percent_cover" | Var_type == "Nitrogen_above" | Var_type == "Shoot_length")
 
-# running stats
-SMD.ma<-rma.uni(yi,vi,method="REML",data=esmd_var_type)
-summary(SMD.ma)
+## height
+esmd_height <- esmd_clean %>%
+  filter(Var_type == "Height")
+# equal effects model for height
+res.rma.height <- rma(yi, vi, data=esmd_height, method="EE")
+res.rma.height
 
