@@ -19,19 +19,8 @@ library(multcomp)
 MA_dir<-Sys.getenv("MADIR")
 
 # read in data
-otc_data <- read.csv(file.path(MA_dir,"L2/otc_data_cleaned_L2.csv"))
+esmd_clean <- read.csv(file.path(MA_dir,"L2/otc_effect_sizes_L2.csv"))
 
-
-# calculating effect sizes
-# https://rfunctions.blogspot.com/2016/10/meta-analysis-in-r.html
-esmd <- escalc(measure="SMD", m1i=Warmed_Mean, m2i=Ambient_Mean, # SMD = Hedge's g
-               sd1i=Warmed_SD, sd2i=Ambient_SD,
-               n1i=Warmed_N, n2i=Ambient_N,
-               data=otc_data)
-
-# remove rows with incomplete data
-esmd_clean <- esmd %>%
-  filter(!is.na(vi))
 
 
 # is there a significant relationship between the amount warmed by the experiment and our effect sizes?
@@ -63,14 +52,14 @@ res.rma.months
 ### main stats (all variables):
 # removing func groups that are blank
 esmd_clean2<- esmd_clean %>%
-  filter(!(Var_type == ""))
+  filter(!(Var_type_broad == ""))
 # equal effects model for height
-res.rma.all <- rma(yi, vi, mods=~Var_type, data=esmd_clean2)
+res.rma.all <- rma(yi, vi, mods=~Var_type_broad, data=esmd_clean2)
 res.rma.all
 # all comparisons
 # Values of P=1.0 indicate that there is no evidence of a difference between variables
 # Holm correction used here because it was used in the Kuebbing phenology meta-analysis
-summary(glht(res.rma.all, linfct=cbind(contrMat(rep(1,31), type="Tukey"))), test=adjusted("holm"))
+summary(glht(res.rma.all, linfct=cbind(contrMat(rep(1,17), type="Tukey"))), test=adjusted("holm"))
 
 
 

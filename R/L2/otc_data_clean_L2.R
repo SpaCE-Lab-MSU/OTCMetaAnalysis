@@ -11,6 +11,7 @@ rm(list=ls())
 
 # Load packages
 library(tidyverse)
+library(metafor)
 
 # set working directory
 MA_dir<-Sys.getenv("MADIR")
@@ -347,4 +348,20 @@ sample_latest_year <- sample_reorder %>%
 
 # upload csv file to L2 folder
 write.csv(sample_latest_year, file.path(MA_dir,"L2/otc_data_cleaned_L2.csv"), row.names=F)
+
+
+
+#### calculating effect sizes ###
+# https://rfunctions.blogspot.com/2016/10/meta-analysis-in-r.html
+esmd <- escalc(measure="SMD", m1i=Warmed_Mean, m2i=Ambient_Mean, # SMD = Hedge's g
+               sd1i=Warmed_SD, sd2i=Ambient_SD,
+               n1i=Warmed_N, n2i=Ambient_N,
+               data=sample_latest_year)
+
+# remove rows with incomplete data
+esmd_clean <- esmd %>%
+  filter(!is.na(vi))
+
+# uploading the effect size data
+write.csv(esmd_clean, file.path(MA_dir,"L2/otc_effect_sizes_L2.csv"), row.names=F)
 

@@ -17,22 +17,8 @@ library(plotrix)
 MA_dir<-Sys.getenv("MADIR")
 
 # read in data
-otc_data <- read.csv(file.path(MA_dir,"L2/otc_data_cleaned_L2.csv"))
+esmd_clean <- read.csv(file.path(MA_dir,"L2/otc_effect_sizes_L2.csv"))
 
-
-# calculating effect sizes
-# https://rfunctions.blogspot.com/2016/10/meta-analysis-in-r.html
-esmd <- escalc(measure="SMD", m1i=Warmed_Mean, m2i=Ambient_Mean, # SMD = Hedge's g
-               sd1i=Warmed_SD, sd2i=Ambient_SD,
-               n1i=Warmed_N, n2i=Ambient_N,
-               data=otc_data)
-
-# remove rows with incomplete data
-esmd_clean <- esmd %>%
-  filter(!is.na(vi))
-
-# uploading the effect size data
-write.csv(esmd_clean, file.path(MA_dir,"L2/otc_effect_sizes_L2.csv"), row.names=F)
 
 # https://ecologyforacrowdedplanet.wordpress.com/2013/05/10/using-metafor-and-ggplot-togetherpart-1/
 # example stats: update var_type based on what variable to look at
@@ -122,3 +108,11 @@ funnel(res, main="Standard Error")
 funnel(res, yaxis="vi", main="Sampling Variance")
 funnel(res, yaxis="seinv", main="Inverse Standard Error")
 funnel(res, yaxis="vinv", main="Inverse Sampling Variance")
+
+# correlation test between effect size and sample size
+res <- cor.test(esmd_clean$Warmed_N+esmd_clean$Ambient_N, esmd_clean$yi, 
+                method = "pearson")
+res
+ggplot(esmd_clean, aes(x = Ambient_N, y = yi)) +
+  geom_point() +
+  geom_smooth(method = 'lm')
