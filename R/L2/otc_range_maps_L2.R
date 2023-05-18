@@ -20,6 +20,9 @@ library(tidyverse)
 library(BIEN)
 library(terra)
 library(maps)
+library(rgbif)
+library(maptools)
+library(latticeExtra)
 
 # set working directory
 MA_dir<-Sys.getenv("MADIR")
@@ -34,7 +37,7 @@ count <- effect %>%
 
 
 
-### range maps ###
+### range maps - BIEN ###
 # Carex bigelowii (most common species)
 Carex_bigelowii <- effect %>%
   filter(Genus_Species == "Carex_bigelowii")
@@ -85,13 +88,14 @@ points(cbind(Lonicera_hispida$Longitude,Lonicera_hispida$Latitude),
 
 
 
-### occurrence data ###
+### occurrence data - BIEN ###
 Carex_bigelowii_full <- BIEN_occurrence_species(species = "Carex bigelowii",
                                                     cultivated = TRUE,
                                                     all.taxonomy = TRUE,
                                                     native.status = TRUE,
                                                     observation.type = TRUE,
                                                     political.boundaries = TRUE)
+# test map
 map('world', fill = TRUE, col= "grey", bg = "light blue") 
 points(cbind(Carex_bigelowii_full$longitude,
              Carex_bigelowii_full$latitude),
@@ -103,3 +107,25 @@ points(cbind(Carex_bigelowii$Longitude,
        col = "blue",
        pch = 20,
        cex = 1) 
+# better map
+mp <- map('world', fill = TRUE, plot=F) 
+SP <- map2SpatialPolygons(mp, IDs = mp$names, 
+                          proj4string = CRS("+proj=longlat +datum=WGS84"))
+DATA <- data.frame(seq_len(length(SP)), row.names = names(SP))
+SPDF <- SpatialPolygonsDataFrame(SP, data = DATA)
+spplot(SPDF, col.regions = "transparent", colorkey = FALSE,
+       par.settings = list(axis.line = list(col = "transparent"))) +
+  layer(panel.points(longitude, latitude, col="blue", pch=19), data=Carex_bigelowii_full) +
+  layer(panel.points(Longitude, Latitude, col="red", pch=19), data=Carex_bigelowii)
+
+
+### occurrence data - GBIF ###
+taxonKey <- name_backbone("Carex bigelowii")$usageKey
+occ_download(pred("taxonKey", 2722383))
+x <- occ_download_get('0248073-230224095556074') %>%
+  occ_download_import()
+
+plot(map_fetch(taxonKey = 2722383, bin = "hex", srs="EPSG:3857",
+               hexPerTile = 30, style = "purpleYellow-noborder.poly"))
+
+
