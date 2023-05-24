@@ -54,7 +54,19 @@ species3 <- species[6:10]
 species4 <- species[11:15]
 species5 <- species[16:20]
 species6 <- species[21:25]
-
+species7 <- species[26:30]
+species8 <- species[31:35]
+species9 <- species[36:40]
+species10 <- species[41:45]
+species11 <- species[46:50]
+species12 <- species[51:55]
+species13 <- species[56:60]
+species14 <- species[61:65]
+species15 <- species[66:70]
+species16 <- species[71:75]
+species17 <- species[76:80]
+species18 <- species[81:85]
+species19 <- species[86:90]
 
 
 ### occurrence data - BIEN ###
@@ -77,7 +89,7 @@ occurrences <- function(spp) {
 }
 # store the results of the function
 # change "species#" and "df_list#" to match the subset of species I want to work with
-df_list5 <- occurrences(spp = species6)
+df_list18 <- occurrences(spp = species19)
 
 
 
