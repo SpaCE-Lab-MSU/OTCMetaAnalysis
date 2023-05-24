@@ -32,6 +32,9 @@ esmd_var_type <- esmd_clean %>%
          | Var_type_broad == "Percent_cover" | Var_type_broad == "Height"
          | Var_type_broad == "Flower_num" | Var_type_broad == "Nitrogen_above")
 
+esmd_var_type2 <- esmd_clean %>%
+  filter(Var_type_broad == "Nitrogen_above")
+
 esmd_var_phen <- esmd_clean %>%
   filter(Var_type_broad == "Phen_early" | Var_type_broad == "Phen_late")
 
@@ -88,9 +91,36 @@ ggplot(esmd_var_type_sum2, aes(y = Func_group_broad, x = avg)) +
         axis.title.x = element_text(size = 12, colour = "black"))
 dev.off()
 
-# regression between latitude and effect size
-ggplot(esmd_var_type, aes(x = Latitude, y = yi)) +
+# all variables sorted by native/non-native
+esmd_native <- esmd_clean %>%
+  filter(!(Native_Status == "")) %>%
+  group_by(Var_type_broad, Native_Status) %>%
+  summarize(avg = mean(yi, na.rm = TRUE),
+            se = std.error(yi, na.rm = TRUE),
+            count = n())
+png("effect_native.png", units="in", width=8, height=6, res=300)
+ggplot(esmd_native, aes(y = Native_Status, x = avg)) +
   facet_wrap(.~Var_type_broad) +
+  geom_point(shape = 18, size = 4) +  
+  geom_errorbarh(aes(xmin = avg - se, xmax = avg + se), height = 0.25) +
+  geom_vline(xintercept = 0, color = "red", linetype = "dashed", cex = 1, alpha = 0.5) +
+  #scale_y_continuous(name = "", breaks=1:4, labels = dat$label, trans = "reverse") +
+  xlab("Mean effect size (Hedges' g) +/- SE") + 
+  ylab(" ") + 
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        panel.background = element_blank(),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(), 
+        axis.line = element_line(colour = "black"),
+        axis.text.y = element_text(size = 12, colour = "black"),
+        axis.text.x.bottom = element_text(size = 12, colour = "black"),
+        axis.title.x = element_text(size = 12, colour = "black"))
+dev.off()
+
+# regression between latitude and effect size
+ggplot(esmd_var_type2, aes(x = Latitude, y = yi)) +
+  #facet_wrap(.~Var_type_broad) +
   geom_point(size = 2) +
   geom_smooth(method = 'lm') +
   xlab("Latitude") +
