@@ -93,6 +93,10 @@ sample_coal$Notes <- NULL
 sample_coal$Warmed_Var <- NULL
 sample_coal$Ambient_Var <- NULL
 
+# checking spelling on native/non-native
+unique(sample_coal$Native_Status)
+sample_coal$Native_Status[sample_coal$Native_Status == 'Non_native'] = 'Non_Native'
+
 
 # checking unique species functional groups
 unique(sample_coal$Func_group)
@@ -337,7 +341,7 @@ sample_coal$Genus_Species <- paste0(sample_coal$Genus,"_",sample_coal$Species)
 # reorganize order of column names 
 sample_reorder <- sample_coal[, c("User","Pub_number","Pub_info","Study_year_start","File_name",
                                     "Var_type","Var_type_broad","Value_error","Yunits","Func_group","Func_group_broad","Family",
-                                    "Genus","Species","Genus_Species","Amount_warmed_C","Amount_warmed_type","Years_warmed",
+                                    "Genus","Species","Genus_Species","Native_Status","Amount_warmed_C","Amount_warmed_type","Years_warmed",
                                     "Year_round_warm","Latitude","Longitude","Site","Tissue_Type","Tissue_Type_broad",
                                     "Warmed_Mean","Warmed_SD","Warmed_N","Ambient_Mean","Ambient_SD","Ambient_N")]
 
