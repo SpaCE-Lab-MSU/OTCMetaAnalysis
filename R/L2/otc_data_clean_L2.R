@@ -158,7 +158,6 @@ check_n <- sample_coal %>%
 unique(check_n$Tissue_Type)
 
 # fixing tissue type names in the full data
-sample_coal$Tissue_Type[sample_coal$File_name == 'Pub170_Fig1'] = 'Total' # adding tissue type for this row
 sample_coal$Tissue_Type[sample_coal$Tissue_Type == 'Leaves'] = 'Leaf'
 sample_coal$Tissue_Type[sample_coal$Tissue_Type == 'Shoots'] = 'Shoot'
 sample_coal$Tissue_Type[sample_coal$Tissue_Type == 'Coarse_Root'] = 'Coarse_root'
@@ -337,17 +336,21 @@ sample_coal %>%
 # make combo genus species column
 sample_coal$Genus_Species <- paste0(sample_coal$Genus,"_",sample_coal$Species)
 
+# make column for latitude difference between max latitude of species + study latitude
+sample_coal <- sample_coal %>%
+  mutate(Lat_difference = Max_lat_of_species-Latitude)
+sample_coal$Lat_difference[sample_coal$Lat_difference < 0] <- NA
 
 # reorganize order of column names 
 sample_reorder <- sample_coal[, c("User","Pub_number","Pub_info","Study_year_start","File_name",
                                     "Var_type","Var_type_broad","Value_error","Yunits","Func_group","Func_group_broad","Family",
                                     "Genus","Species","Genus_Species","Native_Status","Amount_warmed_C","Amount_warmed_type","Years_warmed",
-                                    "Year_round_warm","Latitude","Longitude","Site","Tissue_Type","Tissue_Type_broad",
-                                    "Warmed_Mean","Warmed_SD","Warmed_N","Ambient_Mean","Ambient_SD","Ambient_N")]
+                                    "Year_round_warm","Latitude","Longitude","Max_lat_of_species","Lat_difference","Site","Tissue_Type","Tissue_Type_broad",
+                                    "Lichen_Moss_Type","Warmed_Mean","Warmed_SD","Warmed_N","Ambient_Mean","Ambient_SD","Ambient_N")]
 
 # keep max year per study (to remove pseudoreplication)
 sample_latest_year <- sample_reorder %>%
-  group_by(Pub_number, File_name, Var_type, Func_group, Genus, Species, Amount_warmed_C, Latitude, Longitude, Site, Tissue_Type) %>%
+  group_by(Pub_number, File_name, Var_type, Func_group, Genus, Species, Amount_warmed_C, Latitude, Longitude, Site, Tissue_Type, Lichen_Moss_Type) %>%
   filter(Years_warmed == max(Years_warmed))
 
 # upload csv file to L2 folder
