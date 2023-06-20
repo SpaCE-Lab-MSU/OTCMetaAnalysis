@@ -26,7 +26,7 @@ ggplot() +
   geom_map(
     data = world, map = world,
     aes(map_id = region),
-    color = "black", fill = "lightgray", size = 0.1
+    color = "black", fill = "darkgrey", size = 0.1
   ) +
   geom_point(
     data = effect,
