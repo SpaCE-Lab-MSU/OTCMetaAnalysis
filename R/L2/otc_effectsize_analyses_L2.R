@@ -23,40 +23,9 @@ esmd_clean <- read.csv(file.path(MA_dir,"L2/otc_effect_sizes_L2.csv"))
 
 
 
-# is there a significant relationship between the amount warmed by the experiment and our effect sizes?
-# if yes, this indicates that we need to account for this variation in our model (random effect?)
-# restricting to growing season average & annual average, to see if either temp estimate has an effect
-esmd_gs <- esmd_clean %>%
-  filter(Amount_warmed_type == "GrowingSeason_average")
-esmd_annual <- esmd_clean %>%
-  filter(Amount_warmed_type == "Annual_average")
-res.rma.C.gs <- rma(yi, vi, mods = ~ Amount_warmed_C, data=esmd_gs, method="REML")
-res.rma.C.gs # no effect
-res.rma.C.annual <- rma(yi, vi, mods = ~ Amount_warmed_C, data=esmd_annual, method="REML")
-res.rma.C.annual # no effect
 
-# is there a significant relationship between the latitude of the experiment and our effect sizes?
-# if yes, this indicates that we need to account for this variation in our model (random effect?)
-res.rma.lat <- rma(yi, vi, mods = ~ Latitude, data=esmd_clean, method="REML")
-res.rma.lat
-# yes, there is an effect of latitude
-
-# is there a significant relationship between year-round warming and our effect sizes?
-# if yes, this indicates that we need to account for this variation in our model (random effect?)
-res.rma.year <- rma(yi, vi, mods = ~ Year_round_warm, data=esmd_clean, method="REML")
-res.rma.year
-# no, so we don't need to account for year-round warming
-
-# is there a significant relationship between months warmed and our effect sizes?
-# if yes, this indicates that we need to account for this variation in our model (random effect?)
-res.rma.months <- rma(yi, vi, mods = ~ Years_warmed, data=esmd_clean, method="REML")
-res.rma.months
-# no, so we don't need to account for months warmed
-
-
-
-### main stats (all variables):
-### removing variables that have <10 effect sizes
+#### main stats (single variable): update var_type based on what variable to look at ####
+## removing variables that have <10 effect sizes
 esmd_clean %>%
   group_by(Var_type_broad) %>%
   summarize(count = n())
@@ -65,44 +34,6 @@ esmd_clean <- esmd_clean %>%
              Var_type_broad == "Flower_weight" |
              Var_type_broad == "Phen_leaf_lifespan" |
              Var_type_broad == "Phen_preflwr_length"))
-# removing func groups that are blank
-esmd_clean2<- esmd_clean %>%
-  filter(!(Var_type_broad == ""))
-# equal effects model for height
-res.rma.all <- rma.mv(yi, vi, mods=~Var_type_broad-1, random=list(~1|Pub_number/Genus_Species), data=esmd_clean2)
-res.rma.all
-# all comparisons
-# Values of P=1.0 indicate that there is no evidence of a difference between variables
-# Holm correction used here because it was used in the Kuebbing phenology meta-analysis
-summary(glht(res.rma.all, linfct=cbind(contrMat(rep(1,17), type="Tukey"))), test=adjusted("holm"))
-
-
-
-### main stats (single variable): update var_type based on what variable to look at ###
-unique(esmd_clean$Var_type)
-esmd_clean %>% 
-  count(Var_type)
-
-
-## growth
-esmd_growth <- esmd_clean %>%
-  filter(Var_type_broad == "Growth")
-# removing func groups that are blank
-esmd_growth <- esmd_growth %>%
-  filter(!(Func_group_broad == ""))
-# models for growth
-res.rma.growth <- rma(yi, vi, mods=~Func_group_broad-1, data=esmd_growth) # comparing func groups
-res.rma.growth
-res.rma.growth2 <- rma.mv(yi, vi, random=list(~1|Pub_number/Genus_Species,~1|Latitude), data=esmd_growth) # overall model w/ random effects
-res.rma.growth2
-res.rma.growth3 <- rma(yi, vi, mods=~Latitude,data=esmd_growth) # effect of latitude
-res.rma.growth3
-res.rma.growth4 <- rma(yi, vi, mods=~Lat_difference,data=esmd_growth) # effect of latitude
-res.rma.growth4
-res.rma.growth4 <- rma.mv(yi, vi, mods=~Year_round_warm-1,random=list(~1|Pub_number/Genus_Species), data=esmd_growth)
-res.rma.growth4
-# all comparisons - needs some work
-summary(glht(res.rma.growth, linfct=cbind(contrMat(rep(1,6), type="Tukey"))), test=adjusted("none"))
 
 
 ## aboveground biomass
@@ -114,12 +45,14 @@ esmd_ab_biomass2 <- esmd_ab_biomass %>%
 # models for aboveground biomass
 res.rma.ab.biomass <- rma(yi, vi, mods=~Func_group_broad-1, data=esmd_ab_biomass2)
 res.rma.ab.biomass
-res.rma.ab.biomass2 <- rma.mv(yi, vi, c,~1|Latitude),data=esmd_ab_biomass)
+res.rma.ab.biomass2 <- rma(yi, vi, mods=~Latitude,data=esmd_ab_biomass)
 res.rma.ab.biomass2
-res.rma.ab.biomass3 <- rma(yi, vi, mods=~Latitude,data=esmd_ab_biomass)
+res.rma.ab.biomass3 <- rma(yi, vi, mods=~Amount_warmed_C,data=esmd_ab_biomass)
 res.rma.ab.biomass3
-res.rma.ab.biomass4 <- rma.mv(yi, vi, mods=~Year_round_warm-1,random=list(~1|Pub_number/Genus_Species), data=esmd_ab_biomass)
+res.rma.ab.biomass4 <- rma(yi, vi, mods=~Years_warmed,data=esmd_ab_biomass)
 res.rma.ab.biomass4
+res.rma.ab.biomass5 <- rma.mv(yi, vi, mods=~Year_round_warm-1,random=list(~1|Pub_number), data=esmd_ab_biomass)
+res.rma.ab.biomass5
 # all comparisons - needs some work
 summary(glht(res.rma.ab.biomass, linfct=cbind(contrMat(rep(1,9), type="Tukey"))), test=adjusted("none"))
 
@@ -200,20 +133,48 @@ res.rma.fruit.weight4
 summary(glht(res.rma.fruit.weight, linfct=cbind(contrMat(rep(1,9), type="Tukey"))), test=adjusted("none"))
 
 
-## fruit weight
+## growth
+esmd_growth <- esmd_clean %>%
+  filter(Var_type_broad == "Growth")
+# removing func groups that are blank
+esmd_growth2 <- esmd_growth %>%
+  filter(!(Func_group_broad == ""))
+# models for growth
+res.rma.growth <- rma(yi, vi, mods=~Func_group_broad-1, data=esmd_growth2) # comparing func groups
+res.rma.growth
+res.rma.growth2 <- rma.mv(yi, vi, random=list(~1|Pub_number/Genus_Species,~1|Latitude), data=esmd_growth) # overall model w/ random effects
+res.rma.growth2
+res.rma.growth3 <- rma(yi, vi, mods=~Latitude,data=esmd_growth)
+res.rma.growth3
+res.rma.growth4 <- rma(yi, vi, mods=~Lat_difference,data=esmd_growth)
+res.rma.growth4
+res.rma.growth5 <- rma(yi, vi, mods=~Amount_warmed_C,data=esmd_growth)
+res.rma.growth5
+res.rma.growth6 <- rma(yi, vi, mods=~Years_warmed,data=esmd_growth)
+res.rma.growth6
+res.rma.growth7 <- rma.mv(yi, vi, mods=~Year_round_warm-1,random=list(~1|Pub_number), data=esmd_growth)
+res.rma.growth7
+# all comparisons - needs some work
+summary(glht(res.rma.growth, linfct=cbind(contrMat(rep(1,6), type="Tukey"))), test=adjusted("none"))
+
+
+## leaf growth
 esmd_leaf_growth <- esmd_clean %>%
   filter(Var_type_broad == "Leaf_Growth")
 # removing func groups that are blank
 esmd_leaf_growth2 <- esmd_leaf_growth %>%
   filter(!(Func_group_broad == ""))
-# models for bloveground biomass
+# removing NA rows from amount warmed
+esmd_leaf_growth <- esmd_leaf_growth %>%
+  filter(!is.na(Amount_warmed_C))
+# models for aboveground biomass
 res.rma.leaf.growth <- rma(yi, vi, mods=~Func_group_broad-1, data=esmd_leaf_growth2)
 res.rma.leaf.growth
 res.rma.leaf.growth2 <- rma.mv(yi, vi, c,~1|Latitude),data=esmd_leaf_growth)
 res.rma.leaf.growth2
 res.rma.leaf.growth3 <- rma(yi, vi, mods=~Latitude,data=esmd_leaf_growth)
 res.rma.leaf.growth3
-res.rma.leaf.growth4 <- rma.mv(yi, vi, mods=~Year_round_warm-1,random=list(~1|Pub_number/Genus_Species), data=esmd_leaf_growth)
+res.rma.leaf.growth4 <- rma.mv(yi, vi, mods=~Year_round_warm-1,random=list(~1|Pub_number,~1|Amount_warmed_C,~1|Years_warmed), data=esmd_leaf_growth)
 res.rma.leaf.growth4
 # all comparisons - needs some work
 summary(glht(res.rma.leaf.growth, linfct=cbind(contrMat(rep(1,9), type="Tukey"))), test=adjusted("none"))
