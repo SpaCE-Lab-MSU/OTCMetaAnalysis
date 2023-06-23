@@ -43,16 +43,18 @@ esmd_ab_biomass <- esmd_clean %>%
 esmd_ab_biomass2 <- esmd_ab_biomass %>%
   filter(!(Func_group_broad == ""))
 # models for aboveground biomass
-res.rma.ab.biomass <- rma(yi, vi, mods=~Func_group_broad-1, data=esmd_ab_biomass2)
+res.rma.ab.biomass <- rma.mv(yi, vi, mods=~Func_group_broad-1, random=list(~1|Pub_number, ~1|Year_round_warm),data=esmd_ab_biomass2)
 res.rma.ab.biomass
 res.rma.ab.biomass2 <- rma(yi, vi, mods=~Latitude,data=esmd_ab_biomass)
 res.rma.ab.biomass2
-res.rma.ab.biomass3 <- rma(yi, vi, mods=~Amount_warmed_C,data=esmd_ab_biomass)
+res.rma.ab.biomass3 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number, ~1|Year_round_warm),data=esmd_ab_biomass)
 res.rma.ab.biomass3
-res.rma.ab.biomass4 <- rma(yi, vi, mods=~Years_warmed,data=esmd_ab_biomass)
+res.rma.ab.biomass4 <- rma(yi, vi, mods=~Amount_warmed_C,data=esmd_ab_biomass)
 res.rma.ab.biomass4
-res.rma.ab.biomass5 <- rma.mv(yi, vi, mods=~Year_round_warm-1,random=list(~1|Pub_number), data=esmd_ab_biomass)
+res.rma.ab.biomass5 <- rma(yi, vi, mods=~Years_warmed,data=esmd_ab_biomass)
 res.rma.ab.biomass5
+res.rma.ab.biomass6 <- rma.mv(yi, vi, mods=~Year_round_warm-1,random=list(~1|Pub_number), data=esmd_ab_biomass)
+res.rma.ab.biomass6
 # all comparisons - needs some work
 summary(glht(res.rma.ab.biomass, linfct=cbind(contrMat(rep(1,9), type="Tukey"))), test=adjusted("none"))
 
@@ -63,15 +65,17 @@ esmd_bl_biomass <- esmd_clean %>%
 # removing func groups that are blank - only from functional group test
 esmd_bl_biomass2 <- esmd_bl_biomass %>%
   filter(!(Func_group_broad == ""))
-# models for bloveground biomass
-res.rma.bl.biomass <- rma(yi, vi, mods=~Func_group_broad-1, data=esmd_bl_biomass2)
+# models for belowground biomass
+res.rma.bl.biomass <- rma.mv(yi, vi, mods=~Func_group_broad-1, random=list(~1|Pub_number, ~1|Year_round_warm), data=esmd_bl_biomass2)
 res.rma.bl.biomass
 res.rma.bl.biomass2 <- rma.mv(yi, vi, c,~1|Latitude),data=esmd_bl_biomass)
 res.rma.bl.biomass2
 res.rma.bl.biomass3 <- rma(yi, vi, mods=~Latitude,data=esmd_bl_biomass)
 res.rma.bl.biomass3
-res.rma.bl.biomass4 <- rma.mv(yi, vi, mods=~Year_round_warm-1,random=list(~1|Pub_number/Genus_Species), data=esmd_bl_biomass)
+res.rma.bl.biomass4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number, ~1|Year_round_warm),data=esmd_bl_biomass)
 res.rma.bl.biomass4
+res.rma.bl.biomass5 <- rma.mv(yi, vi, mods=~Year_round_warm-1,random=list(~1|Pub_number/Genus_Species), data=esmd_bl_biomass)
+res.rma.bl.biomass5
 # all comparisons - needs some work
 summary(glht(res.rma.bl.biomass, linfct=cbind(contrMat(rep(1,9), type="Tukey"))), test=adjusted("none"))
 
@@ -83,7 +87,7 @@ esmd_flwr_num <- esmd_clean %>%
 esmd_flwr_num2 <- esmd_flwr_num %>%
   filter(!(Func_group_broad == ""))
 # models for aboveground biomass
-res.rma.flwr.num <- rma(yi, vi, mods=~Func_group_broad-1, data=esmd_flwr_num2)
+res.rma.flwr.num <- rma.mv(yi, vi, mods=~Func_group_broad-1, random=list(~1|Pub_number, ~1|Year_round_warm), data=esmd_flwr_num2)
 res.rma.flwr.num
 res.rma.flwr.num2 <- rma.mv(yi, vi, c,~1|Latitude),data=esmd_flwr_num)
 res.rma.flwr.num2
@@ -102,7 +106,7 @@ esmd_fruit_num <- esmd_clean %>%
 esmd_fruit_num2 <- esmd_fruit_num %>%
   filter(!(Func_group_broad == ""))
 # models for bloveground biomass
-res.rma.fruit.num <- rma(yi, vi, mods=~Func_group_broad-1, data=esmd_fruit_num2)
+res.rma.fruit.num <- rma.mv(yi, vi, mods=~Func_group_broad-1, random=list(~1|Pub_number, ~1|Year_round_warm), data=esmd_fruit_num2)
 res.rma.fruit.num
 res.rma.fruit.num2 <- rma.mv(yi, vi, c,~1|Latitude),data=esmd_fruit_num)
 res.rma.fruit.num2
@@ -121,7 +125,7 @@ esmd_fruit_weight <- esmd_clean %>%
 esmd_fruit_weight2 <- esmd_fruit_weight %>%
   filter(!(Func_group_broad == ""))
 # models for bloveground biomass
-res.rma.fruit.weight <- rma(yi, vi, mods=~Func_group_broad-1, data=esmd_fruit_weight2)
+res.rma.fruit.weight <- rma.mv(yi, vi, mods=~Func_group_broad-1, random=list(~1|Pub_number, ~1|Year_round_warm), data=esmd_fruit_weight2)
 res.rma.fruit.weight
 res.rma.fruit.weight2 <- rma.mv(yi, vi, c,~1|Latitude),data=esmd_fruit_weight)
 res.rma.fruit.weight2
@@ -269,8 +273,10 @@ res.rma.fall2 <- rma.mv(yi, vi, random=list(~1|Pub_number/Genus_Species,~1|Latit
 res.rma.fall2
 res.rma.fall3 <- rma(yi, vi, mods=~Latitude,data=esmd_fall)
 res.rma.fall3
-res.rma.fall4 <- rma.mv(yi, vi, mods=~Year_round_warm-1,random=list(~1|Pub_number/Genus_Species), data=esmd_fall)
+res.rma.fall4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number,~1|Year_round_warm),data=esmd_fall)
 res.rma.fall4
+res.rma.fall5 <- rma.mv(yi, vi, mods=~Year_round_warm-1,random=list(~1|Pub_number), data=esmd_fall)
+res.rma.fall5
 # all comparisons - needs some work
 summary(glht(res.rma.fall, linfct=cbind(contrMat(rep(1,9), type="Tukey"))), test=adjusted("none"))
 
