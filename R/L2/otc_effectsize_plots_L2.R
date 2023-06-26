@@ -92,119 +92,127 @@ esmd_func <- esmd_clean %>%
   summarize(count = n(),
             avg = mean(yi, na.rm = TRUE),
             se = std.error(yi, na.rm = TRUE)) %>%
-  filter(!(Func_group_broad == "" | Func_group_broad == "Pteridophyte" | Func_group_broad == "Total"))
+  filter(!(Func_group_broad == "")) %>% # remove blank functional groups
+  filter(!(count < 8)) %>% # remove categories w/ sample size < 8
+  filter(!(Var_type_broad == "Biomass_below" | Var_type_broad == "Fruit_num" |
+             Var_type_broad == "Flower_lifespan" | Var_type_broad == "Nitrogen_below"))
 # making text labels for sample sizes
 # Tree
-ann_text_abovebio <- data.frame(avg=3.4,Func_group_broad="Tree",lab = "Text",
+ann_text_abovebio <- data.frame(avg=3,Func_group_broad="Tree",lab = "Text",
                                 Var_type_broad = factor("Biomass_above"))
-ann_text_belowbio <- data.frame(avg=3,Func_group_broad="Tree",lab = "Text",
+ann_text_belowbio <- data.frame(avg=2.6,Func_group_broad="Tree",lab = "Text",
                                 Var_type_broad = factor("Biomass_below"))
-ann_text_plantgrwth <- data.frame(avg=2.2,Func_group_broad="Tree",lab = "Text",
+ann_text_plantgrwth <- data.frame(avg=1.6,Func_group_broad="Tree",lab = "Text",
                                   Var_type_broad = factor("Growth"))
-ann_text_leafgrwth <- data.frame(avg=2.4,Func_group_broad="Tree",lab = "Text",
+ann_text_leafgrwth <- data.frame(avg=2,Func_group_broad="Tree",lab = "Text",
                                  Var_type_broad = factor("Leaf_Growth"))
-ann_text_aboven <- data.frame(avg=-0.2,Func_group_broad="Tree",lab = "Text",
+ann_text_aboven <- data.frame(avg=-0.6,Func_group_broad="Tree",lab = "Text",
                               Var_type_broad = factor("Nitrogen_above"))
-ann_text_belown <- data.frame(avg=1.6,Func_group_broad="Tree",lab = "Text",
+ann_text_belown <- data.frame(avg=1.2,Func_group_broad="Tree",lab = "Text",
                               Var_type_broad = factor("Nitrogen_below"))
-ann_text_spring <- data.frame(avg=0.4,Func_group_broad="Tree",lab = "Text",
+ann_text_spring <- data.frame(avg=0,Func_group_broad="Tree",lab = "Text",
                               Var_type_broad = factor("Phen_early"))
-ann_text_fall <- data.frame(avg=3.4,Func_group_broad="Tree",lab = "Text",
+ann_text_fall <- data.frame(avg=3,Func_group_broad="Tree",lab = "Text",
                             Var_type_broad = factor("Phen_late"))
 # Shrub
-ann_text_abovebio2 <- data.frame(avg=2.2,Func_group_broad="Shrub",lab = "Text",
+ann_text_abovebio2 <- data.frame(avg=1.2,Func_group_broad="Shrub",lab = "Text",
                                 Var_type_broad = factor("Biomass_above"))
-ann_text_belowbio2 <- data.frame(avg=1.2,Func_group_broad="Shrub",lab = "Text",
+ann_text_belowbio2 <- data.frame(avg=0.4,Func_group_broad="Shrub",lab = "Text",
                                 Var_type_broad = factor("Biomass_below"))
-ann_text_flwrnum2 <- data.frame(avg=2,Func_group_broad="Shrub",lab = "Text",
+ann_text_flwrnum2 <- data.frame(avg=1.2,Func_group_broad="Shrub",lab = "Text",
                                   Var_type_broad = factor("Flower_num"))
-ann_text_fruitnum2 <- data.frame(avg=1.6,Func_group_broad="Shrub",lab = "Text",
+ann_text_fruitnum2 <- data.frame(avg=1.8,Func_group_broad="Shrub",lab = "Text",
                                Var_type_broad = factor("Fruit_num"))
-ann_text_fruitweight2 <- data.frame(avg=2.4,Func_group_broad="Shrub",lab = "Text",
+ann_text_fruitweight2 <- data.frame(avg=1.8,Func_group_broad="Shrub",lab = "Text",
                                Var_type_broad = factor("Fruit_weight"))
-ann_text_plantgrwth2 <- data.frame(avg=2.4,Func_group_broad="Shrub",lab = "Text",
+ann_text_plantgrwth2 <- data.frame(avg=1.8,Func_group_broad="Shrub",lab = "Text",
                                   Var_type_broad = factor("Growth"))
-ann_text_leafgrwth2 <- data.frame(avg=2.2,Func_group_broad="Shrub",lab = "Text",
+ann_text_leafgrwth2 <- data.frame(avg=1.3,Func_group_broad="Shrub",lab = "Text",
                                  Var_type_broad = factor("Leaf_Growth"))
 ann_text_aboven2 <- data.frame(avg=1.1,Func_group_broad="Shrub",lab = "Text",
                               Var_type_broad = factor("Nitrogen_above"))
-ann_text_belown2 <- data.frame(avg=1.4,Func_group_broad="Shrub",lab = "Text",
+ann_text_belown2 <- data.frame(avg=0.8,Func_group_broad="Shrub",lab = "Text",
                               Var_type_broad = factor("Nitrogen_below"))
-ann_text_perc2 <- data.frame(avg=2.1,Func_group_broad="Shrub",lab = "Text",
+ann_text_perc2 <- data.frame(avg=1.5,Func_group_broad="Shrub",lab = "Text",
                                   Var_type_broad = factor("Percent_cover"))
-ann_text_spring2 <- data.frame(avg=1,Func_group_broad="Shrub",lab = "Text",
+ann_text_spring2 <- data.frame(avg=0.4,Func_group_broad="Shrub",lab = "Text",
                               Var_type_broad = factor("Phen_early"))
-ann_text_fall2 <- data.frame(avg=0.5,Func_group_broad="Shrub",lab = "Text",
+ann_text_fall2 <- data.frame(avg=0.4,Func_group_broad="Shrub",lab = "Text",
                             Var_type_broad = factor("Phen_late"))
-ann_text_flwrlife2 <- data.frame(avg=2,Func_group_broad="Shrub",lab = "Text",
+ann_text_flwrlife2 <- data.frame(avg=1.4,Func_group_broad="Shrub",lab = "Text",
                                   Var_type_broad = factor("Phen_flwr_lifespan"))
 # Lichen
-ann_text_abovebio3 <- data.frame(avg=1,Func_group_broad="Lichen",lab = "Text",
+ann_text_abovebio3 <- data.frame(avg=0.4,Func_group_broad="Lichen",lab = "Text",
                                  Var_type_broad = factor("Biomass_above"))
-ann_text_aboven3 <- data.frame(avg=1.4,Func_group_broad="Lichen",lab = "Text",
+ann_text_aboven3 <- data.frame(avg=0.8,Func_group_broad="Lichen",lab = "Text",
                                Var_type_broad = factor("Nitrogen_above"))
-ann_text_perc3 <- data.frame(avg=1.2,Func_group_broad="Lichen",lab = "Text",
+ann_text_perc3 <- data.frame(avg=0.6,Func_group_broad="Lichen",lab = "Text",
                              Var_type_broad = factor("Percent_cover"))
 # Graminoid
-ann_text_abovebio4 <- data.frame(avg=2.2,Func_group_broad="Graminoid",lab = "Text",
+ann_text_abovebio4 <- data.frame(avg=1.4,Func_group_broad="Graminoid",lab = "Text",
                                  Var_type_broad = factor("Biomass_above"))
-ann_text_belowbio4 <- data.frame(avg=4.7,Func_group_broad="Graminoid",lab = "Text",
+ann_text_belowbio4 <- data.frame(avg=4.1,Func_group_broad="Graminoid",lab = "Text",
                                  Var_type_broad = factor("Biomass_below"))
-ann_text_flwrnum4 <- data.frame(avg=2,Func_group_broad="Graminoid",lab = "Text",
+ann_text_flwrnum4 <- data.frame(avg=1.1,Func_group_broad="Graminoid",lab = "Text",
                                 Var_type_broad = factor("Flower_num"))
-ann_text_fruitnum4 <- data.frame(avg=5,Func_group_broad="Graminoid",lab = "Text",
+ann_text_fruitnum4 <- data.frame(avg=4.4,Func_group_broad="Graminoid",lab = "Text",
                                  Var_type_broad = factor("Fruit_num"))
-ann_text_fruitweight4 <- data.frame(avg=4.2,Func_group_broad="Graminoid",lab = "Text",
+ann_text_fruitweight4 <- data.frame(avg=3.6,Func_group_broad="Graminoid",lab = "Text",
                                     Var_type_broad = factor("Fruit_weight"))
-ann_text_plantgrwth4 <- data.frame(avg=2,Func_group_broad="Graminoid",lab = "Text",
+ann_text_plantgrwth4 <- data.frame(avg=1.4,Func_group_broad="Graminoid",lab = "Text",
                                    Var_type_broad = factor("Growth"))
-ann_text_leafgrwth4 <- data.frame(avg=2.4,Func_group_broad="Graminoid",lab = "Text",
+ann_text_leafgrwth4 <- data.frame(avg=1.5,Func_group_broad="Graminoid",lab = "Text",
                                   Var_type_broad = factor("Leaf_Growth"))
-ann_text_aboven4 <- data.frame(avg=0.6,Func_group_broad="Graminoid",lab = "Text",
+ann_text_aboven4 <- data.frame(avg=0.2,Func_group_broad="Graminoid",lab = "Text",
                                Var_type_broad = factor("Nitrogen_above"))
-ann_text_belown4 <- data.frame(avg=2,Func_group_broad="Graminoid",lab = "Text",
+ann_text_belown4 <- data.frame(avg=1.4,Func_group_broad="Graminoid",lab = "Text",
                                Var_type_broad = factor("Nitrogen_below"))
-ann_text_perc4 <- data.frame(avg=2,Func_group_broad="Graminoid",lab = "Text",
+ann_text_perc4 <- data.frame(avg=1.2,Func_group_broad="Graminoid",lab = "Text",
                              Var_type_broad = factor("Percent_cover"))
-ann_text_spring4 <- data.frame(avg=1,Func_group_broad="Graminoid",lab = "Text",
+ann_text_spring4 <- data.frame(avg=0.4,Func_group_broad="Graminoid",lab = "Text",
                                Var_type_broad = factor("Phen_early"))
-ann_text_fall4 <- data.frame(avg=2.3,Func_group_broad="Graminoid",lab = "Text",
+ann_text_fall4 <- data.frame(avg=1.7,Func_group_broad="Graminoid",lab = "Text",
                              Var_type_broad = factor("Phen_late"))
-ann_text_flwrlife4 <- data.frame(avg=0,Func_group_broad="Graminoid",lab = "Text",
+ann_text_flwrlife4 <- data.frame(avg=-0.6,Func_group_broad="Graminoid",lab = "Text",
                                  Var_type_broad = factor("Phen_flwr_lifespan"))
 # Forb
-ann_text_abovebio5 <- data.frame(avg=2.1,Func_group_broad="Forb",lab = "Text",
+ann_text_abovebio5 <- data.frame(avg=1.3,Func_group_broad="Forb",lab = "Text",
                                  Var_type_broad = factor("Biomass_above"))
-ann_text_flwrnum5 <- data.frame(avg=1.9,Func_group_broad="Forb",lab = "Text",
+ann_text_flwrnum5 <- data.frame(avg=1,Func_group_broad="Forb",lab = "Text",
                                 Var_type_broad = factor("Flower_num"))
-ann_text_fruitnum5 <- data.frame(avg=2,Func_group_broad="Forb",lab = "Text",
+ann_text_fruitnum5 <- data.frame(avg=1.4,Func_group_broad="Forb",lab = "Text",
                                  Var_type_broad = factor("Fruit_num"))
-ann_text_fruitweight5 <- data.frame(avg=2.8,Func_group_broad="Forb",lab = "Text",
+ann_text_fruitweight5 <- data.frame(avg=2.5,Func_group_broad="Forb",lab = "Text",
                                     Var_type_broad = factor("Fruit_weight"))
-ann_text_plantgrwth5 <- data.frame(avg=2.8,Func_group_broad="Forb",lab = "Text",
+ann_text_plantgrwth5 <- data.frame(avg=2.2,Func_group_broad="Forb",lab = "Text",
                                    Var_type_broad = factor("Growth"))
-ann_text_leafgrwth5 <- data.frame(avg=2.3,Func_group_broad="Forb",lab = "Text",
+ann_text_leafgrwth5 <- data.frame(avg=1.4,Func_group_broad="Forb",lab = "Text",
                                   Var_type_broad = factor("Leaf_Growth"))
-ann_text_aboven5 <- data.frame(avg=1.2,Func_group_broad="Forb",lab = "Text",
+ann_text_aboven5 <- data.frame(avg=0.6,Func_group_broad="Forb",lab = "Text",
                                Var_type_broad = factor("Nitrogen_above"))
-ann_text_perc5 <- data.frame(avg=1.8,Func_group_broad="Forb",lab = "Text",
+ann_text_perc5 <- data.frame(avg=1,Func_group_broad="Forb",lab = "Text",
                              Var_type_broad = factor("Percent_cover"))
-ann_text_spring5 <- data.frame(avg=1.2,Func_group_broad="Forb",lab = "Text",
+ann_text_spring5 <- data.frame(avg=0.6,Func_group_broad="Forb",lab = "Text",
                                Var_type_broad = factor("Phen_early"))
-ann_text_fall5 <- data.frame(avg=1.2,Func_group_broad="Forb",lab = "Text",
+ann_text_fall5 <- data.frame(avg=0.6,Func_group_broad="Forb",lab = "Text",
                              Var_type_broad = factor("Phen_late"))
-ann_text_flwrlife5 <- data.frame(avg=0,Func_group_broad="Forb",lab = "Text",
+ann_text_flwrlife5 <- data.frame(avg=-0.6,Func_group_broad="Forb",lab = "Text",
                                  Var_type_broad = factor("Phen_flwr_lifespan"))
 # Bryophyte
-ann_text_abovebio6 <- data.frame(avg=4.2,Func_group_broad="Bryophyte",lab = "Text",
+ann_text_abovebio6 <- data.frame(avg=3.6,Func_group_broad="Bryophyte",lab = "Text",
                                  Var_type_broad = factor("Biomass_above"))
-ann_text_fruitnum6 <- data.frame(avg=2,Func_group_broad="Bryophyte",lab = "Text",
+ann_text_fruitnum6 <- data.frame(avg=1.4,Func_group_broad="Bryophyte",lab = "Text",
                                  Var_type_broad = factor("Fruit_num"))
-ann_text_plantgrwth6 <- data.frame(avg=1.8,Func_group_broad="Bryophyte",lab = "Text",
+ann_text_plantgrwth6 <- data.frame(avg=1.2,Func_group_broad="Bryophyte",lab = "Text",
                                    Var_type_broad = factor("Growth"))
-ann_text_aboven6 <- data.frame(avg=1.7,Func_group_broad="Bryophyte",lab = "Text",
+ann_text_aboven6 <- data.frame(avg=1.1,Func_group_broad="Bryophyte",lab = "Text",
                                Var_type_broad = factor("Nitrogen_above"))
-ann_text_perc6 <- data.frame(avg=1.2,Func_group_broad="Bryophyte",lab = "Text",
+ann_text_perc6 <- data.frame(avg=0.6,Func_group_broad="Bryophyte",lab = "Text",
+                             Var_type_broad = factor("Percent_cover"))
+# Total community
+ann_text_abovebio7 <- data.frame(avg=3,Func_group_broad="Total",lab = "Text",
+                                 Var_type_broad = factor("Biomass_above"))
+ann_text_perc7 <- data.frame(avg=1,Func_group_broad="Total",lab = "Text",
                              Var_type_broad = factor("Percent_cover"))
 
 png("effect_func.png", units="in", width=8, height=7, res=300)
@@ -217,58 +225,40 @@ ggplot(esmd_func, aes(y = Func_group_broad, x = avg)) +
   xlab("Mean effect size (Hedges' g) +/- SE") + 
   ylab(" ") + 
   geom_text(data = ann_text_abovebio,label = "(18)",size=3.3) +
-  geom_text(data = ann_text_belowbio,label = "(4)",size=3.3) +
   geom_text(data = ann_text_aboven,label = "(8)",size=3.3) +
-  geom_text(data = ann_text_belown,label = "(4)",size=3.3) +
-  geom_text(data = ann_text_leafgrwth,label = "(3)",size=3.3) +
   geom_text(data = ann_text_plantgrwth,label = "(29)",size=3.3) +
-  geom_text(data = ann_text_spring,label = "(2)",size=3.3) +
-  geom_text(data = ann_text_fall,label = "(2)",size=3.3) +
   geom_text(data = ann_text_abovebio2,label = "(55)",size=3.3) +
-  geom_text(data = ann_text_belowbio2,label = "(6)",size=3.3) +
   geom_text(data = ann_text_flwrnum2,label = "(20)",size=3.3) +
-  geom_text(data = ann_text_fruitnum2,label = "(7)",size=3.3) +
   geom_text(data = ann_text_fruitweight2,label = "(10)",size=3.3) +
   geom_text(data = ann_text_plantgrwth2,label = "(38)",size=3.3) +
   geom_text(data = ann_text_leafgrwth2,label = "(48)",size=3.3) +
   geom_text(data = ann_text_aboven2,label = "(59)",size=3.3) +
-  geom_text(data = ann_text_belown2,label = "(4)",size=3.3) +
   geom_text(data = ann_text_perc2,label = "(32)",size=3.3) +
   geom_text(data = ann_text_spring2,label = "(35)",size=3.3) +
-  geom_text(data = ann_text_flwrlife2,label = "(5)",size=3.3) +
   geom_text(data = ann_text_fall2,label = "(8)",size=3.3) +
-  geom_text(data = ann_text_abovebio3,label = "(3)",size=3.3) +
   geom_text(data = ann_text_aboven3,label = "(11)",size=3.3) +
   geom_text(data = ann_text_perc3,label = "(25)",size=3.3) +
   geom_text(data = ann_text_abovebio4,label = "(20)",size=3.3) +
-  geom_text(data = ann_text_belowbio4,label = "(8)",size=3.3) +
   geom_text(data = ann_text_flwrnum4,label = "(32)",size=3.3) +
-  geom_text(data = ann_text_fruitnum4,label = "(3)",size=3.3) +
-  geom_text(data = ann_text_fruitweight4,label = "(3)",size=3.3) +
   geom_text(data = ann_text_plantgrwth4,label = "(32)",size=3.3) +
   geom_text(data = ann_text_leafgrwth4,label = "(53)",size=3.3) +
   geom_text(data = ann_text_aboven4,label = "(28)",size=3.3) +
-  geom_text(data = ann_text_belown4,label = "(3)",size=3.3) +
   geom_text(data = ann_text_perc4,label = "(47)",size=3.3) +
   geom_text(data = ann_text_spring4,label = "(25)",size=3.3) +
-  geom_text(data = ann_text_flwrlife4,label = "(6)",size=3.3) +
   geom_text(data = ann_text_fall4,label = "(12)",size=3.3) +
   geom_text(data = ann_text_abovebio5,label = "(14)",size=3.3) +
   geom_text(data = ann_text_flwrnum5,label = "(27)",size=3.3) +
-  geom_text(data = ann_text_fruitnum5,label = "(19)",size=3.3) +
   geom_text(data = ann_text_fruitweight5,label = "(14)",size=3.3) +
   geom_text(data = ann_text_plantgrwth5,label = "(19)",size=3.3) +
   geom_text(data = ann_text_leafgrwth5,label = "(27)",size=3.3) +
   geom_text(data = ann_text_aboven5,label = "(12)",size=3.3) +
   geom_text(data = ann_text_perc5,label = "(24)",size=3.3) +
   geom_text(data = ann_text_spring5,label = "(54)",size=3.3) +
-  geom_text(data = ann_text_flwrlife5,label = "(2)",size=3.3) +
   geom_text(data = ann_text_fall5,label = "(31)",size=3.3) +
   geom_text(data = ann_text_abovebio6,label = "(9)",size=3.3) +
-  geom_text(data = ann_text_fruitnum6,label = "(5)",size=3.3) +
-  geom_text(data = ann_text_plantgrwth6,label = "(3)",size=3.3) +
-  geom_text(data = ann_text_aboven6,label = "(2)",size=3.3) +
   geom_text(data = ann_text_perc6,label = "(27)",size=3.3) +
+  geom_text(data = ann_text_abovebio7,label = "(22)",size=3.3) +
+  geom_text(data = ann_text_perc7,label = "(14)",size=3.3) +
   theme_bw() +
   theme(panel.border = element_blank(),
         panel.background = element_blank(),
@@ -398,7 +388,7 @@ ann_text_spring2 <- data.frame(avg=0.1,Year_round_warm="No",lab = "Text",
                               Var_type_broad = factor("Phen_early"))
 ann_text_fall2 <- data.frame(avg=0.1,Year_round_warm="No",lab = "Text",
                             Var_type_broad = factor("Phen_late"))
-png("effect_yearround.png", units="in", width=8, height=6, res=300)
+png("effect_yearround.png", units="in", width=8, height=7, res=300)
 ggplot(esmd_yearround, aes(y = Year_round_warm, x = avg)) +
   facet_wrap(.~Var_type_broad, labeller = as_labeller(var_labels)) +
   geom_vline(xintercept = 0, color = "red", linetype = "dashed", cex = 1, alpha = 0.5) +
@@ -459,47 +449,22 @@ ggplot(esmd_lat_trim, aes(x = Latitude, y = yi)) +
 
 
 ### effect size based on distance from range edge ###
-esmd_lat_diff_trim <- esmd_clean %>% # testing if we restrict latitude difference
+esmd_lat_diff_trim <- esmd_clean %>% # testing if we restrict latitude difference to remove large outlier values
   filter(!(Lat_difference > 60))
+png("effect_latdiff.png", units="in", width=8, height=6, res=300)
 ggplot(esmd_lat_diff_trim, aes(x = Lat_difference, y = yi)) +
-  facet_wrap(.~Var_type_broad) +
+  facet_wrap(.~Var_type_broad, labeller = as_labeller(var_labels), scales="free") +
   geom_point(size = 2) +
   geom_smooth(method = 'lm') +
-  xlab("Latitude difference") +
+  xlab("Latitude difference (°)") +
   ylab("Effect size") +
-  ylim(-5,5) +
+  #ylim(-5,5) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank(), axis.line = element_line(colour = "black"))
-# categorical? 
-esmd_range <- esmd_clean
-esmd_range$Lat_category <- NA
-esmd_range$Lat_category[esmd_range$Lat_difference < 30] <- "Near_edge"
-esmd_range$Lat_category[esmd_range$Lat_difference >= 30] <- "Far_from_edge"
-esmd_range <- esmd_range %>%
-  na.omit(Lat_category) %>%
-  group_by(Var_type_broad, Lat_category) %>%
-  summarize(count = n(),
-            avg = mean(yi, na.rm = TRUE),
-            se = std.error(yi, na.rm = TRUE))
-png("effect_range.png", units="in", width=8, height=6, res=300)
-ggplot(esmd_range, aes(y = Lat_category, x = avg)) +
-  facet_wrap(.~Var_type_broad) +
-  geom_point(shape = 18, size = 4) +  
-  geom_errorbarh(aes(xmin = avg - se, xmax = avg + se), height = 0.25) +
-  geom_vline(xintercept = 0, color = "red", linetype = "dashed", cex = 1, alpha = 0.5) +
-  #scale_y_continuous(name = "", breaks=1:4, labels = dat$label, trans = "reverse") +
-  xlab("Mean effect size (Hedges' g) +/- SE") + 
-  ylab(" ") + 
-  theme_bw() +
-  theme(panel.border = element_blank(),
-        panel.background = element_blank(),
-        panel.grid.major = element_blank(), 
-        panel.grid.minor = element_blank(), 
-        axis.line = element_line(colour = "black"),
-        axis.text.y = element_text(size = 12, colour = "black"),
-        axis.text.x.bottom = element_text(size = 12, colour = "black"),
-        axis.title.x = element_text(size = 12, colour = "black"))
+        panel.background = element_blank(), axis.line = element_line(colour = "black"),
+        axis.title.x = element_text(size=15),
+        axis.title.y = element_text(size=15))
 dev.off()
+
 
 ### effect size based on amount warmed ###
 esmd_amount <- esmd_clean %>%
@@ -519,15 +484,21 @@ ggplot(esmd_amount, aes(x = Amount_warmed_C, y = yi)) +
 
 
 ### effect size based on # months warmed ###
+esmd_months_warm <- esmd_clean %>%
+  filter(!(Years_warmed >10))
+png("effect_yearsw.png", units="in", width=8, height=6, res=300)
 ggplot(esmd_clean, aes(x = Years_warmed, y = yi)) +
-  facet_wrap(.~Var_type_broad) +
+  facet_wrap(.~Var_type_broad, labeller = as_labeller(var_labels), scales="free") +
   geom_point(size = 2) +
   geom_smooth(method = 'lm') +
-  xlab("Amount warmed (°C)") +
+  xlab("Years warmed") +
   ylab("Effect size") +
   #ylim(-10,10) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank(), axis.line = element_line(colour = "black"))
+        panel.background = element_blank(), axis.line = element_line(colour = "black"),
+        axis.title.x = element_text(size=15),
+        axis.title.y = element_text(size=15))
+dev.off()
 
 
 
