@@ -437,15 +437,19 @@ dev.off()
 ### effect size based on latitude of study ###
 esmd_lat_trim <- esmd_clean %>% # testing if we restrict latitude
   filter(!(Latitude < 0))
-ggplot(esmd_lat_trim, aes(x = Latitude, y = yi)) +
-  facet_wrap(.~Var_type_broad) +
+png("effect_lat.png", units="in", width=8, height=6, res=300)
+ggplot(esmd_clean, aes(x = Latitude, y = yi)) +
+  facet_wrap(.~Var_type_broad, scales="free",labeller = as_labeller(var_labels)) +
   geom_point(size = 2) +
   geom_smooth(method = 'lm') +
-  xlab("Latitude") +
+  xlab("Latitude (°)") +
   ylab("Effect size") +
   #ylim(-5,5) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank(), axis.line = element_line(colour = "black"))
+        panel.background = element_blank(), axis.line = element_line(colour = "black"),
+        axis.title.x = element_text(size=15),
+        axis.title.y = element_text(size=15))
+dev.off()
 
 
 ### effect size based on distance from range edge ###
