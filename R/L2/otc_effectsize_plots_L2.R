@@ -3,7 +3,7 @@
 # COLLABORATORS:  Phoebe Zarnetske, Pat Bills
 # DATA INPUT:     L2 manipulated data from the L2 folder
 # DATA OUTPUT:    Effect size plots
-# DATE:           Sep 2022; Jan 2023
+# DATE:           Sep 2022; Jan 2023; July 2023
 
 # clear environment
 rm(list = ls())
@@ -267,7 +267,8 @@ ggplot(esmd_func, aes(y = Func_group_broad, x = avg)) +
         axis.line = element_line(colour = "black"),
         axis.text.y = element_text(size = 12, colour = "black"),
         axis.text.x.bottom = element_text(size = 12, colour = "black"),
-        axis.title.x = element_text(size = 12, colour = "black"))
+        axis.title.x = element_text(size = 12, colour = "black"),
+        strip.text = element_text(face = "bold"))
 dev.off()
 
 
@@ -430,25 +431,32 @@ ggplot(esmd_yearround, aes(y = Year_round_warm, x = avg)) +
         axis.line = element_line(colour = "black"),
         axis.text.y = element_text(size = 12, colour = "black"),
         axis.text.x.bottom = element_text(size = 12, colour = "black"),
-        axis.title.x = element_text(size = 12, colour = "black"))
+        axis.title.x = element_text(size = 12, colour = "black"),
+        strip.text = element_text(face = "bold"))
 dev.off()
 
 
 ### effect size based on latitude of study ###
 esmd_lat_trim <- esmd_clean %>% # testing if we restrict latitude
   filter(!(Latitude < 0))
+esmd_lat_trim_poster <- esmd_lat_trim %>%
+  filter(Var_type_broad == "Flower_num" |
+           Var_type_broad == "Fruit_weight" |
+           Var_type_broad == "Nitrogen_below" |
+           Var_type_broad == "Phen_late")
 png("effect_lat.png", units="in", width=8, height=6, res=300)
-ggplot(esmd_clean, aes(x = Latitude, y = yi)) +
+ggplot(esmd_lat_trim_poster, aes(x = Latitude, y = yi)) +
   facet_wrap(.~Var_type_broad, scales="free",labeller = as_labeller(var_labels)) +
   geom_point(size = 2) +
-  geom_smooth(method = 'lm') +
+  geom_smooth(method = 'lm',color="darkgreen") +
   xlab("Latitude (°)") +
   ylab("Effect size") +
   #ylim(-5,5) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"),
         axis.title.x = element_text(size=15),
-        axis.title.y = element_text(size=15))
+        axis.title.y = element_text(size=15),
+        strip.text = element_text(face = "bold"))
 dev.off()
 
 
@@ -490,18 +498,24 @@ ggplot(esmd_amount, aes(x = Amount_warmed_C, y = yi)) +
 ### effect size based on # months warmed ###
 esmd_months_warm <- esmd_clean %>%
   filter(!(Years_warmed >10))
+esmd_months_poster <- esmd_clean %>%
+  filter(Var_type_broad == "Fruit_num" |
+           Var_type_broad == "Phen_flwr_lifespan" |
+           Var_type_broad == "Nitrogen_above" |
+           Var_type_broad == "Phen_early")
 png("effect_yearsw.png", units="in", width=8, height=6, res=300)
-ggplot(esmd_clean, aes(x = Years_warmed, y = yi)) +
+ggplot(esmd_months_poster, aes(x = Years_warmed, y = yi)) +
   facet_wrap(.~Var_type_broad, labeller = as_labeller(var_labels), scales="free") +
   geom_point(size = 2) +
-  geom_smooth(method = 'lm') +
+  geom_smooth(method = 'lm', color="darkgreen") +
   xlab("Years warmed") +
   ylab("Effect size") +
   #ylim(-10,10) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"),
         axis.title.x = element_text(size=15),
-        axis.title.y = element_text(size=15))
+        axis.title.y = element_text(size=15),
+        strip.text = element_text(face = "bold"))
 dev.off()
 
 
