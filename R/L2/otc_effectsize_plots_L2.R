@@ -53,10 +53,28 @@ esmd_var_type_sum <- esmd_clean %>%
   summarize(count = n(),
             avg = mean(yi, na.rm = TRUE),
             se = std.error(yi, na.rm = TRUE))
+esmd_var_type_sum$Var_type_color <- NA # making a column for even broader var types for colors
+esmd_var_type_sum$Var_type_color[esmd_var_type_sum$Var_type_broad == "Biomass_above"] <- "Biomass"
+esmd_var_type_sum$Var_type_color[esmd_var_type_sum$Var_type_broad == "Biomass_below"] <- "Biomass"
+esmd_var_type_sum$Var_type_color[esmd_var_type_sum$Var_type_broad == "Percent_cover"] <- "Biomass"
+esmd_var_type_sum$Var_type_color[esmd_var_type_sum$Var_type_broad == "Flower_num"] <- "Rep"
+esmd_var_type_sum$Var_type_color[esmd_var_type_sum$Var_type_broad == "Fruit_num"] <- "Rep"
+esmd_var_type_sum$Var_type_color[esmd_var_type_sum$Var_type_broad == "Fruit_weight"] <- "Rep"
+esmd_var_type_sum$Var_type_color[esmd_var_type_sum$Var_type_broad == "Phen_early"] <- "Phen"
+esmd_var_type_sum$Var_type_color[esmd_var_type_sum$Var_type_broad == "Phen_late"] <- "Phen"
+esmd_var_type_sum$Var_type_color[esmd_var_type_sum$Var_type_broad == "Phen_flwr_lifespan"] <- "Phen"
+esmd_var_type_sum$Var_type_color[esmd_var_type_sum$Var_type_broad == "Nitrogen_above"] <- "N"
+esmd_var_type_sum$Var_type_color[esmd_var_type_sum$Var_type_broad == "Nitrogen_below"] <- "N"
+esmd_var_type_sum$Var_type_color[esmd_var_type_sum$Var_type_broad == "Growth"] <- "Growth"
+esmd_var_type_sum$Var_type_color[esmd_var_type_sum$Var_type_broad == "Leaf_Growth"] <- "Growth"
+# changing order of facets
+esmd_var_type_sum$Var_type_color <- factor(esmd_var_type_sum$Var_type_color,
+                                   levels=c("Phen","N","Growth","Rep","Biomass"))
+
 png("effect.png", units="in", width=8, height=6, res=300)
 ggplot(esmd_var_type_sum, aes(y = reorder(Var_type_broad, -avg, FUN=mean), x = avg)) +
   #facet_wrap(.~Var_type) +
-  geom_vline(xintercept = 0, color = "red", linetype = "dashed", cex = 1, alpha = 0.5) +
+  geom_vline(xintercept = 0, color = "red", linetype = "dashed", cex = 1, alpha = 0.7) +
   geom_point(shape = 18, size = 4) +  
   geom_errorbarh(aes(xmin = avg - se, xmax = avg + se), height = 0.25) +
   scale_y_discrete(labels=c("Phen_flwr_lifespan" = "Flower lifespan (13)",
@@ -72,6 +90,13 @@ ggplot(esmd_var_type_sum, aes(y = reorder(Var_type_broad, -avg, FUN=mean), x = a
                             "Growth" = "Plant growth (135)",
                             "Fruit_weight" = "Fruit weight (27)",
                             "Biomass_below" = "Belowground biomass (44)")) +
+  #scale_color_manual(values=c("Biomass"="#EE99AA",
+  #                            "Rep" = "#663333",
+  #                            "Phen" = "#222255",
+  #                            "N" = "#666633",
+  #                            "Growth" = "#EECC66"),
+  #                   name = "Trait type",
+  #                   labels=c("Phenology","Nutrients","Growth","Reproductive","Abundance")) +
   xlab("Mean effect size (Hedges' g) +/- SE") + 
   ylab(" ") + 
   theme_bw() +
@@ -82,6 +107,7 @@ ggplot(esmd_var_type_sum, aes(y = reorder(Var_type_broad, -avg, FUN=mean), x = a
         axis.line = element_line(colour = "black"),
         axis.text.y = element_text(size = 12, colour = "black"),
         axis.text.x.bottom = element_text(size = 12, colour = "black"),
+        legend.position="none",
         axis.title.x = element_text(size = 12, colour = "black"))
 dev.off()
 
@@ -96,6 +122,16 @@ esmd_func <- esmd_clean %>%
   filter(!(count < 8)) %>% # remove categories w/ sample size < 8
   filter(!(Var_type_broad == "Biomass_below" | Var_type_broad == "Fruit_num" |
              Var_type_broad == "Flower_lifespan" | Var_type_broad == "Nitrogen_below"))
+esmd_func$Var_type_color <- NA # making a column for even broader var types for colors
+esmd_func$Var_type_color[esmd_func$Var_type_broad == "Biomass_above"] <- "Biomass"
+esmd_func$Var_type_color[esmd_func$Var_type_broad == "Percent_cover"] <- "Biomass"
+esmd_func$Var_type_color[esmd_func$Var_type_broad == "Flower_num"] <- "Rep"
+esmd_func$Var_type_color[esmd_func$Var_type_broad == "Fruit_weight"] <- "Rep"
+esmd_func$Var_type_color[esmd_func$Var_type_broad == "Phen_early"] <- "Phen"
+esmd_func$Var_type_color[esmd_func$Var_type_broad == "Phen_late"] <- "Phen"
+esmd_func$Var_type_color[esmd_func$Var_type_broad == "Nitrogen_above"] <- "N"
+esmd_func$Var_type_color[esmd_func$Var_type_broad == "Growth"] <- "Growth"
+esmd_func$Var_type_color[esmd_func$Var_type_broad == "Leaf_Growth"] <- "Growth"
 # making text labels for sample sizes
 # Tree
 ann_text_abovebio <- data.frame(avg=3,Func_group_broad="Tree",lab = "Text",
@@ -214,11 +250,16 @@ ann_text_abovebio7 <- data.frame(avg=3,Func_group_broad="Total",lab = "Text",
                                  Var_type_broad = factor("Biomass_above"))
 ann_text_perc7 <- data.frame(avg=1,Func_group_broad="Total",lab = "Text",
                              Var_type_broad = factor("Percent_cover"))
+# changing order of facets
+esmd_func$Var_type_broad <- factor(esmd_func$Var_type_broad,
+                                    levels=c("Biomass_above", "Percent_cover",
+                                             "Flower_num","Fruit_weight","Growth",
+                                             "Leaf_Growth","Nitrogen_above","Phen_early","Phen_late"))
 
 png("effect_func.png", units="in", width=8, height=7, res=300)
 ggplot(esmd_func, aes(y = Func_group_broad, x = avg)) +
   facet_wrap(.~Var_type_broad, labeller = as_labeller(var_labels)) +
-  geom_vline(xintercept = 0, color = "red", linetype = "dashed", cex = 1, alpha = 0.5) +
+  geom_vline(xintercept = 0, color = "red", linetype = "dashed", cex = 1, alpha = 0.7) +
   geom_point(shape = 18, size = 4) +  
   geom_errorbarh(aes(xmin = avg - se, xmax = avg + se), height = 0.25) +
   #scale_y_continuous(name = "", breaks=1:4, labels = dat$label, trans = "reverse") +
@@ -259,6 +300,11 @@ ggplot(esmd_func, aes(y = Func_group_broad, x = avg)) +
   geom_text(data = ann_text_perc6,label = "(27)",size=3.3) +
   geom_text(data = ann_text_abovebio7,label = "(22)",size=3.3) +
   geom_text(data = ann_text_perc7,label = "(14)",size=3.3) +
+  scale_color_manual(values=c("Biomass"="#EE99AA",
+                              "Rep" = "#663333",
+                              "Phen" = "#222255",
+                              "N" = "#666633",
+                              "Growth" = "#EECC66")) +
   theme_bw() +
   theme(panel.border = element_blank(),
         panel.background = element_blank(),
@@ -268,6 +314,7 @@ ggplot(esmd_func, aes(y = Func_group_broad, x = avg)) +
         axis.text.y = element_text(size = 12, colour = "black"),
         axis.text.x.bottom = element_text(size = 12, colour = "black"),
         axis.title.x = element_text(size = 12, colour = "black"),
+        legend.position = "none",
         strip.text = element_text(face = "bold"))
 dev.off()
 
@@ -338,6 +385,19 @@ esmd_yearround <- esmd_clean %>%
   summarize(count = n(),
             avg = mean(yi, na.rm = TRUE),
             se = std.error(yi, na.rm = TRUE))
+esmd_yearround$Var_type_color <- NA # making a column for even broader var types for colors
+esmd_yearround$Var_type_color[esmd_yearround$Var_type_broad == "Biomass_above"] <- "Biomass"
+esmd_yearround$Var_type_color[esmd_yearround$Var_type_broad == "Biomass_below"] <- "Biomass"
+esmd_yearround$Var_type_color[esmd_yearround$Var_type_broad == "Percent_cover"] <- "Biomass"
+esmd_yearround$Var_type_color[esmd_yearround$Var_type_broad == "Flower_num"] <- "Rep"
+esmd_yearround$Var_type_color[esmd_yearround$Var_type_broad == "Fruit_num"] <- "Rep"
+esmd_yearround$Var_type_color[esmd_yearround$Var_type_broad == "Fruit_weight"] <- "Rep"
+esmd_yearround$Var_type_color[esmd_yearround$Var_type_broad == "Phen_early"] <- "Phen"
+esmd_yearround$Var_type_color[esmd_yearround$Var_type_broad == "Phen_late"] <- "Phen"
+esmd_yearround$Var_type_color[esmd_yearround$Var_type_broad == "Nitrogen_above"] <- "N"
+esmd_yearround$Var_type_color[esmd_yearround$Var_type_broad == "Nitrogen_below"] <- "N"
+esmd_yearround$Var_type_color[esmd_yearround$Var_type_broad == "Growth"] <- "Growth"
+esmd_yearround$Var_type_color[esmd_yearround$Var_type_broad == "Leaf_Growth"] <- "Growth"
 # making text labels for sample sizes
 # year round warming
 ann_text_abovebio <- data.frame(avg=1.8,Year_round_warm="Yes",lab = "Text",
@@ -389,10 +449,17 @@ ann_text_spring2 <- data.frame(avg=0.1,Year_round_warm="No",lab = "Text",
                               Var_type_broad = factor("Phen_early"))
 ann_text_fall2 <- data.frame(avg=0.1,Year_round_warm="No",lab = "Text",
                             Var_type_broad = factor("Phen_late"))
+# changing order of facets
+esmd_yearround$Var_type_broad <- factor(esmd_yearround$Var_type_broad,
+                                   levels=c("Biomass_above","Biomass_below","Percent_cover",
+                                            "Flower_num","Fruit_num","Fruit_weight",
+                                            "Growth","Leaf_Growth","Nitrogen_above",
+                                            "Nitrogen_below","Phen_early","Phen_late"))
+
 png("effect_yearround.png", units="in", width=8, height=7, res=300)
 ggplot(esmd_yearround, aes(y = Year_round_warm, x = avg)) +
   facet_wrap(.~Var_type_broad, labeller = as_labeller(var_labels)) +
-  geom_vline(xintercept = 0, color = "red", linetype = "dashed", cex = 1, alpha = 0.5) +
+  geom_vline(xintercept = 0, color = "red", linetype = "dashed", cex = 1, alpha = 0.7) +
   geom_point(shape = 18, size = 4) +  
   geom_errorbarh(aes(xmin = avg - se, xmax = avg + se), height = 0.25) +
   scale_y_discrete(labels=c("Yes" = "Year-round warming",
@@ -423,6 +490,11 @@ ggplot(esmd_yearround, aes(y = Year_round_warm, x = avg)) +
   geom_text(data = ann_text_perc2,label = "(91)",size=3.5) +
   geom_text(data = ann_text_plantgrwth2,label = "(58)",size=3.5) +
   geom_text(data = ann_text_spring2,label = "(82)",size=3.5) +
+  #scale_color_manual(values=c("Biomass"="#EE99AA",
+  #                            "Rep" = "#663333",
+  #                            "Phen" = "#222255",
+  #                            "N" = "#666633",
+  #                            "Growth" = "#EECC66")) +
   theme_bw() +
   theme(panel.border = element_blank(),
         panel.background = element_blank(),
@@ -432,7 +504,8 @@ ggplot(esmd_yearround, aes(y = Year_round_warm, x = avg)) +
         axis.text.y = element_text(size = 12, colour = "black"),
         axis.text.x.bottom = element_text(size = 12, colour = "black"),
         axis.title.x = element_text(size = 12, colour = "black"),
-        strip.text = element_text(face = "bold"))
+        legend.position = "none",
+        strip.text = element_text(face = "bold", size=12))
 dev.off()
 
 
@@ -444,6 +517,11 @@ esmd_lat_trim_poster <- esmd_lat_trim %>%
            Var_type_broad == "Fruit_weight" |
            Var_type_broad == "Nitrogen_below" |
            Var_type_broad == "Phen_late")
+esmd_lat_trim_poster$Var_type_color <- NA # making a column for even broader var types for colors
+esmd_lat_trim_poster$Var_type_color[esmd_lat_trim_poster$Var_type_broad == "Flower_num"] <- "Rep"
+esmd_lat_trim_poster$Var_type_color[esmd_lat_trim_poster$Var_type_broad == "Fruit_weight"] <- "Rep"
+esmd_lat_trim_poster$Var_type_color[esmd_lat_trim_poster$Var_type_broad == "Phen_late"] <- "Phen"
+esmd_lat_trim_poster$Var_type_color[esmd_lat_trim_poster$Var_type_broad == "Nitrogen_below"] <- "N"
 png("effect_lat.png", units="in", width=8, height=6, res=300)
 ggplot(esmd_lat_trim_poster, aes(x = Latitude, y = yi)) +
   facet_wrap(.~Var_type_broad, scales="free",labeller = as_labeller(var_labels)) +
@@ -451,12 +529,16 @@ ggplot(esmd_lat_trim_poster, aes(x = Latitude, y = yi)) +
   geom_smooth(method = 'lm',color="darkgreen") +
   xlab("Latitude (°)") +
   ylab("Effect size") +
+  #scale_color_manual(values=c("Rep" = "#663333",
+  #                            "Phen" = "#222255",
+  #                            "N" = "#666633")) +
   #ylim(-5,5) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"),
         axis.title.x = element_text(size=15),
         axis.title.y = element_text(size=15),
-        strip.text = element_text(face = "bold"))
+        legend.position="none",
+        strip.text = element_text(face = "bold", size=15))
 dev.off()
 
 
@@ -503,6 +585,11 @@ esmd_months_poster <- esmd_clean %>%
            Var_type_broad == "Phen_flwr_lifespan" |
            Var_type_broad == "Nitrogen_above" |
            Var_type_broad == "Phen_early")
+esmd_months_poster$Var_type_color <- NA # making a column for even broader var types for colors
+esmd_months_poster$Var_type_color[esmd_months_poster$Var_type_broad == "Fruit_num"] <- "Rep"
+esmd_months_poster$Var_type_color[esmd_months_poster$Var_type_broad == "Phen_flwr_lifespan"] <- "Phen"
+esmd_months_poster$Var_type_color[esmd_months_poster$Var_type_broad == "Phen_early"] <- "Phen"
+esmd_months_poster$Var_type_color[esmd_months_poster$Var_type_broad == "Nitrogen_above"] <- "N"
 png("effect_yearsw.png", units="in", width=8, height=6, res=300)
 ggplot(esmd_months_poster, aes(x = Years_warmed, y = yi)) +
   facet_wrap(.~Var_type_broad, labeller = as_labeller(var_labels), scales="free") +
@@ -510,12 +597,16 @@ ggplot(esmd_months_poster, aes(x = Years_warmed, y = yi)) +
   geom_smooth(method = 'lm', color="darkgreen") +
   xlab("Years warmed") +
   ylab("Effect size") +
+  #scale_color_manual(values=c("Rep" = "#663333",
+  #                            "Phen" = "#222255",
+  #                            "N" = "#666633")) +
   #ylim(-10,10) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"),
         axis.title.x = element_text(size=15),
         axis.title.y = element_text(size=15),
-        strip.text = element_text(face = "bold"))
+        legend.position="none",
+        strip.text = element_text(face = "bold", size=15))
 dev.off()
 
 
