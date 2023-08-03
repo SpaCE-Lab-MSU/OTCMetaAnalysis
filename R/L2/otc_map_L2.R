@@ -17,7 +17,7 @@ library(maps)
 MA_dir<-Sys.getenv("MADIR")
 
 # Load data
-effect <- read.csv(file.path(MA_dir,"L2/otc_effect_sizes_L2.csv"))
+effect <- read.csv(file.path(MA_dir,"L2/otc_effect_sizes_L2_test.csv"))
 world <- map_data("world")
 
 # make map
@@ -34,5 +34,7 @@ ggplot() +
     alpha = 0.7,
     color = "red"
   ) +
-  theme_classic()
+  theme_classic() +
+  theme(axis.title.x = element_text(size=15),
+        axis.title.y = element_text(size=15))
 dev.off()
