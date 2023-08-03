@@ -21,16 +21,17 @@ list.files(MA_dir)
 sample <- read.csv(file.path(MA_dir,"L1/otc_data_sample_sizes (1).csv"))
 
 
-# remove data with "remove" in a row
+### remove data with "remove" in a row
 # these rows are being removed because they either don't have sample sizes, or don't have SE/SD
 sample_rem <- sample %>%
   filter(!(To_Remove == "remove"))
 
+
+### fixing error types
 # removing data that doesn't specify variation type (SD, SE, etc.)
 unique(sample_rem$Value_error)
 sample_rem <- sample_rem %>%
   filter(!Value_error == "")
-
 
 # changing 2SE to 1SE
 sample_2SE <- sample_rem %>%
@@ -43,7 +44,6 @@ sample_2SE$Value_error[sample_2SE$Value_error == "mean_2SE"] <- "mean_SE"
 sample_rem <- sample_rem %>%
   filter(!(Pub_number == 170))
 sample_rem <- rbind(sample_rem, sample_2SE)
-
 
 # converting SE and 95CI to SD
 # http://handbook-5-1.cochrane.org/chapter_7/7_7_3_2_obtaining_standard_deviations_from_standard_errors_and.htm
@@ -64,7 +64,7 @@ sample_rem$Ambient_SD1[sample_rem$Value_error == 'mean_95'] = NA
 sample_rem$Warmed_SD2<-ifelse(sample_rem$Value_error=="mean_95",
                              sqrt(sample_rem$Warmed_N)*(sample_rem$Warmed_Var/3.92),
                              sample_rem$Warmed_Var)
-sample_rem$Ambient_SD2<-ifelse(sample_rem$Value_error=="mean_SE",
+sample_rem$Ambient_SD2<-ifelse(sample_rem$Value_error=="mean_95",
                                sqrt(sample_rem$Ambient_N)*(sample_rem$Ambient_Var/3.92),
                               sample_rem$Ambient_Var)
 # if a sample is SD or SE, setting the "SD2" column as NA
@@ -81,7 +81,6 @@ sample_coal <- sample_rem %>%
 # making every "value_error" be SD
 sample_coal$Value_error <- "mean_SD"
 
-
 # removing old SD columns and uneeded columns
 sample_coal$Warmed_SD1 <- NULL
 sample_coal$Warmed_SD2 <- NULL
@@ -93,10 +92,11 @@ sample_coal$Notes <- NULL
 sample_coal$Warmed_Var <- NULL
 sample_coal$Ambient_Var <- NULL
 
+
+### fixing spelling + groupings
 # checking spelling on native/non-native
 unique(sample_coal$Native_Status)
 sample_coal$Native_Status[sample_coal$Native_Status == 'Non_native'] = 'Non_Native'
-
 
 # checking unique species functional groups
 unique(sample_coal$Func_group)
@@ -114,7 +114,6 @@ sample_coal$Func_group_broad[sample_coal$Func_group == 'Ever_Shrub'] = 'Shrub'
 sample_coal$Func_group_broad[sample_coal$Func_group == 'Ever_Tree'] = 'Tree'
 sample_coal$Func_group_broad[sample_coal$Func_group == 'Decid_Tree'] = 'Tree'
 unique(sample_coal$Func_group_broad)
-
 
 # checking that variable types are all spelled the same
 unique(sample_coal$Var_type)
@@ -182,7 +181,6 @@ sample_coal$Tissue_Type_broad[sample_coal$Tissue_Type == 'Old_Total'] = 'Total'
 sample_coal$Tissue_Type_broad[sample_coal$Tissue_Type == 'New_Total'] = 'Total'
 unique(sample_coal$Tissue_Type_broad)
 
-
 # checking genus names
 unique(sort(sample_coal$Genus))
 sample_coal$Genus[sample_coal$Genus == 'Agrostis '] = 'Agrostis'
@@ -192,11 +190,11 @@ sample_coal$Genus[sample_coal$Genus == 'Helianthemum '] = 'Helianthemum'
 sample_coal$Genus[sample_coal$Genus == 'Pleruocarpous'] = 'Pleurocarpous'
 sample_coal$Genus[sample_coal$Genus == 'Ranunculus '] = 'Ranunculus'
 
-
 # adding family name
 sample_coal$Family <- NA
 sample_coal$Family[sample_coal$Genus == 'Abies'] = 'Pinaceae'
 sample_coal$Family[sample_coal$Genus == 'Acer'] = 'Sapindaceae'
+sample_coal$Family[sample_coal$Genus == 'Achillea'] = 'Asteraceae'
 sample_coal$Family[sample_coal$Genus == 'Agropyron'] = 'Poaceae'
 sample_coal$Family[sample_coal$Genus == 'Agrostis'] = 'Poaceae'
 sample_coal$Family[sample_coal$Genus == 'Anaphalis'] = 'Asteraceae'
@@ -204,27 +202,33 @@ sample_coal$Family[sample_coal$Genus == 'Andreae'] = 'Andreaeaceae'
 sample_coal$Family[sample_coal$Genus == 'Andromeda'] = 'Ericaceae'
 sample_coal$Family[sample_coal$Genus == 'Androsace'] = 'Primulaceae'
 sample_coal$Family[sample_coal$Genus == 'Anemonoides'] = 'Ranunculaceae'
+sample_coal$Family[sample_coal$Genus == 'Antennaria'] = 'Asteraceae'
 sample_coal$Family[sample_coal$Genus == 'Anthoxanthum'] = 'Poaceae'
 sample_coal$Family[sample_coal$Genus == 'Anthyllis'] = 'Fabaceae'
 sample_coal$Family[sample_coal$Genus == 'Arctagrostis'] = 'Poaceae'
 sample_coal$Family[sample_coal$Genus == 'Arctous'] = 'Ericaceae'
 sample_coal$Family[sample_coal$Genus == 'Arenaria'] = 'Caryophyllaceae'
+sample_coal$Family[sample_coal$Genus == 'Arrhenatherum'] = 'Poaceae'
 sample_coal$Family[sample_coal$Genus == 'Artemisia'] = 'Asteraceae'
+sample_coal$Family[sample_coal$Genus == 'Asclepias'] = 'Apocynaceae'
 sample_coal$Family[sample_coal$Genus == 'Asphodelus'] = 'Asphodelaceae'
 sample_coal$Family[sample_coal$Genus == 'Aster'] = 'Asteraceae'
 sample_coal$Family[sample_coal$Genus == 'Asterolasia'] = 'Rutaceae'
 sample_coal$Family[sample_coal$Genus == 'Aulacomnium'] = 'Aulacomniaceae'
 sample_coal$Family[sample_coal$Genus == 'Avenella'] = 'Poaceae'
 sample_coal$Family[sample_coal$Genus == 'Avicennia'] = 'Acanthaceae'
+sample_coal$Family[sample_coal$Genus == 'Barbarea'] = 'Brassicaceae'
 sample_coal$Family[sample_coal$Genus == 'Bartramia'] = 'Bartramiaceae'
 sample_coal$Family[sample_coal$Genus == 'Betula'] = 'Betulaceae'
-sample_coal$Family[sample_coal$Genus == 'Bistorta'] = '	Polygonaceae'
+sample_coal$Family[sample_coal$Genus == 'Bistorta'] = 'Polygonaceae'
 sample_coal$Family[sample_coal$Genus == 'Bituminaria'] = 'Fabaceae'
 sample_coal$Family[sample_coal$Genus == 'Brachyscome'] = 'Asteraceae'
+sample_coal$Family[sample_coal$Genus == 'Cardamine'] = 'Brassicaceae'
 sample_coal$Family[sample_coal$Genus == 'Carduus'] = 'Asteraceae'
 sample_coal$Family[sample_coal$Genus == 'Carex'] = 'Cyperaceae'
 sample_coal$Family[sample_coal$Genus == 'Cassiope'] = 'Ericaceae'
 sample_coal$Family[sample_coal$Genus == 'Celmisia'] = 'Asteraceae'
+sample_coal$Family[sample_coal$Genus == 'Centaurea'] = 'Asteraceae'
 sample_coal$Family[sample_coal$Genus == 'Cerastium'] = 'Caryophyllaceae'
 sample_coal$Family[sample_coal$Genus == 'Cetraria'] = 'Parmeliaceae'
 sample_coal$Family[sample_coal$Genus == 'Chorisodontium'] = 'Dicranaceae'
@@ -234,6 +238,9 @@ sample_coal$Family[sample_coal$Genus == 'Comarum'] = 'Rosaceae'
 sample_coal$Family[sample_coal$Genus == 'Coris'] = 'Primulaceae'
 sample_coal$Family[sample_coal$Genus == 'Craspedia'] = 'Asteraceae'
 sample_coal$Family[sample_coal$Genus == 'Cynodon'] = 'Poaceae'
+sample_coal$Family[sample_coal$Genus == 'Dactylis'] = 'Poaceae'
+sample_coal$Family[sample_coal$Genus == 'Danthonia'] = 'Poaceae'
+sample_coal$Family[sample_coal$Genus == 'Daucus'] = 'Apiaceae'
 sample_coal$Family[sample_coal$Genus == 'Daphne'] = 'Thymelaeaceae'
 sample_coal$Family[sample_coal$Genus == 'Dasiphora'] = 'Rosaceae'
 sample_coal$Family[sample_coal$Genus == 'Deschampsia'] = 'Poaceae'
@@ -249,8 +256,10 @@ sample_coal$Family[sample_coal$Genus == 'Empetrum'] = 'Ericaceae'
 sample_coal$Family[sample_coal$Genus == 'Eremogone'] = 'Caryophyllaceae'
 sample_coal$Family[sample_coal$Genus == 'Erigeron'] = 'Asteraceae'
 sample_coal$Family[sample_coal$Genus == 'Eriophorum'] = 'Cyperaceae'
+sample_coal$Family[sample_coal$Genus == 'Euthamia'] = 'Asteraceae'
 sample_coal$Family[sample_coal$Genus == 'Festuca'] = 'Poaceae'
 sample_coal$Family[sample_coal$Genus == 'Flavocetraria'] = 'Parmeliaceae'
+sample_coal$Family[sample_coal$Genus == 'Fragaria'] = 'Rosaceae'
 sample_coal$Family[sample_coal$Genus == 'Furcraea'] = 'Asparagaceae'
 sample_coal$Family[sample_coal$Genus == 'Gentiana'] = 'Gentianaceae'
 sample_coal$Family[sample_coal$Genus == 'Gypsophila'] = 'Caryophyllaceae'
@@ -259,8 +268,10 @@ sample_coal$Family[sample_coal$Genus == 'Helianthemum'] = 'Cistaceae'
 sample_coal$Family[sample_coal$Genus == 'Helictochloa'] = 'Poaceae'
 sample_coal$Family[sample_coal$Genus == 'Hennediella'] = 'Pottiaceae'
 sample_coal$Family[sample_coal$Genus == 'Heteropogon'] = 'Poaceae'
+sample_coal$Family[sample_coal$Genus == 'Hieracium'] = 'Asteraceae'
 sample_coal$Family[sample_coal$Genus == 'Hordeum'] = 'Poaceae'
 sample_coal$Family[sample_coal$Genus == 'Hylocomium'] = 'Hylocomiaceae'
+sample_coal$Family[sample_coal$Genus == 'Hypericum'] = 'Hypericaceae'
 sample_coal$Family[sample_coal$Genus == 'Kalmia'] = 'Ericaceae'
 sample_coal$Family[sample_coal$Genus == 'Koeleria'] = 'Poaceae'
 sample_coal$Family[sample_coal$Genus == 'Lagotis'] = 'Plantaginaceae'
@@ -279,6 +290,7 @@ sample_coal$Family[sample_coal$Genus == 'Oxytropis'] = 'Fabaceae'
 sample_coal$Family[sample_coal$Genus == 'Papaver'] = 'Papaveraceae'
 sample_coal$Family[sample_coal$Genus == 'Parnassia'] = 'Celastraceae'
 sample_coal$Family[sample_coal$Genus == 'Peltigera'] = 'Peltigeraceae'
+sample_coal$Family[sample_coal$Genus == 'Phleum'] = 'Poaceae'
 sample_coal$Family[sample_coal$Genus == 'Picea'] = 'Pinaceae'
 sample_coal$Family[sample_coal$Genus == 'Pimelea'] = 'Thymelaeaceae'
 sample_coal$Family[sample_coal$Genus == 'Plantago'] = 'Plantaginaceae'
@@ -289,9 +301,11 @@ sample_coal$Family[sample_coal$Genus == 'Polytrichum'] = 'Polytrichaceae'
 sample_coal$Family[sample_coal$Genus == 'Potentilla'] = 'Rosaceae'
 sample_coal$Family[sample_coal$Genus == 'Primula'] = 'Primulaceae'
 sample_coal$Family[sample_coal$Genus == 'Pseudoroegneria'] = 'Poaceae'
+sample_coal$Family[sample_coal$Genus == 'Pteridium'] = 'Dennstaedtiaceae'
 sample_coal$Family[sample_coal$Genus == 'Ranunculus'] = 'Ranunculaceae'
 sample_coal$Family[sample_coal$Genus == 'Rhododendron'] = 'Ericaceae'
 sample_coal$Family[sample_coal$Genus == 'Rubus'] = 'Rosaceae'
+sample_coal$Family[sample_coal$Genus == 'Rumex'] = 'Polygonaceae'
 sample_coal$Family[sample_coal$Genus == 'Rytidosperma'] = 'Poaceae'
 sample_coal$Family[sample_coal$Genus == 'Salix'] = 'Salicaceae'
 sample_coal$Family[sample_coal$Genus == 'Sanguisorba'] = 'Rosaceae'
@@ -306,6 +320,7 @@ sample_coal$Family[sample_coal$Genus == 'Senecio'] = 'Asteraceae'
 sample_coal$Family[sample_coal$Genus == 'Sesleria'] = 'Poaceae'
 sample_coal$Family[sample_coal$Genus == 'Sieversia'] = 'Rosaceae'
 sample_coal$Family[sample_coal$Genus == 'Silene'] = 'Caryophyllaceae'
+sample_coal$Family[sample_coal$Genus == 'Solidago'] = 'Asteraceae'
 sample_coal$Family[sample_coal$Genus == 'Sparganium'] = 'Typhaceae'
 sample_coal$Family[sample_coal$Genus == 'Sphaerophorus'] = 'Sphaerophoraceae'
 sample_coal$Family[sample_coal$Genus == 'Sphagnum'] = 'Sphagnaceae'
@@ -317,43 +332,49 @@ sample_coal$Family[sample_coal$Genus == 'Stereocaulon'] = 'Stereocaulaceae'
 sample_coal$Family[sample_coal$Genus == 'Stiburus'] = 'Poaceae'
 sample_coal$Family[sample_coal$Genus == 'Stipa'] = 'Poaceae'
 sample_coal$Family[sample_coal$Genus == 'Sulla'] = 'Fabaceae'
+sample_coal$Family[sample_coal$Genus == 'Taraxacum'] = 'Asteraceae'
 sample_coal$Family[sample_coal$Genus == 'Thalictrum'] = 'Ranunculaceae'
 sample_coal$Family[sample_coal$Genus == 'Teucrium'] = 'Lamiaceae'
 sample_coal$Family[sample_coal$Genus == 'Thamnolia'] = 'Icmadophilaceae'
 sample_coal$Family[sample_coal$Genus == 'Themeda'] = 'Poaceae'
 sample_coal$Family[sample_coal$Genus == 'Tofieldia'] = 'Tofieldiaceae'
 sample_coal$Family[sample_coal$Genus == 'Trichostema'] = 'Lamiaceae'
+sample_coal$Family[sample_coal$Genus == 'Trifolium'] = 'Fabaceae'
 sample_coal$Family[sample_coal$Genus == 'Triglochin'] = 'Juncaginaceae'
 sample_coal$Family[sample_coal$Genus == 'Tristachya'] = 'Poaceae'
 sample_coal$Family[sample_coal$Genus == 'Usnea'] = 'Parmeliaceae'
 sample_coal$Family[sample_coal$Genus == 'Vaccinium'] = 'Ericaceae'
+sample_coal$Family[sample_coal$Genus == 'Veronica'] = 'Plantaginaceae'
 sample_coal$Family[sample_coal$Genus == 'Zizania'] = 'Poaceae'
 # most common families?
 sample_coal %>% 
   count(Family)
 
-
 # make combo genus species column
 sample_coal$Genus_Species <- paste0(sample_coal$Genus,"_",sample_coal$Species)
 
-# make column for latitude difference between max latitude of species + study latitude
+
+### make column for latitude difference between max latitude of species + study latitude
 sample_coal <- sample_coal %>%
   mutate(Lat_difference = Max_lat_of_species-Latitude)
 sample_coal$Lat_difference[sample_coal$Lat_difference < 0] <- NA
 
-# reorganize order of column names 
+
+### reorganize order of column names 
 sample_reorder <- sample_coal[, c("User","Pub_number","Pub_info","Study_year_start","File_name",
                                     "Var_type","Var_type_broad","Value_error","Yunits","Func_group","Func_group_broad","Family",
                                     "Genus","Species","Genus_Species","Native_Status","Amount_warmed_C","Amount_warmed_type","Years_warmed",
                                     "Year_round_warm","Latitude","Longitude","Max_lat_of_species","Lat_difference","Site","Tissue_Type","Tissue_Type_broad",
                                     "Lichen_Moss_Type","Warmed_Mean","Warmed_SD","Warmed_N","Ambient_Mean","Ambient_SD","Ambient_N")]
 
-# keep max year per study (to remove pseudoreplication)
+
+### keep max year per study (to remove pseudoreplication)
 sample_latest_year <- sample_reorder %>%
   group_by(Pub_number, File_name, Var_type, Func_group, Genus, Species, Amount_warmed_C, Latitude, Longitude, Site, Tissue_Type, Lichen_Moss_Type) %>%
   filter(Years_warmed == max(Years_warmed))
 
-# upload csv file to L2 folder
+
+### upload csv file to L2 folder
 write.csv(sample_latest_year, file.path(MA_dir,"L2/otc_data_cleaned_L2.csv"), row.names=F)
 
 
