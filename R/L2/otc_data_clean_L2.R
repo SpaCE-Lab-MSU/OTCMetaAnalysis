@@ -1,6 +1,6 @@
 # TITLE:          L1 data clean-up
 # AUTHORS:        Kara Dobson
-# COLLABORATORS:  Phoebe Zarnetske, Pat Bills
+# COLLABORATORS:  Phoebe Zarnetske
 # DATA INPUT:     L1 sample size data sheet from google drive
 # DATA OUTPUT:    cleaned L2 version of the sample size dataframe
 # DATE:           Jan 2023
@@ -12,6 +12,11 @@ rm(list=ls())
 # Load packages
 library(tidyverse)
 library(metafor)
+library(elevatr)
+library(raster)
+library(sp)
+library(geodata)
+library(terra)
 
 # set working directory
 MA_dir<-Sys.getenv("MADIR")
@@ -119,6 +124,11 @@ unique(sample_coal$Func_group_broad)
 unique(sample_coal$Var_type)
 sample_coal$Var_type[sample_coal$Var_type == 'Perc_cover'] = 'Percent_cover'
 
+# renaming Phen_start_male and Phen_start_female to Phen_flwr since their definitions are the same
+sample_coal$Var_type[sample_coal$Var_type == 'Phen_start_male'] = 'Phen_flwr'
+sample_coal$Var_type[sample_coal$Var_type == 'Phen_start_female'] = 'Phen_flwr'
+unique(sample_coal$Var_type)
+
 # making column for broader variable types
 # mainly delineating early vs. late season phenological events here - following Stuble et al. paper 
 # from the Kuebbing lab
@@ -127,8 +137,6 @@ sample_coal$Var_type_broad <- sample_coal$Var_type
 sample_coal$Var_type_broad[sample_coal$Var_type == 'Phen_leaf_appear'] = 'Phen_early'
 sample_coal$Var_type_broad[sample_coal$Var_type == 'Phen_leaf_expand'] = 'Phen_early'
 sample_coal$Var_type_broad[sample_coal$Var_type == 'Phen_senes'] = 'Phen_late'
-sample_coal$Var_type_broad[sample_coal$Var_type == 'Phen_start_male'] = 'Phen_early'
-sample_coal$Var_type_broad[sample_coal$Var_type == 'Phen_start_female'] = 'Phen_early'
 sample_coal$Var_type_broad[sample_coal$Var_type == 'Phen_seed_set'] = 'Phen_late'
 sample_coal$Var_type_broad[sample_coal$Var_type == 'Phen_bud_break'] = 'Phen_early'
 sample_coal$Var_type_broad[sample_coal$Var_type == 'Phen_flwr'] = 'Phen_early'
@@ -139,11 +147,11 @@ sample_coal$Var_type_broad[sample_coal$Var_type == 'Phen_emergence'] = 'Phen_ear
 sample_coal$Var_type_broad[sample_coal$Var_type == 'Height'] = 'Growth'
 sample_coal$Var_type_broad[sample_coal$Var_type == 'Shoot_length'] = 'Growth'
 
-sample_coal$Var_type_broad[sample_coal$Var_type == 'SLA'] = 'Leaf_Growth'
-sample_coal$Var_type_broad[sample_coal$Var_type == 'LMA'] = 'Leaf_Growth'
-sample_coal$Var_type_broad[sample_coal$Var_type == 'Leaf_area'] = 'Leaf_Growth'
-sample_coal$Var_type_broad[sample_coal$Var_type == 'Leaf_length'] = 'Leaf_Growth'
-sample_coal$Var_type_broad[sample_coal$Var_type == 'Leaf_width'] = 'Leaf_Growth'
+sample_coal$Var_type_broad[sample_coal$Var_type == 'SLA'] = 'Leaf_growth'
+sample_coal$Var_type_broad[sample_coal$Var_type == 'LMA'] = 'Leaf_growth'
+sample_coal$Var_type_broad[sample_coal$Var_type == 'Leaf_area'] = 'Leaf_growth'
+sample_coal$Var_type_broad[sample_coal$Var_type == 'Leaf_length'] = 'Leaf_growth'
+sample_coal$Var_type_broad[sample_coal$Var_type == 'Leaf_width'] = 'Leaf_growth'
 unique(sample_coal$Var_type_broad)
 
 # check that all biomass data has tissue type entered & that its the same
@@ -374,8 +382,64 @@ sample_latest_year <- sample_reorder %>%
   filter(Years_warmed == max(Years_warmed))
 
 
+### extracting elevation for coordinates
+# selecting out each unique pairing in the lat & long columns
+sample_cols <- sample_latest_year[,c("Latitude","Longitude")]
+sample_cols2 <- unique(sample_cols[,c("Latitude","Longitude")])
+sample_cols3 <- sample_cols2 %>%
+  relocate(Longitude) %>%
+  rename(x = Longitude) %>%
+  rename(y = Latitude)
+sample_cols3 <- as.data.frame(sample_cols3)
+# get elevation
+df_elev_aws <- get_elev_point(sample_cols3, prj = 4326, src = "aws")
+df_elev_aws$geometry <- as.character(df_elev_aws$geometry)
+# manipulate elevation dataframe to re-parse coordinates into separate columns
+df_elev_aws$geometry <- str_remove_all(df_elev_aws$geometry, 'c\\(')
+df_elev_aws$geometry <- str_remove_all(df_elev_aws$geometry, '\\)')
+df_elev_aws[c("Longitude","Latitude")] <- str_split_fixed(df_elev_aws$geometry, ", ", 2)
+df_elev_aws$Longitude <- as.numeric(df_elev_aws$Longitude)
+df_elev_aws$Latitude <- as.numeric(df_elev_aws$Latitude)
+# re-merge elevation with data
+sample_elev <- left_join(sample_latest_year, df_elev_aws, by=c("Longitude","Latitude"))
+# dropping uneeded columns and renaming
+sample_elev = subset(sample_elev, select = -c(geometry,elev_units))
+colnames(sample_elev)[colnames(sample_elev) == "elevation"] ="Elevation_m"
+
+
+### getting annual mean temp and precip for each coordinate
+# https://stackoverflow.com/questions/76623171/how-to-extract-data-for-coordinates-from-spatraster-class-in-r
+
+
+
+
+# 1970-2000
+# https://gis.stackexchange.com/questions/227585/using-r-to-extract-data-from-worldclim
+r <- getData("worldclim",var="bio",res=10)
+r <- r[[c(1,12)]]
+names(r) <- c("Temp","Prec")
+points <- SpatialPoints(sample_cols3, proj4string = r@crs)
+values <- extract(r,points)
+df <- cbind.data.frame(coordinates(points),values)
+plot(r[[1]])
+plot(points,add=T,pch=3,
+     xlab="Longitude",
+     ylab="Latitude")
+# fixing scale - WorldClim data has a scaling of 10
+df <- df %>%
+  mutate(Mean_annual_temp = Temp*0.1) %>%
+  mutate(Mean_annual_precip = Prec*0.1)
+# re-merge with data
+df <- df %>%
+  rename(Longitude = x) %>%
+  rename(Latitude = y)
+df = subset(df, select = -c(Temp,Prec))
+sample_climate_data <- left_join(sample_elev, df, by=c("Longitude","Latitude"))
+
+
+
 ### upload csv file to L2 folder
-write.csv(sample_latest_year, file.path(MA_dir,"L2/otc_data_cleaned_L2.csv"), row.names=F)
+write.csv(sample_climate_data, file.path(MA_dir,"L2/otc_data_cleaned_L2.csv"), row.names=F)
 
 
 
@@ -384,7 +448,7 @@ write.csv(sample_latest_year, file.path(MA_dir,"L2/otc_data_cleaned_L2.csv"), ro
 esmd <- escalc(measure="SMD", m1i=Warmed_Mean, m2i=Ambient_Mean, # SMD = Hedge's g
                sd1i=Warmed_SD, sd2i=Ambient_SD,
                n1i=Warmed_N, n2i=Ambient_N,
-               data=sample_latest_year)
+               data=sample_climate_data)
 
 # remove rows with incomplete data
 esmd_clean <- esmd %>%
