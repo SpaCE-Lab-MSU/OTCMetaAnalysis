@@ -437,6 +437,11 @@ df = subset(df, select = -c(Temp,Prec))
 sample_climate_data <- left_join(sample_elev, df, by=c("Longitude","Latitude"))
 
 
+### calculating absolute latitude
+sample_climate_data <- sample_climate_data %>%
+  mutate(Abs_Latitude = abs(Latitude))
+
+
 
 ### upload csv file to L2 folder
 write.csv(sample_climate_data, file.path(MA_dir,"L2/otc_data_cleaned_L2.csv"), row.names=F)
