@@ -409,10 +409,28 @@ colnames(sample_elev)[colnames(sample_elev) == "elevation"] ="Elevation_m"
 
 ### getting annual mean temp and precip for each coordinate
 # https://stackoverflow.com/questions/76623171/how-to-extract-data-for-coordinates-from-spatraster-class-in-r
+# missing a lot of data for certain coordinates?
+test2 <- worldclim_tile("tavg",
+                        sample_cols3[1,1],
+                        sample_cols3[1,2],
+                        version="2.1",
+                        path="WorldClimData")
+points2 <- vect(sample_cols3,
+                geom=c("x", "y"),
+                crs = "EPSG:4326")
+values2 <- extract(test2,
+                   points2)
+# testing precipitation
+# also missing data for the same coordinates
+test2_p <- worldclim_tile("prec",
+                          sample_cols3[1,1],
+                          sample_cols3[1,2],
+                          version="2.1",
+                          path="WorldClimData")
+values2_p <- extract(test2_p,
+                     points2)
 
-
-
-
+# old method using raster package
 # 1970-2000
 # https://gis.stackexchange.com/questions/227585/using-r-to-extract-data-from-worldclim
 r <- getData("worldclim",var="bio",res=10)
