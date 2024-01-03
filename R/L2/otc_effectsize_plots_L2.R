@@ -66,17 +66,24 @@ esmd_var_type_sum <- esmd_clean2 %>%
             se = std.error(yi, na.rm = TRUE),
             CI_lower = avg - (1.96 * se),
             CI_upper = avg + (1.96 * se))
+# making dataframe for mean estimataed effect sizes from model output (in otc_effectsize_analyses_L2.R)
+esmd_est_mean <- data.frame(Var_type_broad = c("Biomass_above","Biomass_below","Flower_num","Fruit_num","Fruit_weight",
+                                               "Growth","Leaf_growth","Nitrogen_above","Nitrogen_below","Percent_cover",
+                                               "Phen_early","Phen_flwr_lifespan","Phen_late"),
+                            avg = c(0.2528,0.6033,-0.0763,-0.0982,0.5776,0.6488,0.5369,-0.4093,-0.1082,0.1044,-0.1223,0.1364,-0.0373),
+                            CI_upper = c(0.3889,0.9203,0.0866,0.0865,0.8578,0.7757,0.6646,-0.2450,0.4367,0.2495,0.0140,0.3091,0.1190),
+                            CI_lower = c(0.1167,0.2862,-0.2391,-0.2829,0.2974,0.5220,0.4091,-0.5735,-0.6531,-0.0406,-0.2586,-0.0363,-0.1936))
 
 png("effect.png", units="in", width=8, height=6, res=300)
-ggplot(esmd_var_type_sum, aes(y = reorder(Var_type_broad, -avg, FUN=mean), x = avg)) +
+ggplot(esmd_est_mean, aes(y = reorder(Var_type_broad, -avg, FUN=mean), x = avg)) +
   #facet_wrap(.~Var_type) +
   geom_vline(xintercept = 0, color = "red", linetype = "dashed", cex = 1, alpha = 0.7) +
   geom_point(shape = 18, size = 4) +  
   geom_errorbarh(aes(xmin = CI_lower, xmax =CI_upper), height = 0.25) +
   scale_y_discrete(labels=c("Phen_flwr_lifespan" = "Flower lifespan (37)",
-                            "Phen_early" = "Spring phenophases (172)",
+                            "Phen_early" = "Spring phenophases (186)",
                             "Nitrogen_above" = "Aboveground N (131)",
-                            "Phen_late" = "Fall phenophases (74)",
+                            "Phen_late" = "Fall phenophases (77)",
                             "Nitrogen_below" = "Belowground N (12)",
                             "Flower_num" = "Number of flowers (79)",
                             "Percent_cover" = "Percent cover (193)",
@@ -406,30 +413,30 @@ ggplot(esmd_yearround, aes(y = Year_round_warm, x = avg)) +
                             "No" = "Seasonal warming")) +
   xlab("Mean effect size (Hedges' g) +/- SE") + 
   ylab(" ") + 
-  geom_text(data = ann_text_abovebio,label = "(120)",size=3.5) +
-  geom_text(data = ann_text_belowbio,label = "(42)",size=3.5) +
-  geom_text(data = ann_text_aboven,label = "(105)",size=3.5) +
-  geom_text(data = ann_text_belown,label = "(11)",size=3.5) +
-  geom_text(data = ann_text_fall,label = "(43)",size=3.5) +
-  geom_text(data = ann_text_flwrnum,label = "(49)",size=3.5) +
-  geom_text(data = ann_text_fruitnum,label = "(25)",size=3.5) +
-  geom_text(data = ann_text_fruitweight,label = "(24)",size=3.5) +
-  geom_text(data = ann_text_leafgrwth,label = "(112)",size=3.5) +
-  geom_text(data = ann_text_perc,label = "(102)",size=3.5) +
-  geom_text(data = ann_text_plantgrwth,label = "(77)",size=3.5) +
-  geom_text(data = ann_text_spring,label = "(90)",size=3.5) +
-  geom_text(data = ann_text_abovebio2,label = "(49)",size=3.5) +
-  geom_text(data = ann_text_belowbio2,label = "(2)",size=3.5) +
-  geom_text(data = ann_text_aboven2,label = "(26)",size=3.5) +
-  geom_text(data = ann_text_belown2,label = "(1)",size=3.5) +
-  geom_text(data = ann_text_fall2,label = "(31)",size=3.5) +
-  geom_text(data = ann_text_flwrnum2,label = "(30)",size=3.5) +
-  geom_text(data = ann_text_fruitnum2,label = "(9)",size=3.5) +
-  geom_text(data = ann_text_fruitweight2,label = "(3)",size=3.5) +
-  geom_text(data = ann_text_leafgrwth2,label = "(32)",size=3.5) +
-  geom_text(data = ann_text_perc2,label = "(91)",size=3.5) +
-  geom_text(data = ann_text_plantgrwth2,label = "(58)",size=3.5) +
-  geom_text(data = ann_text_spring2,label = "(82)",size=3.5) +
+  #geom_text(data = ann_text_abovebio,label = "(120)",size=3.5) +
+  #geom_text(data = ann_text_belowbio,label = "(42)",size=3.5) +
+  #geom_text(data = ann_text_aboven,label = "(105)",size=3.5) +
+  #geom_text(data = ann_text_belown,label = "(11)",size=3.5) +
+  #geom_text(data = ann_text_fall,label = "(43)",size=3.5) +
+  #geom_text(data = ann_text_flwrnum,label = "(49)",size=3.5) +
+  #geom_text(data = ann_text_fruitnum,label = "(25)",size=3.5) +
+  #geom_text(data = ann_text_fruitweight,label = "(24)",size=3.5) +
+  #geom_text(data = ann_text_leafgrwth,label = "(112)",size=3.5) +
+  #geom_text(data = ann_text_perc,label = "(102)",size=3.5) +
+  #geom_text(data = ann_text_plantgrwth,label = "(77)",size=3.5) +
+  #geom_text(data = ann_text_spring,label = "(90)",size=3.5) +
+  #geom_text(data = ann_text_abovebio2,label = "(49)",size=3.5) +
+  #geom_text(data = ann_text_belowbio2,label = "(2)",size=3.5) +
+  #geom_text(data = ann_text_aboven2,label = "(26)",size=3.5) +
+  #geom_text(data = ann_text_belown2,label = "(1)",size=3.5) +
+  #geom_text(data = ann_text_fall2,label = "(31)",size=3.5) +
+  #geom_text(data = ann_text_flwrnum2,label = "(30)",size=3.5) +
+  #geom_text(data = ann_text_fruitnum2,label = "(9)",size=3.5) +
+  #geom_text(data = ann_text_fruitweight2,label = "(3)",size=3.5) +
+  #geom_text(data = ann_text_leafgrwth2,label = "(32)",size=3.5) +
+  #geom_text(data = ann_text_perc2,label = "(91)",size=3.5) +
+  #geom_text(data = ann_text_plantgrwth2,label = "(58)",size=3.5) +
+  #geom_text(data = ann_text_spring2,label = "(82)",size=3.5) +
   theme_bw() +
   theme(panel.border = element_blank(),
         panel.background = element_blank(),
@@ -445,8 +452,6 @@ dev.off()
 
 
 ### effect size based on latitude of study ###
-esmd_lat_trim <- esmd_clean2 %>% # testing if we restrict latitude
-  filter(!(Latitude < 0))
 esmd_lat_trim_poster <- esmd_lat_trim %>%
   filter(Var_type_broad == "Flower_num" |
            Var_type_broad == "Fruit_num" |
@@ -455,7 +460,7 @@ esmd_lat_trim_poster <- esmd_lat_trim %>%
            Var_type_broad == "Nitrogen_below" |
            Var_type_broad == "Phen_early")
 png("effect_lat.png", units="in", width=8, height=6, res=300)
-ggplot(esmd_lat_trim_poster, aes(x = Latitude, y = yi)) +
+ggplot(esmd_clean2, aes(x = Abs_Latitude, y = yi)) +
   facet_wrap(.~Var_type_broad, scales="free",labeller = as_labeller(var_labels)) +
   geom_point(size = 2) +
   geom_smooth(method = 'lm',color="darkgreen") +
@@ -478,6 +483,50 @@ dev.off()
 ### effect size based on elevation ###
 png("effect_elev.png", units="in", width=8, height=6, res=300)
 ggplot(esmd_clean2, aes(x = Elevation_m, y = yi)) +
+  facet_wrap(.~Var_type_broad, scales="free",labeller = as_labeller(var_labels)) +
+  geom_point(size = 2) +
+  geom_smooth(method = 'lm',color="darkgreen") +
+  xlab("Elevation (m)") +
+  ylab("Effect size") +
+  #scale_color_manual(values=c("Rep" = "#663333",
+  #                            "Phen" = "#222255",
+  #                            "N" = "#666633")) +
+  #ylim(-5,5) +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black"),
+        axis.title.x = element_text(size=15),
+        axis.title.y = element_text(size=15),
+        legend.position="none",
+        strip.text = element_text(face = "bold", size=10))
+dev.off()
+
+
+
+### effect size based on mean annual temperature ###
+png("effect_elev.png", units="in", width=8, height=6, res=300)
+ggplot(esmd_clean2, aes(x = Mean_annual_temp, y = yi)) +
+  facet_wrap(.~Var_type_broad, scales="free",labeller = as_labeller(var_labels)) +
+  geom_point(size = 2) +
+  geom_smooth(method = 'lm',color="darkgreen") +
+  xlab("Elevation (m)") +
+  ylab("Effect size") +
+  #scale_color_manual(values=c("Rep" = "#663333",
+  #                            "Phen" = "#222255",
+  #                            "N" = "#666633")) +
+  #ylim(-5,5) +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black"),
+        axis.title.x = element_text(size=15),
+        axis.title.y = element_text(size=15),
+        legend.position="none",
+        strip.text = element_text(face = "bold", size=10))
+dev.off()
+
+
+
+### effect size based on mean annual precipitation ###
+png("effect_elev.png", units="in", width=8, height=6, res=300)
+ggplot(esmd_clean2, aes(x = Mean_annual_precip, y = yi)) +
   facet_wrap(.~Var_type_broad, scales="free",labeller = as_labeller(var_labels)) +
   geom_point(size = 2) +
   geom_smooth(method = 'lm',color="darkgreen") +

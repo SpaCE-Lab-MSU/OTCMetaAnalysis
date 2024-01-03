@@ -269,6 +269,7 @@ sample_coal$Family[sample_coal$Genus == 'Festuca'] = 'Poaceae'
 sample_coal$Family[sample_coal$Genus == 'Flavocetraria'] = 'Parmeliaceae'
 sample_coal$Family[sample_coal$Genus == 'Fragaria'] = 'Rosaceae'
 sample_coal$Family[sample_coal$Genus == 'Furcraea'] = 'Asparagaceae'
+sample_coal$Family[sample_coal$Genus == 'Geum'] = 'Rosaceae'
 sample_coal$Family[sample_coal$Genus == 'Gentiana'] = 'Gentianaceae'
 sample_coal$Family[sample_coal$Genus == 'Gypsophila'] = 'Caryophyllaceae'
 sample_coal$Family[sample_coal$Genus == 'Harpochloa'] = 'Poaceae'
@@ -376,15 +377,9 @@ sample_reorder <- sample_coal[, c("User","Pub_number","Pub_info","Study_year_sta
                                     "Lichen_Moss_Type","Warmed_Mean","Warmed_SD","Warmed_N","Ambient_Mean","Ambient_SD","Ambient_N")]
 
 
-### keep max year per study (to remove pseudoreplication)
-sample_latest_year <- sample_reorder %>%
-  group_by(Pub_number, File_name, Var_type, Func_group, Genus, Species, Amount_warmed_C, Latitude, Longitude, Site, Tissue_Type, Lichen_Moss_Type) %>%
-  filter(Years_warmed == max(Years_warmed))
-
-
 ### extracting elevation for coordinates
 # selecting out each unique pairing in the lat & long columns
-sample_cols <- sample_latest_year[,c("Latitude","Longitude")]
+sample_cols <- sample_reorder[,c("Latitude","Longitude")]
 sample_cols2 <- unique(sample_cols[,c("Latitude","Longitude")])
 sample_cols3 <- sample_cols2 %>%
   relocate(Longitude) %>%
@@ -401,7 +396,7 @@ df_elev_aws[c("Longitude","Latitude")] <- str_split_fixed(df_elev_aws$geometry, 
 df_elev_aws$Longitude <- as.numeric(df_elev_aws$Longitude)
 df_elev_aws$Latitude <- as.numeric(df_elev_aws$Latitude)
 # re-merge elevation with data
-sample_elev <- left_join(sample_latest_year, df_elev_aws, by=c("Longitude","Latitude"))
+sample_elev <- left_join(sample_reorder, df_elev_aws, by=c("Longitude","Latitude"))
 # dropping uneeded columns and renaming
 sample_elev = subset(sample_elev, select = -c(geometry,elev_units))
 colnames(sample_elev)[colnames(sample_elev) == "elevation"] ="Elevation_m"
@@ -409,50 +404,62 @@ colnames(sample_elev)[colnames(sample_elev) == "elevation"] ="Elevation_m"
 
 ### getting annual mean temp and precip for each coordinate
 # https://stackoverflow.com/questions/76623171/how-to-extract-data-for-coordinates-from-spatraster-class-in-r
-# missing a lot of data for certain coordinates?
-test2 <- worldclim_tile("tavg",
-                        sample_cols3[1,1],
-                        sample_cols3[1,2],
-                        version="2.1",
-                        path="WorldClimData")
-points2 <- vect(sample_cols3,
-                geom=c("x", "y"),
-                crs = "EPSG:4326")
-values2 <- extract(test2,
-                   points2)
-# testing precipitation
-# also missing data for the same coordinates
-test2_p <- worldclim_tile("prec",
-                          sample_cols3[1,1],
-                          sample_cols3[1,2],
+# temperature
+worldclim_temp <- worldclim_global("tavg",
+                          res = 10,
                           version="2.1",
                           path="WorldClimData")
-values2_p <- extract(test2_p,
-                     points2)
-
+coord_vec <- vect(sample_cols3,
+                geom=c("x", "y"),
+                crs = "EPSG:4326")
+temp_data <- extract(worldclim_temp,
+                   coord_vec)
+# precipitation
+worldclim_precip <- worldclim_global("prec",
+                          res = 10,
+                          version="2.1",
+                          path="WorldClimData")
+precip_data <- extract(worldclim_precip,
+                     coord_vec)
+# getting yearly averages
+temp_data2 <- transform(temp_data, Mean_annual_temp = rowMeans(temp_data[,-1], na.rm = TRUE))
+precip_data2 <- transform(precip_data, Mean_annual_precip = rowMeans(precip_data[,-1], na.rm = TRUE))
+# merging worldclim dataframe
+worldclim <- merge(temp_data2, precip_data2, by="ID")
+# selecting needed columns
+worldclim <- worldclim %>%
+  dplyr::select(ID,Mean_annual_temp,Mean_annual_precip)
+# merge with lat/long data
+worldclim_coord <- bind_cols(sample_cols2, worldclim)
+# re-merge with data
+worldclim_coord <- worldclim_coord %>%
+  dplyr::select(-ID)
+sample_climate_data <- left_join(sample_elev, worldclim_coord, by=c("Longitude","Latitude"))
 # old method using raster package
 # 1970-2000
 # https://gis.stackexchange.com/questions/227585/using-r-to-extract-data-from-worldclim
-r <- getData("worldclim",var="bio",res=10)
-r <- r[[c(1,12)]]
-names(r) <- c("Temp","Prec")
-points <- SpatialPoints(sample_cols3, proj4string = r@crs)
-values <- extract(r,points)
-df <- cbind.data.frame(coordinates(points),values)
-plot(r[[1]])
-plot(points,add=T,pch=3,
-     xlab="Longitude",
-     ylab="Latitude")
-# fixing scale - WorldClim data has a scaling of 10
-df <- df %>%
-  mutate(Mean_annual_temp = Temp*0.1) %>%
-  mutate(Mean_annual_precip = Prec*0.1)
+#r <- getData("worldclim",var="bio",res=10)
+#r <- r[[c(1,12)]]
+#names(r) <- c("Temp","Prec")
+#points <- SpatialPoints(sample_cols3, proj4string = r@crs)
+#values <- extract(r,points)
+#df <- cbind.data.frame(coordinates(points),values)
+#plot(r[[1]])
+#plot(points,add=T,pch=3,
+#     xlab="Longitude",
+#     ylab="Latitude")
+## fixing scale - WorldClim data has a scaling of 10
+#df <- df %>%
+#  mutate(Mean_annual_temp = Temp*0.1) %>%
+#  mutate(Mean_annual_precip = Prec*0.1)
 # re-merge with data
-df <- df %>%
-  rename(Longitude = x) %>%
-  rename(Latitude = y)
-df = subset(df, select = -c(Temp,Prec))
-sample_climate_data <- left_join(sample_elev, df, by=c("Longitude","Latitude"))
+#df <- df %>%
+#  rename(Longitude = x) %>%
+#  rename(Latitude = y)
+#df = subset(df, select = -c(Temp,Prec))
+#sample_climate_data <- left_join(sample_elev, df, by=c("Longitude","Latitude"))
+## saving just the climate data to google drive 
+#write.csv(df, file.path(MA_dir,"L2/worldclim_data_L2.csv"), row.names=F)
 
 
 ### calculating absolute latitude
@@ -460,9 +467,14 @@ sample_climate_data <- sample_climate_data %>%
   mutate(Abs_Latitude = abs(Latitude))
 
 
+### keep max year per study (to remove pseudoreplication)
+sample_latest_year <- sample_climate_data %>%
+  group_by(Pub_number, File_name, Study_year_start, Var_type, Func_group, Genus, Species, Amount_warmed_C, Latitude, Longitude, Site, Tissue_Type, Lichen_Moss_Type) %>%
+  filter(Years_warmed == max(Years_warmed))
+
 
 ### upload csv file to L2 folder
-write.csv(sample_climate_data, file.path(MA_dir,"L2/otc_data_cleaned_L2.csv"), row.names=F)
+write.csv(sample_latest_year, file.path(MA_dir,"L2/otc_data_cleaned_L2.csv"), row.names=F)
 
 
 
@@ -471,12 +483,19 @@ write.csv(sample_climate_data, file.path(MA_dir,"L2/otc_data_cleaned_L2.csv"), r
 esmd <- escalc(measure="SMD", m1i=Warmed_Mean, m2i=Ambient_Mean, # SMD = Hedge's g
                sd1i=Warmed_SD, sd2i=Ambient_SD,
                n1i=Warmed_N, n2i=Ambient_N,
+               data=sample_latest_year)
+esmd2 <- escalc(measure="SMD", m1i=Warmed_Mean, m2i=Ambient_Mean, # SMD = Hedge's g
+               sd1i=Warmed_SD, sd2i=Ambient_SD,
+               n1i=Warmed_N, n2i=Ambient_N,
                data=sample_climate_data)
 
 # remove rows with incomplete data
 esmd_clean <- esmd %>%
   filter(!is.na(vi))
+esmd_clean2 <- esmd2 %>%
+  filter(!is.na(vi))
 
 # uploading the effect size data
-write.csv(esmd_clean, file.path(MA_dir,"L2/otc_effect_sizes_L2.csv"), row.names=F)
+write.csv(esmd_clean, file.path(MA_dir,"L2/otc_effect_sizes_L2.csv"), row.names=F) # main data
+write.csv(esmd_clean2, file.path(MA_dir,"L2/otc_data_cleaned_allyears_L2.csv"), row.names=F) # data with all years
 

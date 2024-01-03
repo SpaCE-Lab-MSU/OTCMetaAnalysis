@@ -19,8 +19,8 @@ library(multcomp)
 MA_dir<-Sys.getenv("MADIR")
 
 # read in data
-esmd_clean <- read.csv(file.path(MA_dir,"L2/otc_effect_sizes_L2.csv"))
-
+esmd_clean <- read.csv(file.path(MA_dir,"L2/otc_effect_sizes_L2.csv")) # main data
+esmd_clean_allyears <- read.csv(file.path(MA_dir,"L2/otc_data_cleaned_allyears_L2.csv")) # data for all years
 
 ### thoughts
 # how to do lat difference analyses?
@@ -52,13 +52,20 @@ esmd_clean <- esmd_clean %>%
              Var_type_broad == "Phen_leaf_lifespan" |
              Var_type_broad == "Phen_preflwr_length" |
              Var_type == "LMA"))
+esmd_clean_allyears <- esmd_clean_allyears %>%
+  filter(!(Var_type_broad == "Biomass_total" |
+             Var_type_broad == "Flower_weight" |
+             Var_type_broad == "Phen_leaf_lifespan" |
+             Var_type_broad == "Phen_preflwr_length" |
+             Var_type == "LMA"))
 # fixing species names for measurements that don't have a species
 esmd_clean$Genus_Species[esmd_clean$Genus_Species == "_"] <- ""
+esmd_clean_allyears$Genus_Species[esmd_clean_allyears$Genus_Species == "_"] <- ""
 
 
 ### all variables
 ## note: using model below with species fixed
-#res.rma.all <- rma.mv(yi, vi, mods=~Var_type_broad-1, random=list(~1|Pub_number/Genus_Species),data=esmd_clean)
+#res.rma.all <- rma.mv(yi, vi, mods=~Var_type_broad-1, random=list(~1|Pub_number/Site/Genus_Species),data=esmd_clean)
 #res.rma.all
 ## all comparisons
 ## Values of P=1.0 indicate that there is no evidence of a difference between variables
@@ -67,13 +74,26 @@ esmd_clean$Genus_Species[esmd_clean$Genus_Species == "_"] <- ""
 
 ## all variables - fixing species random effect
 # if species is blank, then input func type, if not keep species listed
+# main data
 esmd_clean2 <- esmd_clean
 esmd_clean2$Genus_Species <- ifelse(esmd_clean2$Genus_Species == "",
                                     esmd_clean2$Func_group,
                                     esmd_clean2$Genus_Species)
+esmd_clean2$Pub_number <- as.factor(esmd_clean2$Pub_number) # making pub number a factor
+# data for all years
+esmd_clean_allyears2 <- esmd_clean_allyears
+esmd_clean_allyears2$Genus_Species <- ifelse(esmd_clean_allyears2$Genus_Species == "",
+                                             esmd_clean_allyears2$Func_group,
+                                             esmd_clean_allyears$Genus_Species)
+esmd_clean_allyears2$Pub_number <- as.factor(esmd_clean_allyears2$Pub_number) # making pub number a factor
 
+# main model
 res.rma.all2 <- rma.mv(yi, vi, mods=~Var_type_broad-1, random=list(~1|Pub_number/Site/Genus_Species),data=esmd_clean2)
 res.rma.all2 ## using this model, results are the same as the first model but its more accurate
+# model for all years
+res.rma.all.allyears2 <- rma.mv(yi, vi, mods=~Var_type_broad-1, random=list(~1|Pub_number/Site/Genus_Species),data=esmd_clean_allyears2)
+res.rma.all.allyears2
+
 
 
 ## aboveground biomass
@@ -92,21 +112,23 @@ esmd_ab_biomass2 <- esmd_ab_biomass %>%
 esmd_ab_biomass3 <- esmd_ab_biomass %>%
   filter(!(Native_Status == ""))
 # models for aboveground biomass
-# testing if amount warmed has an effect
 res.rma.ab.biomass <- rma.mv(yi, vi, mods=~Amount_warmed_C,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_ab_biomass)
-res.rma.ab.biomass # no effect - not including in other models
+res.rma.ab.biomass
 res.rma.ab.biomass2 <- rma.mv(yi, vi, mods=~Func_group_broad-1, random=list(~1|Pub_number/Site/Genus_Species),data=esmd_ab_biomass2)
-res.rma.ab.biomass2 # graminoid, total
+res.rma.ab.biomass2
+summary(glht(res.rma.ab.biomass2, linfct=cbind(contrMat(rep(1,8), type="Tukey"))), test=adjusted("holm"))
 res.rma.ab.biomass3 <- rma.mv(yi, vi, mods=~Abs_Latitude,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_ab_biomass)
-res.rma.ab.biomass3 # no effect
+res.rma.ab.biomass3
 res.rma.ab.biomass4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_ab_biomass_latdiff)
-res.rma.ab.biomass4 # no effect
+res.rma.ab.biomass4
 res.rma.ab.biomass5 <- rma.mv(yi, vi, mods=~Years_warmed,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_ab_biomass)
-res.rma.ab.biomass5 # no effect
+res.rma.ab.biomass5
 res.rma.ab.biomass6 <- rma.mv(yi, vi, mods=~Year_round_warm-1,random=list(~1|Pub_number/Site/Genus_Species), data=esmd_ab_biomass)
-res.rma.ab.biomass6 # yes: 0.0013
+res.rma.ab.biomass6
+summary(glht(res.rma.ab.biomass6, linfct=cbind(contrMat(rep(1,2), type="Tukey"))), test=adjusted("holm"))
 res.rma.ab.biomass7 <- rma.mv(yi, vi, mods=~Native_Status-1, random=list(~1|Pub_number/Site/Genus_Species),data=esmd_ab_biomass3)
-res.rma.ab.biomass7 # native: 0.0827
+res.rma.ab.biomass7
+summary(glht(res.rma.ab.biomass7, linfct=cbind(contrMat(rep(1,2), type="Tukey"))), test=adjusted("holm"))
 res.rma.ab.biomass8 <- rma.mv(yi, vi, mods=~Elevation_m,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_ab_biomass)
 res.rma.ab.biomass8
 res.rma.ab.biomass9 <- rma.mv(yi, vi, mods=~Mean_annual_temp,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_ab_biomass)
@@ -129,26 +151,25 @@ esmd_bl_biomass2 <- esmd_bl_biomass %>%
 esmd_bl_biomass3 <- esmd_bl_biomass %>%
   filter(!(Native_Status == ""))
 # models for belowground biomass
-# testing if amount warmed has an effect
 res.rma.bl.biomass <- rma.mv(yi, vi, mods=~Amount_warmed_C,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_bl_biomass)
-res.rma.bl.biomass # no effect - not including in other models
-res.rma.bl.biomass2 <- rma.mv(yi, vi, mods=~Func_group_broad-1, random=list(~1|Pub_number/Genus_Species),data=esmd_bl_biomass2)
-res.rma.bl.biomass2 # no effect
+res.rma.bl.biomass
+res.rma.bl.biomass2 <- rma.mv(yi, vi, mods=~Func_group_broad-1, random=list(~1|Pub_number/Site/Genus_Species),data=esmd_bl_biomass2)
+res.rma.bl.biomass2
 res.rma.bl.biomass3 <- rma.mv(yi, vi, mods=~Abs_Latitude,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_bl_biomass)
-res.rma.bl.biomass3 # no effect
-res.rma.bl.biomass4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Genus_Species),data=esmd_bl_biomass_latdiff)
-res.rma.bl.biomass4 # no effect
-res.rma.bl.biomass5 <- rma.mv(yi, vi, mods=~Years_warmed,random=list(~1|Pub_number/Genus_Species),data=esmd_bl_biomass)
-res.rma.bl.biomass5 # no effect
+res.rma.bl.biomass3
+res.rma.bl.biomass4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_bl_biomass_latdiff)
+res.rma.bl.biomass4
+res.rma.bl.biomass5 <- rma.mv(yi, vi, mods=~Years_warmed,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_bl_biomass)
+res.rma.bl.biomass5
 res.rma.bl.biomass6 <- rma.mv(yi, vi, mods=~Year_round_warm-1,random=list(~1|Pub_number/Site/Genus_Species), data=esmd_bl_biomass)
-res.rma.bl.biomass6 # yes: 0.01
-res.rma.bl.biomass7 <- rma.mv(yi, vi, mods=~Native_Status-1, random=list(~1|Pub_number/Genus_Species),data=esmd_bl_biomass3)
-res.rma.bl.biomass7 # non-native: 0.0016
-res.rma.bl.biomass8 <- rma.mv(yi, vi, mods=~Elevation_m,random=list(~1|Pub_number/Genus_Species),data=esmd_bl_biomass)
+res.rma.bl.biomass6
+res.rma.bl.biomass7 <- rma.mv(yi, vi, mods=~Native_Status-1, random=list(~1|Pub_number/Site/Genus_Species),data=esmd_bl_biomass3)
+res.rma.bl.biomass7
+res.rma.bl.biomass8 <- rma.mv(yi, vi, mods=~Elevation_m,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_bl_biomass)
 res.rma.bl.biomass8
-res.rma.bl.biomass9 <- rma.mv(yi, vi, mods=~Mean_annual_temp,random=list(~1|Pub_number/Genus_Species),data=esmd_bl_biomass)
+res.rma.bl.biomass9 <- rma.mv(yi, vi, mods=~Mean_annual_temp,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_bl_biomass)
 res.rma.bl.biomass9
-res.rma.bl.biomass10 <- rma.mv(yi, vi, mods=~Mean_annual_precip,random=list(~1|Pub_number/Genus_Species),data=esmd_bl_biomass)
+res.rma.bl.biomass10 <- rma.mv(yi, vi, mods=~Mean_annual_precip,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_bl_biomass)
 res.rma.bl.biomass10
 
 
@@ -166,26 +187,25 @@ esmd_flwr_num2 <- esmd_flwr_num %>%
 esmd_flwr_num3 <- esmd_flwr_num %>%
   filter(!(Native_Status == ""))
 # models for flower number
-# testing if amount warmed has an effect
 res.rma.flwr.num <- rma.mv(yi, vi, mods=~Amount_warmed_C,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_flwr_num)
-res.rma.flwr.num # no effect - not including in other models
-res.rma.flwr.num2 <- rma.mv(yi, vi, mods=~Func_group_broad-1, random=list(~1|Pub_number/Genus_Species),data=esmd_flwr_num2)
-res.rma.flwr.num2 # no effect
+res.rma.flwr.num
+res.rma.flwr.num2 <- rma.mv(yi, vi, mods=~Func_group_broad-1, random=list(~1|Pub_number/Site/Genus_Species),data=esmd_flwr_num2)
+res.rma.flwr.num2
 res.rma.flwr.num3 <- rma.mv(yi, vi, mods=~Abs_Latitude,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_flwr_num)
-res.rma.flwr.num3 # latitude: 0.0924
-res.rma.flwr.num4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Genus_Species),data=esmd_flwr_num_latdiff)
-res.rma.flwr.num4 # no effect
-res.rma.flwr.num5 <- rma.mv(yi, vi, mods=~Years_warmed,random=list(~1|Pub_number/Genus_Species),data=esmd_flwr_num)
-res.rma.flwr.num5 # no effect
+res.rma.flwr.num3
+res.rma.flwr.num4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_flwr_num_latdiff)
+res.rma.flwr.num4
+res.rma.flwr.num5 <- rma.mv(yi, vi, mods=~Years_warmed,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_flwr_num)
+res.rma.flwr.num5
 res.rma.flwr.num6 <- rma.mv(yi, vi, mods=~Year_round_warm-1,random=list(~1|Pub_number/Site/Genus_Species), data=esmd_flwr_num)
-res.rma.flwr.num6 # no effect
-res.rma.flwr.num7 <- rma.mv(yi, vi, mods=~Native_Status-1, random=list(~1|Pub_number/Genus_Species),data=esmd_flwr_num3)
-res.rma.flwr.num7 # no effect
-res.rma.flwr.num8 <- rma.mv(yi, vi, mods=~Elevation_m, random=list(~1|Pub_number/Genus_Species),data=esmd_flwr_num)
+res.rma.flwr.num6
+res.rma.flwr.num7 <- rma.mv(yi, vi, mods=~Native_Status-1, random=list(~1|Pub_number/Site/Genus_Species),data=esmd_flwr_num3)
+res.rma.flwr.num7
+res.rma.flwr.num8 <- rma.mv(yi, vi, mods=~Elevation_m, random=list(~1|Pub_number/Site/Genus_Species),data=esmd_flwr_num)
 res.rma.flwr.num8
-res.rma.flwr.num9 <- rma.mv(yi, vi, mods=~Mean_annual_temp, random=list(~1|Pub_number/Genus_Species),data=esmd_flwr_num)
+res.rma.flwr.num9 <- rma.mv(yi, vi, mods=~Mean_annual_temp, random=list(~1|Pub_number/Site/Genus_Species),data=esmd_flwr_num)
 res.rma.flwr.num9
-res.rma.flwr.num10 <- rma.mv(yi, vi, mods=~Mean_annual_precip, random=list(~1|Pub_number/Genus_Species),data=esmd_flwr_num)
+res.rma.flwr.num10 <- rma.mv(yi, vi, mods=~Mean_annual_precip, random=list(~1|Pub_number/Site/Genus_Species),data=esmd_flwr_num)
 res.rma.flwr.num10
 
 
@@ -203,26 +223,25 @@ esmd_fruit_num2 <- esmd_fruit_num %>%
 esmd_fruit_num3 <- esmd_fruit_num %>%
   filter(!(Native_Status == ""))
 # models for fruit number
-# testing if amount warmed has an effect
 res.rma.fruit.num <- rma.mv(yi, vi, mods=~Amount_warmed_C,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_fruit_num)
-res.rma.fruit.num # no effect - not including in other models
-res.rma.fruit.num2 <- rma.mv(yi, vi, mods=~Func_group_broad-1, random=list(~1|Pub_number/Genus_Species),data=esmd_fruit_num2)
-res.rma.fruit.num2 # graminoid: 0.01
+res.rma.fruit.num
+res.rma.fruit.num2 <- rma.mv(yi, vi, mods=~Func_group_broad-1, random=list(~1|Pub_number/Site/Genus_Species),data=esmd_fruit_num2)
+res.rma.fruit.num2
 res.rma.fruit.num3 <- rma.mv(yi, vi, mods=~Abs_Latitude,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_fruit_num)
-res.rma.fruit.num3 # latitude: 0.0467
-res.rma.fruit.num4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Genus_Species),data=esmd_fruit_num_latdiff)
-res.rma.fruit.num4 # no effect
-res.rma.fruit.num5 <- rma.mv(yi, vi, mods=~Years_warmed,random=list(~1|Pub_number/Genus_Species),data=esmd_fruit_num)
-res.rma.fruit.num5 # years warmed: 0.0125
+res.rma.fruit.num3
+res.rma.fruit.num4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_fruit_num_latdiff)
+res.rma.fruit.num4
+res.rma.fruit.num5 <- rma.mv(yi, vi, mods=~Years_warmed,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_fruit_num)
+res.rma.fruit.num5
 res.rma.fruit.num6 <- rma.mv(yi, vi, mods=~Year_round_warm-1,random=list(~1|Pub_number/Site/Genus_Species), data=esmd_fruit_num)
-res.rma.fruit.num6 # no effect
-res.rma.fruit.num7 <- rma.mv(yi, vi, mods=~Native_Status-1, random=list(~1|Pub_number/Genus_Species),data=esmd_fruit_num3)
-res.rma.fruit.num7 # native: 0.0545, non-native: 0.0010
-res.rma.fruit.num8 <- rma.mv(yi, vi, mods=~Elevation_m,random=list(~1|Pub_number/Genus_Species), data=esmd_fruit_num)
+res.rma.fruit.num6
+res.rma.fruit.num7 <- rma.mv(yi, vi, mods=~Native_Status-1, random=list(~1|Pub_number/Site/Genus_Species),data=esmd_fruit_num3)
+res.rma.fruit.num7
+res.rma.fruit.num8 <- rma.mv(yi, vi, mods=~Elevation_m,random=list(~1|Pub_number/Site/Genus_Species), data=esmd_fruit_num)
 res.rma.fruit.num8
-res.rma.fruit.num9 <- rma.mv(yi, vi, mods=~Mean_annual_temp,random=list(~1|Pub_number/Genus_Species), data=esmd_fruit_num)
+res.rma.fruit.num9 <- rma.mv(yi, vi, mods=~Mean_annual_temp,random=list(~1|Pub_number/Site/Genus_Species), data=esmd_fruit_num)
 res.rma.fruit.num9
-res.rma.fruit.num10 <- rma.mv(yi, vi, mods=~Mean_annual_precip,random=list(~1|Pub_number/Genus_Species), data=esmd_fruit_num)
+res.rma.fruit.num10 <- rma.mv(yi, vi, mods=~Mean_annual_precip,random=list(~1|Pub_number/Site/Genus_Species), data=esmd_fruit_num)
 res.rma.fruit.num10
 
 
@@ -240,26 +259,25 @@ esmd_fruit_weight2 <- esmd_fruit_weight %>%
 esmd_fruit_weight3 <- esmd_fruit_weight %>%
   filter(!(Native_Status == ""))
 # models for fruit weight
-# testing if amount warmed has an effect
 res.rma.fruit.weight <- rma.mv(yi, vi, mods=~Amount_warmed_C,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_fruit_weight)
-res.rma.fruit.weight # no effect - not including in other models
-res.rma.fruit.weight2 <- rma.mv(yi, vi, mods=~Func_group_broad-1, random=list(~1|Pub_number/Genus_Species),data=esmd_fruit_weight2)
-res.rma.fruit.weight2 # forb: 0.0546, graminoid: 0.0035
+res.rma.fruit.weight
+res.rma.fruit.weight2 <- rma.mv(yi, vi, mods=~Func_group_broad-1, random=list(~1|Pub_number/Site/Genus_Species),data=esmd_fruit_weight2)
+res.rma.fruit.weight2
 res.rma.fruit.weight3 <- rma.mv(yi, vi, mods=~Abs_Latitude,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_fruit_weight)
-res.rma.fruit.weight3 # latitude: 0.0184
-res.rma.fruit.weight4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Genus_Species),data=esmd_fruit_weight_latdiff)
-res.rma.fruit.weight4 # no effect
-res.rma.fruit.weight5 <- rma.mv(yi, vi, mods=~Years_warmed,random=list(~1|Pub_number/Genus_Species),data=esmd_fruit_weight)
-res.rma.fruit.weight5 # no effect
+res.rma.fruit.weight3
+res.rma.fruit.weight4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_fruit_weight_latdiff)
+res.rma.fruit.weight4
+res.rma.fruit.weight5 <- rma.mv(yi, vi, mods=~Years_warmed,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_fruit_weight)
+res.rma.fruit.weight5
 res.rma.fruit.weight6 <- rma.mv(yi, vi, mods=~Year_round_warm-1,random=list(~1|Pub_number/Site/Genus_Species), data=esmd_fruit_weight)
-res.rma.fruit.weight6 # yes: 0.0182
-res.rma.fruit.weight7 <- rma.mv(yi, vi, mods=~Native_Status-1, random=list(~1|Pub_number/Genus_Species),data=esmd_fruit_weight3)
-res.rma.fruit.weight7 # native: <0.0001, non-native: 0.0592
-res.rma.fruit.weight8 <- rma.mv(yi, vi, mods=~Elevation_m,random=list(~1|Pub_number/Genus_Species), data=esmd_fruit_weight)
+res.rma.fruit.weight6
+res.rma.fruit.weight7 <- rma.mv(yi, vi, mods=~Native_Status-1, random=list(~1|Pub_number/Site/Genus_Species),data=esmd_fruit_weight3)
+res.rma.fruit.weight7
+res.rma.fruit.weight8 <- rma.mv(yi, vi, mods=~Elevation_m,random=list(~1|Pub_number/Site/Genus_Species), data=esmd_fruit_weight)
 res.rma.fruit.weight8
-res.rma.fruit.weight9 <- rma.mv(yi, vi, mods=~Mean_annual_temp,random=list(~1|Pub_number/Genus_Species), data=esmd_fruit_weight)
+res.rma.fruit.weight9 <- rma.mv(yi, vi, mods=~Mean_annual_temp,random=list(~1|Pub_number/Site/Genus_Species), data=esmd_fruit_weight)
 res.rma.fruit.weight9
-res.rma.fruit.weight10 <- rma.mv(yi, vi, mods=~Mean_annual_precip,random=list(~1|Pub_number/Genus_Species), data=esmd_fruit_weight)
+res.rma.fruit.weight10 <- rma.mv(yi, vi, mods=~Mean_annual_precip,random=list(~1|Pub_number/Site/Genus_Species), data=esmd_fruit_weight)
 res.rma.fruit.weight10
 
 
@@ -277,26 +295,25 @@ esmd_growth2 <- esmd_growth %>%
 esmd_growth3 <- esmd_growth %>%
   filter(!(Native_Status == ""))
 # models for growth
-# testing if amount warmed has an effect
 res.rma.growth <- rma.mv(yi, vi, mods=~Amount_warmed_C,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_growth)
-res.rma.growth # no effect - not including in other models
-res.rma.growth2 <- rma.mv(yi, vi, mods=~Func_group_broad-1, random=list(~1|Pub_number/Genus_Species),data=esmd_growth2)
-res.rma.growth2 # forb: <0.0001, graminoid: 0.002, Shrub: 0.0017, Total: 0.0129
+res.rma.growth
+res.rma.growth2 <- rma.mv(yi, vi, mods=~Func_group_broad-1, random=list(~1|Pub_number/Site/Genus_Species),data=esmd_growth2)
+res.rma.growth2
 res.rma.growth3 <- rma.mv(yi, vi, mods=~Abs_Latitude,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_growth)
-res.rma.growth3 # no effect
-res.rma.growth4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Genus_Species),data=esmd_growth_latdiff)
-res.rma.growth4 # no effect
-res.rma.growth5 <- rma.mv(yi, vi, mods=~Years_warmed,random=list(~1|Pub_number/Genus_Species),data=esmd_growth)
-res.rma.growth5 # no effect
+res.rma.growth3
+res.rma.growth4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_growth_latdiff)
+res.rma.growth4
+res.rma.growth5 <- rma.mv(yi, vi, mods=~Years_warmed,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_growth)
+res.rma.growth5
 res.rma.growth6 <- rma.mv(yi, vi, mods=~Year_round_warm-1,random=list(~1|Pub_number/Site/Genus_Species), data=esmd_growth)
-res.rma.growth6 # yes: 0.0008, no: <0.0001
-res.rma.growth7 <- rma.mv(yi, vi, mods=~Native_Status-1, random=list(~1|Pub_number/Genus_Species),data=esmd_growth3)
-res.rma.growth7 # native: <0.0001, non-native: 0.0098
-res.rma.growth8 <- rma.mv(yi, vi, mods=~Elevation_m,random=list(~1|Pub_number/Genus_Species), data=esmd_growth)
+res.rma.growth6
+res.rma.growth7 <- rma.mv(yi, vi, mods=~Native_Status-1, random=list(~1|Pub_number/Site/Genus_Species),data=esmd_growth3)
+res.rma.growth7
+res.rma.growth8 <- rma.mv(yi, vi, mods=~Elevation_m,random=list(~1|Pub_number/Site/Genus_Species), data=esmd_growth)
 res.rma.growth8 
-res.rma.growth9 <- rma.mv(yi, vi, mods=~Mean_annual_temp,random=list(~1|Pub_number/Genus_Species), data=esmd_growth)
+res.rma.growth9 <- rma.mv(yi, vi, mods=~Mean_annual_temp,random=list(~1|Pub_number/Site/Genus_Species), data=esmd_growth)
 res.rma.growth9 
-res.rma.growth10 <- rma.mv(yi, vi, mods=~Mean_annual_precip,random=list(~1|Pub_number/Genus_Species), data=esmd_growth)
+res.rma.growth10 <- rma.mv(yi, vi, mods=~Mean_annual_precip,random=list(~1|Pub_number/Site/Genus_Species), data=esmd_growth)
 res.rma.growth10 
 
 
@@ -314,26 +331,25 @@ esmd_leaf_growth2 <- esmd_leaf_growth %>%
 esmd_leaf_growth3 <- esmd_leaf_growth %>%
   filter(!(Native_Status == ""))
 # models for leaf growth
-# testing if amount warmed has an effect
 res.rma.leaf.growth <- rma.mv(yi, vi, mods=~Amount_warmed_C,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_leaf_growth)
-res.rma.leaf.growth # yes effect - including as random effect in other models (havent done this yet)
-res.rma.leaf.growth2 <- rma.mv(yi, vi, mods=~Func_group_broad-1, random=list(~1|Pub_number/Genus_Species),data=esmd_leaf_growth2)
-res.rma.leaf.growth2 # graminoid, shrub
+res.rma.leaf.growth
+res.rma.leaf.growth2 <- rma.mv(yi, vi, mods=~Func_group_broad-1, random=list(~1|Pub_number/Site/Genus_Species),data=esmd_leaf_growth2)
+res.rma.leaf.growth2
 res.rma.leaf.growth3 <- rma.mv(yi, vi, mods=~Abs_Latitude,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_leaf_growth)
-res.rma.leaf.growth3 # no effect
-res.rma.leaf.growth4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Genus_Species),data=esmd_leaf_growth_latdiff)
-res.rma.leaf.growth4 # no effect
-res.rma.leaf.growth5 <- rma.mv(yi, vi, mods=~Years_warmed,random=list(~1|Pub_number/Genus_Species),data=esmd_leaf_growth)
-res.rma.leaf.growth5 # no effect
+res.rma.leaf.growth3
+res.rma.leaf.growth4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_leaf_growth_latdiff)
+res.rma.leaf.growth4
+res.rma.leaf.growth5 <- rma.mv(yi, vi, mods=~Years_warmed,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_leaf_growth)
+res.rma.leaf.growth5
 res.rma.leaf.growth6 <- rma.mv(yi, vi, mods=~Year_round_warm-1,random=list(~1|Pub_number/Site/Genus_Species), data=esmd_leaf_growth)
-res.rma.leaf.growth6 # yes: 0.0017
-res.rma.leaf.growth7 <- rma.mv(yi, vi, mods=~Native_Status-1, random=list(~1|Pub_number/Genus_Species),data=esmd_leaf_growth3)
-res.rma.leaf.growth7 # native: 0.007, non-native: 0.0156
-res.rma.leaf.growth8 <- rma.mv(yi, vi, mods=~Elevation_m,random=list(~1|Pub_number/Genus_Species), data=esmd_leaf_growth)
+res.rma.leaf.growth6
+res.rma.leaf.growth7 <- rma.mv(yi, vi, mods=~Native_Status-1, random=list(~1|Pub_number/Site/Genus_Species),data=esmd_leaf_growth3)
+res.rma.leaf.growth7
+res.rma.leaf.growth8 <- rma.mv(yi, vi, mods=~Elevation_m,random=list(~1|Pub_number/Site/Genus_Species), data=esmd_leaf_growth)
 res.rma.leaf.growth8 
-res.rma.leaf.growth9 <- rma.mv(yi, vi, mods=~Mean_annual_temp,random=list(~1|Pub_number/Genus_Species), data=esmd_leaf_growth)
+res.rma.leaf.growth9 <- rma.mv(yi, vi, mods=~Mean_annual_temp,random=list(~1|Pub_number/Site/Genus_Species), data=esmd_leaf_growth)
 res.rma.leaf.growth9 
-res.rma.leaf.growth10 <- rma.mv(yi, vi, mods=~Mean_annual_precip,random=list(~1|Pub_number/Genus_Species), data=esmd_leaf_growth)
+res.rma.leaf.growth10 <- rma.mv(yi, vi, mods=~Mean_annual_precip,random=list(~1|Pub_number/Site/Genus_Species), data=esmd_leaf_growth)
 res.rma.leaf.growth10 
 
 
@@ -351,26 +367,25 @@ esmd_cover2 <- esmd_cover %>%
 esmd_cover3 <- esmd_cover %>%
   filter(!(Native_Status == ""))
 # models for perc cover
-# testing if amount warmed has an effect
 res.rma.cover <- rma.mv(yi, vi, mods=~Amount_warmed_C,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_cover)
-res.rma.cover # no effect - not including in other models
-res.rma.cover2 <- rma.mv(yi, vi, mods=~Func_group_broad-1, random=list(~1|Pub_number/Genus_Species),data=esmd_cover2)
-res.rma.cover2 # bryophyte: <0.0001, lichen: 0.0006, shrub: 0.0001
+res.rma.cover
+res.rma.cover2 <- rma.mv(yi, vi, mods=~Func_group_broad-1, random=list(~1|Pub_number/Site/Genus_Species),data=esmd_cover2)
+res.rma.cover2
 res.rma.cover3 <- rma.mv(yi, vi, mods=~Abs_Latitude,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_cover)
-res.rma.cover3 # no effect
-res.rma.cover4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Genus_Species),data=esmd_cover_latdiff)
-res.rma.cover4 # no effect
-res.rma.cover5 <- rma.mv(yi, vi, mods=~Years_warmed,random=list(~1|Pub_number/Genus_Species),data=esmd_cover)
-res.rma.cover5 # no effect
+res.rma.cover3
+res.rma.cover4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_cover_latdiff)
+res.rma.cover4
+res.rma.cover5 <- rma.mv(yi, vi, mods=~Years_warmed,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_cover)
+res.rma.cover5
 res.rma.cover6 <- rma.mv(yi, vi, mods=~Year_round_warm-1,random=list(~1|Pub_number/Site/Genus_Species), data=esmd_cover)
-res.rma.cover6 # no effect
-res.rma.cover7 <- rma.mv(yi, vi, mods=~Native_Status-1, random=list(~1|Pub_number/Genus_Species),data=esmd_cover3)
-res.rma.cover7 # no effect
-res.rma.cover8 <- rma.mv(yi, vi, mods=~Elevation_m,random=list(~1|Pub_number/Genus_Species), data=esmd_cover)
+res.rma.cover6
+res.rma.cover7 <- rma.mv(yi, vi, mods=~Native_Status-1, random=list(~1|Pub_number/Site/Genus_Species),data=esmd_cover3)
+res.rma.cover7
+res.rma.cover8 <- rma.mv(yi, vi, mods=~Elevation_m,random=list(~1|Pub_number/Site/Genus_Species), data=esmd_cover)
 res.rma.cover8 
-res.rma.cover9 <- rma.mv(yi, vi, mods=~Mean_annual_temp,random=list(~1|Pub_number/Genus_Species), data=esmd_cover)
+res.rma.cover9 <- rma.mv(yi, vi, mods=~Mean_annual_temp,random=list(~1|Pub_number/Site/Genus_Species), data=esmd_cover)
 res.rma.cover9 
-res.rma.cover10 <- rma.mv(yi, vi, mods=~Mean_annual_precip,random=list(~1|Pub_number/Genus_Species), data=esmd_cover)
+res.rma.cover10 <- rma.mv(yi, vi, mods=~Mean_annual_precip,random=list(~1|Pub_number/Site/Genus_Species), data=esmd_cover)
 res.rma.cover10 
 
 
@@ -388,26 +403,25 @@ esmd_ab_n2 <- esmd_ab_n %>%
 esmd_ab_n3 <- esmd_ab_n %>%
   filter(!(Native_Status == ""))
 # models for aboveground N
-# testing if amount warmed has an effect
 res.rma.ab.n <- rma.mv(yi, vi, mods=~Amount_warmed_C,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_ab_n)
-res.rma.ab.n # no effect - not including in other models
-res.rma.ab.n2 <- rma.mv(yi, vi, mods=~Func_group_broad-1, random=list(~1|Pub_number/Genus_Species),data=esmd_ab_n2)
-res.rma.ab.n2 # graminoid, shrub, tree, forb
+res.rma.ab.n
+res.rma.ab.n2 <- rma.mv(yi, vi, mods=~Func_group_broad-1, random=list(~1|Pub_number/Site/Genus_Species),data=esmd_ab_n2)
+res.rma.ab.n2
 res.rma.ab.n3 <- rma.mv(yi, vi, mods=~Abs_Latitude,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_ab_n)
-res.rma.ab.n3 # no effect
-res.rma.ab.n4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Genus_Species),data=esmd_ab_n_latdiff)
-res.rma.ab.n4 # no effect
-res.rma.ab.n5 <- rma.mv(yi, vi, mods=~Years_warmed,random=list(~1|Pub_number/Genus_Species),data=esmd_ab_n)
-res.rma.ab.n5 # years warmed: 0.067
+res.rma.ab.n3
+res.rma.ab.n4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_ab_n_latdiff)
+res.rma.ab.n4
+res.rma.ab.n5 <- rma.mv(yi, vi, mods=~Years_warmed,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_ab_n)
+res.rma.ab.n5
 res.rma.ab.n6 <- rma.mv(yi, vi, mods=~Year_round_warm-1,random=list(~1|Pub_number/Site/Genus_Species), data=esmd_ab_n)
-res.rma.ab.n6 # yes: <0.0001
-res.rma.ab.n7 <- rma.mv(yi, vi, mods=~Native_Status-1, random=list(~1|Pub_number/Genus_Species),data=esmd_ab_n3)
-res.rma.ab.n7 # native: <0.0001
-res.rma.ab.n8 <- rma.mv(yi, vi, mods=~Elevation_m,random=list(~1|Pub_number/Genus_Species), data=esmd_ab_n)
+res.rma.ab.n6
+res.rma.ab.n7 <- rma.mv(yi, vi, mods=~Native_Status-1, random=list(~1|Pub_number/Site/Genus_Species),data=esmd_ab_n3)
+res.rma.ab.n7
+res.rma.ab.n8 <- rma.mv(yi, vi, mods=~Elevation_m,random=list(~1|Pub_number/Site/Genus_Species), data=esmd_ab_n)
 res.rma.ab.n8 
-res.rma.ab.n9 <- rma.mv(yi, vi, mods=~Mean_annual_temp,random=list(~1|Pub_number/Genus_Species), data=esmd_ab_n)
+res.rma.ab.n9 <- rma.mv(yi, vi, mods=~Mean_annual_temp,random=list(~1|Pub_number/Site/Genus_Species), data=esmd_ab_n)
 res.rma.ab.n9 
-res.rma.ab.n10 <- rma.mv(yi, vi, mods=~Mean_annual_precip,random=list(~1|Pub_number/Genus_Species), data=esmd_ab_n)
+res.rma.ab.n10 <- rma.mv(yi, vi, mods=~Mean_annual_precip,random=list(~1|Pub_number/Site/Genus_Species), data=esmd_ab_n)
 res.rma.ab.n10 
 
 
@@ -425,26 +439,25 @@ esmd_bl_n2 <- esmd_bl_n %>%
 esmd_bl_n3 <- esmd_bl_n %>%
   filter(!(Native_Status == ""))
 # models for belowground N
-# testing if amount warmed has an effect
 res.rma.bl.n <- rma.mv(yi, vi, mods=~Amount_warmed_C,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_bl_n)
-res.rma.bl.n # yes effect - including as random effect in other models (not including for now)
-res.rma.bl.n2 <- rma.mv(yi, vi, mods=~Func_group_broad-1, random=list(~1|Pub_number/Genus_Species),data=esmd_bl_n2)
-res.rma.bl.n2 # no effect
+res.rma.bl.n
+res.rma.bl.n2 <- rma.mv(yi, vi, mods=~Func_group_broad-1, random=list(~1|Pub_number/Site/Genus_Species),data=esmd_bl_n2)
+res.rma.bl.n2
 res.rma.bl.n3 <- rma.mv(yi, vi, mods=~Abs_Latitude,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_bl_n)
-res.rma.bl.n3 # latitude: 0.0009
-res.rma.bl.n4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Genus_Species),data=esmd_bl_n_latdiff)
-res.rma.bl.n4 # no effect
-res.rma.bl.n5 <- rma.mv(yi, vi, mods=~Years_warmed,random=list(~1|Pub_number/Genus_Species),data=esmd_bl_n)
-res.rma.bl.n5 # no effect
+res.rma.bl.n3
+res.rma.bl.n4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_bl_n_latdiff)
+res.rma.bl.n4
+res.rma.bl.n5 <- rma.mv(yi, vi, mods=~Years_warmed,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_bl_n)
+res.rma.bl.n5
 res.rma.bl.n6 <- rma.mv(yi, vi, mods=~Year_round_warm-1,random=list(~1|Pub_number/Site/Genus_Species), data=esmd_bl_n)
-res.rma.bl.n6 # no effect
-res.rma.bl.n7 <- rma.mv(yi, vi, mods=~Native_Status-1, random=list(~1|Pub_number/Genus_Species),data=esmd_bl_n3)
+res.rma.bl.n6
+res.rma.bl.n7 <- rma.mv(yi, vi, mods=~Native_Status-1, random=list(~1|Pub_number/Site/Genus_Species),data=esmd_bl_n3)
 res.rma.bl.n7
-res.rma.bl.n8 <- rma.mv(yi, vi, mods=~Elevation_m,random=list(~1|Pub_number/Genus_Species), data=esmd_bl_n)
+res.rma.bl.n8 <- rma.mv(yi, vi, mods=~Elevation_m,random=list(~1|Pub_number/Site/Genus_Species), data=esmd_bl_n)
 res.rma.bl.n8 
-res.rma.bl.n9 <- rma.mv(yi, vi, mods=~Mean_annual_temp,random=list(~1|Pub_number/Genus_Species), data=esmd_bl_n)
+res.rma.bl.n9 <- rma.mv(yi, vi, mods=~Mean_annual_temp,random=list(~1|Pub_number/Site/Genus_Species), data=esmd_bl_n)
 res.rma.bl.n9 
-res.rma.bl.n10 <- rma.mv(yi, vi, mods=~Mean_annual_precip,random=list(~1|Pub_number/Genus_Species), data=esmd_bl_n)
+res.rma.bl.n10 <- rma.mv(yi, vi, mods=~Mean_annual_precip,random=list(~1|Pub_number/Site/Genus_Species), data=esmd_bl_n)
 res.rma.bl.n10 
 
 
@@ -462,26 +475,25 @@ esmd_spring2 <- esmd_spring %>%
 esmd_spring3 <- esmd_spring %>%
   filter(!(Native_Status == ""))
 # models for spring phenphases
-# testing if amount warmed has an effect
 res.rma.spring <- rma.mv(yi, vi, mods=~Amount_warmed_C,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_spring)
-res.rma.spring # no effect - not including in other models
-res.rma.spring2 <- rma.mv(yi, vi, mods=~Func_group_broad-1, random=list(~1|Pub_number/Genus_Species),data=esmd_spring2)
-res.rma.spring2 # forb, graminoid, shrub
+res.rma.spring
+res.rma.spring2 <- rma.mv(yi, vi, mods=~Func_group_broad-1, random=list(~1|Pub_number/Site/Genus_Species),data=esmd_spring2)
+res.rma.spring2
 res.rma.spring3 <- rma.mv(yi, vi, mods=~Abs_Latitude,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_spring)
-res.rma.spring3 # 0.0599
-res.rma.spring4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Genus_Species),data=esmd_spring_latdiff)
-res.rma.spring4 # no effect
-res.rma.spring5 <- rma.mv(yi, vi, mods=~Years_warmed,random=list(~1|Pub_number/Genus_Species),data=esmd_spring)
-res.rma.spring5 # years warmed: 0.0023
+res.rma.spring3
+res.rma.spring4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_spring_latdiff)
+res.rma.spring4
+res.rma.spring5 <- rma.mv(yi, vi, mods=~Years_warmed,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_spring)
+res.rma.spring5
 res.rma.spring6 <- rma.mv(yi, vi, mods=~Year_round_warm-1,random=list(~1|Pub_number/Site/Genus_Species), data=esmd_spring)
-res.rma.spring6 # yes: 0.0212, no: 0.0401
-res.rma.spring7 <- rma.mv(yi, vi, mods=~Native_Status-1, random=list(~1|Pub_number/Genus_Species),data=esmd_spring3)
-res.rma.spring7 # native: 0.0013, non-native:0.0515
-res.rma.spring8 <- rma.mv(yi, vi, mods=~Elevation_m,random=list(~1|Pub_number/Genus_Species), data=esmd_spring)
+res.rma.spring6
+res.rma.spring7 <- rma.mv(yi, vi, mods=~Native_Status-1, random=list(~1|Pub_number/Site/Genus_Species),data=esmd_spring3)
+res.rma.spring7
+res.rma.spring8 <- rma.mv(yi, vi, mods=~Elevation_m,random=list(~1|Pub_number/Site/Genus_Species), data=esmd_spring)
 res.rma.spring8 
-res.rma.spring9 <- rma.mv(yi, vi, mods=~Mean_annual_temp,random=list(~1|Pub_number/Genus_Species), data=esmd_spring)
+res.rma.spring9 <- rma.mv(yi, vi, mods=~Mean_annual_temp,random=list(~1|Pub_number/Site/Genus_Species), data=esmd_spring)
 res.rma.spring9 
-res.rma.spring10 <- rma.mv(yi, vi, mods=~Mean_annual_precip,random=list(~1|Pub_number/Genus_Species), data=esmd_spring)
+res.rma.spring10 <- rma.mv(yi, vi, mods=~Mean_annual_precip,random=list(~1|Pub_number/Site/Genus_Species), data=esmd_spring)
 res.rma.spring10 
 
 
@@ -499,26 +511,25 @@ esmd_fall2 <- esmd_fall %>%
 esmd_fall3 <- esmd_fall %>%
   filter(!(Native_Status == ""))
 # models for fall phenophases
-# testing if amount warmed has an effect
 res.rma.fall <- rma.mv(yi, vi, mods=~Amount_warmed_C,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_fall)
-res.rma.fall # no effect - not including in other models
-res.rma.fall2 <- rma.mv(yi, vi, mods=~Func_group_broad-1, random=list(~1|Pub_number/Genus_Species),data=esmd_fall2)
-res.rma.fall2 # no effect
+res.rma.fall
+res.rma.fall2 <- rma.mv(yi, vi, mods=~Func_group_broad-1, random=list(~1|Pub_number/Site/Genus_Species),data=esmd_fall2)
+res.rma.fall2
 res.rma.fall3 <- rma.mv(yi, vi, mods=~Abs_Latitude,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_fall)
-res.rma.fall3 # no effect
-res.rma.fall4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Genus_Species),data=esmd_fall_latdiff)
-res.rma.fall4 # no effect
-res.rma.fall5 <- rma.mv(yi, vi, mods=~Years_warmed,random=list(~1|Pub_number/Genus_Species),data=esmd_fall)
-res.rma.fall5 # no effect
+res.rma.fall3
+res.rma.fall4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_fall_latdiff)
+res.rma.fall4
+res.rma.fall5 <- rma.mv(yi, vi, mods=~Years_warmed,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_fall)
+res.rma.fall5
 res.rma.fall6 <- rma.mv(yi, vi, mods=~Year_round_warm-1,random=list(~1|Pub_number/Site/Genus_Species), data=esmd_fall)
-res.rma.fall6 # no: 0.0319
-res.rma.fall7 <- rma.mv(yi, vi, mods=~Native_Status-1, random=list(~1|Pub_number/Genus_Species),data=esmd_fall3)
-res.rma.fall7 # no effect
-res.rma.fall8 <- rma.mv(yi, vi, mods=~Elevation_m,random=list(~1|Pub_number/Genus_Species), data=esmd_fall)
+res.rma.fall6
+res.rma.fall7 <- rma.mv(yi, vi, mods=~Native_Status-1, random=list(~1|Pub_number/Site/Genus_Species),data=esmd_fall3)
+res.rma.fall7
+res.rma.fall8 <- rma.mv(yi, vi, mods=~Elevation_m,random=list(~1|Pub_number/Site/Genus_Species), data=esmd_fall)
 res.rma.fall8 
-res.rma.fall9 <- rma.mv(yi, vi, mods=~Mean_annual_temp,random=list(~1|Pub_number/Genus_Species), data=esmd_fall)
+res.rma.fall9 <- rma.mv(yi, vi, mods=~Mean_annual_temp,random=list(~1|Pub_number/Site/Genus_Species), data=esmd_fall)
 res.rma.fall9 
-res.rma.fall10 <- rma.mv(yi, vi, mods=~Mean_annual_precip,random=list(~1|Pub_number/Genus_Species), data=esmd_fall)
+res.rma.fall10 <- rma.mv(yi, vi, mods=~Mean_annual_precip,random=list(~1|Pub_number/Site/Genus_Species), data=esmd_fall)
 res.rma.fall10 
 
 
@@ -536,43 +547,59 @@ esmd_flwr_lifespan2 <- esmd_flwr_lifespan %>%
 esmd_flwr_lifespan3 <- esmd_flwr_lifespan %>%
   filter(!(Native_Status == ""))
 # models for flwr_lifespan phenophases
-# testing if amount warmed has an effect
 res.rma.flwr.lifespan <- rma.mv(yi, vi, mods=~Amount_warmed_C,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_flwr_lifespan)
-res.rma.flwr.lifespan # no effect - not including in other models
-res.rma.flwr.lifespan2 <- rma.mv(yi, vi, mods=~Func_group_broad-1, random=list(~1|Pub_number/Genus_Species),data=esmd_flwr_lifespan2)
-res.rma.flwr.lifespan2 # graminoid: 0.0691
+res.rma.flwr.lifespan
+res.rma.flwr.lifespan2 <- rma.mv(yi, vi, mods=~Func_group_broad-1, random=list(~1|Pub_number/Site/Genus_Species),data=esmd_flwr_lifespan2)
+res.rma.flwr.lifespan2
 res.rma.flwr.lifespan3 <- rma.mv(yi, vi, mods=~Abs_Latitude,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_flwr_lifespan)
-res.rma.flwr.lifespan3 # no effect
-res.rma.flwr.lifespan4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Genus_Species),data=esmd_flwr_lifespan_latdiff)
-res.rma.flwr.lifespan4 # no effect
-res.rma.flwr.lifespan5 <- rma.mv(yi, vi, mods=~Years_warmed,random=list(~1|Pub_number/Genus_Species),data=esmd_flwr_lifespan)
-res.rma.flwr.lifespan5 # no effect
+res.rma.flwr.lifespan3
+res.rma.flwr.lifespan4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_flwr_lifespan_latdiff)
+res.rma.flwr.lifespan4
+res.rma.flwr.lifespan5 <- rma.mv(yi, vi, mods=~Years_warmed,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_flwr_lifespan)
+res.rma.flwr.lifespan5
 res.rma.flwr.lifespan6 <- rma.mv(yi, vi, mods=~Year_round_warm-1,random=list(~1|Pub_number/Site/Genus_Species), data=esmd_flwr_lifespan)
 res.rma.flwr.lifespan6
-res.rma.flwr.lifespan7 <- rma.mv(yi, vi, mods=~Native_Status-1, random=list(~1|Pub_number/Genus_Species),data=esmd_flwr_lifespan3)
+res.rma.flwr.lifespan7 <- rma.mv(yi, vi, mods=~Native_Status-1, random=list(~1|Pub_number/Site/Genus_Species),data=esmd_flwr_lifespan3)
 res.rma.flwr.lifespan7
-res.rma.flwr.lifespan8 <- rma.mv(yi, vi, mods=~Elevation_m,random=list(~1|Pub_number/Genus_Species), data=esmd_flwr_lifespan)
+res.rma.flwr.lifespan8 <- rma.mv(yi, vi, mods=~Elevation_m,random=list(~1|Pub_number/Site/Genus_Species), data=esmd_flwr_lifespan)
 res.rma.flwr.lifespan8
-res.rma.flwr.lifespan9 <- rma.mv(yi, vi, mods=~Mean_annual_temp,random=list(~1|Pub_number/Genus_Species), data=esmd_flwr_lifespan)
+res.rma.flwr.lifespan9 <- rma.mv(yi, vi, mods=~Mean_annual_temp,random=list(~1|Pub_number/Site/Genus_Species), data=esmd_flwr_lifespan)
 res.rma.flwr.lifespan9
-res.rma.flwr.lifespan10 <- rma.mv(yi, vi, mods=~Mean_annual_precip,random=list(~1|Pub_number/Genus_Species), data=esmd_flwr_lifespan)
+res.rma.flwr.lifespan10 <- rma.mv(yi, vi, mods=~Mean_annual_precip,random=list(~1|Pub_number/Site/Genus_Species), data=esmd_flwr_lifespan)
 res.rma.flwr.lifespan10
 
 
+### testing to see if finer var types differ ###
+esmd_spring_fine <- esmd_clean2 %>%
+  filter(Var_type_broad == "Phen_early")
+esmd_fall_fine <- esmd_clean2 %>%
+  filter(Var_type_broad == "Phen_late")
+esmd_growth_fine <- esmd_clean2 %>%
+  filter(Var_type_broad == "Growth")
+esmd_leafgrowth_fine <- esmd_clean2 %>%
+  filter(Var_type_broad == "Leaf_growth")
+res.rma.spring.fine <- rma.mv(yi, vi, mods=~Var_type-1, random=list(~1|Pub_number/Site/Genus_Species),data=esmd_spring_fine)
+res.rma.spring.fine
+res.rma.fall.fine <- rma.mv(yi, vi, mods=~Var_type-1, random=list(~1|Pub_number/Site/Genus_Species),data=esmd_fall_fine)
+res.rma.fall.fine
+res.rma.growth.fine <- rma.mv(yi, vi, mods=~Var_type-1, random=list(~1|Pub_number/Site/Genus_Species),data=esmd_growth_fine)
+res.rma.growth.fine
+res.rma.leafgrowth.fine <- rma.mv(yi, vi, mods=~Var_type-1, random=list(~1|Pub_number/Site/Genus_Species),data=esmd_leafgrowth_fine)
+res.rma.leafgrowth.fine
+
 
 ### testing to see if finer functional groups differ ###
-# deciduous vs. evergreen trees
-esmd_trees <- esmd_clean %>%
+esmd_trees <- esmd_clean2 %>%
   filter(Func_group == "Ever_Tree" | Func_group == "Decid_Tree")
-esmd_shrubs <- esmd_clean %>%
+esmd_shrubs <- esmd_clean2 %>%
   filter(Func_group == "Ever_Shrub" | Func_group == "Decid_Shrub")
-esmd_forbs <- esmd_clean %>%
+esmd_forbs <- esmd_clean2 %>%
   filter(Func_group == "Legume_Forb" | Func_group == "Forb")
-res.rma.trees <- rma.mv(yi, vi, mods=~Func_group, random=list(~1|Pub_number/Genus_Species),data=esmd_trees)
+res.rma.trees <- rma.mv(yi, vi, mods=~Func_group-1, random=list(~1|Pub_number/Site/Genus_Species),data=esmd_trees)
 res.rma.trees
-res.rma.shrubs <- rma.mv(yi, vi, mods=~Func_group, random=list(~1|Pub_number/Genus_Species),data=esmd_shrubs)
+res.rma.shrubs <- rma.mv(yi, vi, mods=~Func_group-1, random=list(~1|Pub_number/Site/Genus_Species),data=esmd_shrubs)
 res.rma.shrubs
-res.rma.forbs <- rma.mv(yi, vi, mods=~Func_group, random=list(~1|Pub_number/Genus_Species),data=esmd_forbs)
+res.rma.forbs <- rma.mv(yi, vi, mods=~Func_group-1, random=list(~1|Pub_number/Site/Genus_Species),data=esmd_forbs)
 res.rma.forbs
 
 
