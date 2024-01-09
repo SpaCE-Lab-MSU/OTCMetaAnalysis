@@ -74,13 +74,15 @@ esmd_est_mean <- data.frame(Var_type_broad = c("Biomass_above","Biomass_below","
                                                "Phen_early","Phen_flwr_lifespan","Phen_late"),
                             avg = c(0.2528,0.6033,-0.0763,-0.0982,0.5776,0.6488,0.5369,-0.4093,-0.1082,0.1044,-0.1223,0.1364,-0.0373),
                             CI_upper = c(0.3889,0.9203,0.0866,0.0865,0.8578,0.7757,0.6646,-0.2450,0.4367,0.2495,0.0140,0.3091,0.1190),
-                            CI_lower = c(0.1167,0.2862,-0.2391,-0.2829,0.2974,0.5220,0.4091,-0.5735,-0.6531,-0.0406,-0.2586,-0.0363,-0.1936))
+                            CI_lower = c(0.1167,0.2862,-0.2391,-0.2829,0.2974,0.5220,0.4091,-0.5735,-0.6531,-0.0406,-0.2586,-0.0363,-0.1936),
+                            sig = c("yes","yes","no","no","yes","yes","yes","yes","no","no","yes","no","no"))
 
 png("effect.png", units="in", width=8, height=6, res=300)
 ggplot(esmd_est_mean, aes(y = reorder(Var_type_broad, -avg, FUN=mean), x = avg)) +
   #facet_wrap(.~Var_type) +
   geom_vline(xintercept = 0, color = "red", linetype = "dashed", cex = 1, alpha = 0.7) +
-  geom_point(shape = 18, size = 4) +  
+  geom_point(aes(shape = sig), size = 4) +  
+  scale_shape_manual(values=c(1,16)) +
   geom_errorbarh(aes(xmin = CI_lower, xmax =CI_upper), height = 0.25) +
   scale_y_discrete(labels=c("Phen_flwr_lifespan" = "Flower lifespan (37)",
                             "Phen_early" = "Spring phenophases (186)",
@@ -149,7 +151,20 @@ esmd_func2 <- data.frame(Var_type_broad = c("Biomass_above","Biomass_above","Bio
                                                   "Bryophyte","Forb","Graminoid","Lichen","Shrub","Total","Tree",
                                                   "Bryophyte","Forb","Graminoid","Lichen","Shrub","Total","Tree",
                                                   "Bryophyte","Forb","Graminoid","Lichen","Shrub","Total","Tree"),
-                              avg = c(-0.015,0.1589,0.454,-0.2938,0.2817,0.7380,1.0902,
+                         sig = c("no","no","yes","no","no","yes","yes",
+                                 "no","no","no","no","no","no","no",
+                                 "no","no","no","no","no","no","no",
+                                 "no","no","yes","no","no","no","no",
+                                 "no","yes","yes","no","no","no","no",
+                                 "no","yes","yes","no","yes","yes","no",
+                                 "no","yes","yes","no","yes","no","no",
+                                 "yes","no","yes","yes","yes","no","no",
+                                 "no","no","yes","no","yes","no","yes",
+                                 "no","no","no","no","no","no","no",
+                                 "no","yes","yes","no","yes","no","no",
+                                 "no","no","no","no","no","no","no",
+                                 "no","yes","yes","no","no","no","no"),
+                         avg = c(-0.015,0.1589,0.454,-0.2938,0.2817,0.7380,1.0902,
                                       NA,NA,1.4871,NA,1.0431,0.6535,1.4969,
                                       NA,-0.0236,-0.0107,NA,0.1258,NA,NA,
                                       0.571,0.0445,1.3665,NA,0.4327,NA,NA,
@@ -162,7 +177,7 @@ esmd_func2 <- data.frame(Var_type_broad = c("Biomass_above","Biomass_above","Bio
                                       NA,-0.4575,-0.5069,NA,-0.6483,NA,-1.3683,
                                       NA,-0.8473,-0.6985,NA,-1.0726,NA,1.0533,
                                       NA,-0.8822,-0.7976,NA,0.8026,NA,NA),
-                              CI_upper = c(0.6948,0.6680,0.9104,0.5979,0.7234,1.2185,2.2649,
+                         CI_upper = c(0.6948,0.6680,0.9104,0.5979,0.7234,1.2185,2.2649,
                                            NA,NA,3.2778,NA,3.2785,1.6451,4.179,
                                            NA,0.2719,0.3159,NA,0.4281,NA,NA,
                                            1.7673,0.4837,2.6020,NA,1.1992,NA,NA,
@@ -175,7 +190,7 @@ esmd_func2 <- data.frame(Var_type_broad = c("Biomass_above","Biomass_above","Bio
                                            NA,-0.0863,-0.1198,NA,-0.2344,NA,0.404,
                                            NA,0.4419,0.6012,NA,0.2793,NA,5.3189,
                                            NA,0.0329,0.1003,NA,2.1287,NA,NA),
-                              CI_lower = c(-0.7247,-0.3501,-0.0024,-1.1856,-0.1599,0.2576,-0.0845,
+                         CI_lower = c(-0.7247,-0.3501,-0.0024,-1.1856,-0.1599,0.2576,-0.0845,
                                            NA,NA,-0.3037,NA,-1.1922,-0.3382,-1.1853,
                                            NA,-0.3192,-0.3374,NA,-0.1764,NA,NA,
                                            -0.6252,-0.3948,0.1309,NA,-0.3338,NA,NA,
@@ -318,7 +333,8 @@ png("effect_func.png", units="in", width=8, height=8, res=300)
 ggplot(esmd_func2, aes(y = Func_group_broad, x = avg)) +
   facet_wrap(.~Var_type_broad, scales="free_x", labeller = as_labeller(var_labels)) +
   geom_vline(xintercept = 0, color = "red", linetype = "dashed", cex = 1, alpha = 0.7) +
-  geom_point(shape = 18, size = 4) +  
+  geom_point(aes(shape = sig), size = 4) +  
+  scale_shape_manual(values = c(1,16)) +
   geom_errorbarh(aes(xmin = CI_lower, xmax = CI_upper), height = 0.25) +
   #scale_y_continuous(name = "", breaks=1:4, labels = dat$label, trans = "reverse") +
   xlab("Mean effect size (Hedges' g)") + 
@@ -416,10 +432,36 @@ esmd_yearround <- esmd_clean2 %>%
             CI_lower = avg - (1.96 * se),
             CI_upper = avg + (1.96 * se))
 # making dataframe for mean estimated effect sizes from model output (in otc_effectsize_analyses_L2.R)
+# only traits w/ differences between catergories
 esmd_yearround2 <- data.frame(Var_type_broad = c("Biomass_above","Biomass_above","Biomass_below","Biomass_below",
                                                  "Fruit_num","Fruit_num","Fruit_weight","Fruit_weight",
                                                  "Nitrogen_above","Nitrogen_above","Phen_late","Phen_late"),
                               Year_round_warm = c("No","Yes","No","Yes","No","Yes","No","Yes","No","Yes","No","Yes"),
+                              sig = c("no","yes","no","yes","yes","no","no","yes","no","yes","yes","no"),
+                              avg = c(-0.0072,0.6537,
+                                      -0.2839,1.0570,
+                                      0.6338,0.1273,
+                                      0.1372,0.9447,
+                                      -0.0867,-0.5187,
+                                      -1.7047,0.334),
+                              CI_upper = c(0.6259,1.0433,
+                                           1.7913,1.8104,
+                                           1.3335,0.5634,
+                                           1.901,1.7215,
+                                           0.3493,-0.2498,
+                                           -0.1473,1.8501),
+                              CI_lower = c(-0.6403,0.2641,
+                                           -2.359,0.3036,
+                                           -0.0659,-0.3087,
+                                           -1.6266,0.1678,
+                                           -0.5227,-0.7876,
+                                           -3.2621,-1.182))
+# all traits
+esmd_yearround3 <- data.frame(Var_type_broad = c("Biomass_above","Biomass_above","Biomass_below","Biomass_below",
+                                                 "Fruit_num","Fruit_num","Fruit_weight","Fruit_weight",
+                                                 "Nitrogen_above","Nitrogen_above","Phen_late","Phen_late"),
+                              Year_round_warm = c("No","Yes","No","Yes","No","Yes","No","Yes","No","Yes","No","Yes"),
+                              sig = c("no","yes","no","yes","yes","no","no","yes","no","yes","yes","no"),
                               avg = c(-0.0072,0.6537,
                                       -0.2839,1.0570,
                                       0.6338,0.1273,
@@ -505,7 +547,8 @@ png("effect_yearround.png", units="in", width=8, height=6, res=300)
 ggplot(esmd_yearround2, aes(y = Year_round_warm, x = avg)) +
   facet_wrap(.~Var_type_broad, labeller = as_labeller(var_labels)) +
   geom_vline(xintercept = 0, color = "red", linetype = "dashed", cex = 1, alpha = 0.7) +
-  geom_point(shape = 18, size = 4) +  
+  geom_point(aes(shape = sig), size = 4) +  
+  scale_shape_manual(values=c(1,16)) +
   geom_errorbarh(aes(xmin = CI_lower, xmax = CI_upper), height = 0.25) +
   scale_y_discrete(labels=c("Yes" = "Year-round warming",
                             "No" = "Seasonal warming")) +
@@ -561,8 +604,8 @@ esmd_lat_trim <- esmd_clean2 %>% # selecting traits/properties that had an effec
 png("effect_lat.png", units="in", width=8, height=6, res=300)
 lat_plot <- ggplot(esmd_lat_trim, aes(x = Abs_Latitude, y = yi)) +
   facet_wrap(.~Var_type_broad, scales="free_y",labeller = as_labeller(var_labels), ncol=2) +
-  geom_point(size = 2) +
-  geom_smooth(method = 'lm',color="darkgreen") +
+  geom_point(size = 1) +
+  geom_smooth(method = 'lm',color="darkred") +
   labs(x = NULL, y = NULL, title="A") +
   theme_bw() +
   #scale_color_manual(values=c("Rep" = "#663333",
@@ -594,8 +637,8 @@ esmd_elev_trim <- esmd_clean2 %>% # selecting traits/properties that had an effe
 png("effect_elev.png", units="in", width=8, height=6, res=300)
 elev_plot <- ggplot(esmd_elev_trim, aes(x = Elevation_m, y = yi)) +
   facet_wrap(.~Var_type_broad, scales="free_y",labeller = as_labeller(var_labels), ncol=2) +
-  geom_point(size = 2) +
-  geom_smooth(method = 'lm',color="darkgreen") +
+  geom_point(size = 1) +
+  geom_smooth(method = 'lm',color="darkred") +
   labs(x = NULL, y = NULL, title="B") +
   theme_bw() +
   #scale_color_manual(values=c("Rep" = "#663333",
@@ -626,12 +669,12 @@ dev.off()
 
 
 ### effect size based on mean annual temperature ###
-png("effect_elev.png", units="in", width=8, height=6, res=300)
+png("effect_temp.png", units="in", width=8, height=6, res=300)
 ggplot(esmd_clean2, aes(x = Mean_annual_temp, y = yi)) +
   facet_wrap(.~Var_type_broad, scales="free",labeller = as_labeller(var_labels)) +
-  geom_point(size = 2) +
-  geom_smooth(method = 'lm',color="darkgreen") +
-  xlab("Elevation (m)") +
+  geom_point(size = 1) +
+  geom_smooth(method = 'lm',color="darkred") +
+  xlab("Mean annual temperature (°C)") +
   ylab("Effect size") +
   #scale_color_manual(values=c("Rep" = "#663333",
   #                            "Phen" = "#222255",
@@ -648,12 +691,12 @@ dev.off()
 
 
 ### effect size based on mean annual precipitation ###
-png("effect_elev.png", units="in", width=8, height=6, res=300)
+png("effect_precip.png", units="in", width=8, height=6, res=300)
 ggplot(esmd_clean2, aes(x = Mean_annual_precip, y = yi)) +
   facet_wrap(.~Var_type_broad, scales="free",labeller = as_labeller(var_labels)) +
-  geom_point(size = 2) +
-  geom_smooth(method = 'lm',color="darkgreen") +
-  xlab("Elevation (m)") +
+  geom_point(size = 1) +
+  geom_smooth(method = 'lm',color="darkred") +
+  xlab("Mean annual precipitation (mm)") +
   ylab("Effect size") +
   #scale_color_manual(values=c("Rep" = "#663333",
   #                            "Phen" = "#222255",
@@ -673,11 +716,11 @@ dev.off()
 esmd_lat_diff_trim <- esmd_clean2 %>% # testing if we restrict latitude difference to remove large outlier values
   filter(!(Lat_difference > 60))
 png("effect_latdiff.png", units="in", width=8, height=6, res=300)
-ggplot(esmd_lat_diff_trim, aes(x = Lat_difference, y = yi)) +
+ggplot(esmd_clean2, aes(x = Lat_difference, y = yi)) +
   facet_wrap(.~Var_type_broad, labeller = as_labeller(var_labels), scales="free") +
-  geom_point(size = 2) +
-  geom_smooth(method = 'lm', color = "darkgreen") +
-  xlab("Latitude difference (°)") +
+  geom_point(size = 1) +
+  geom_smooth(method = 'lm', color = "darkred") +
+  xlab("Distance from range edge (°)") +
   ylab("Effect size") +
   #ylim(-5,5) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
