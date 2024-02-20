@@ -105,6 +105,9 @@ esmd_ab_biomass_latdiff <- esmd_ab_biomass %>%
 # removing latitudes below the equator (outliers)
 #esmd_ab_biomass_lat <- esmd_ab_biomass %>%
 #  filter(!(Latitude < 0))
+# removing latitudes < 0 for range edge analyses - focus only on Northern hemi?
+esmd_ab_biomass_latdiff <- esmd_ab_biomass %>%
+  filter(!(Latitude <= 0))
 # removing func groups that are blank - only from functional group test
 esmd_ab_biomass2 <- esmd_ab_biomass %>%
   filter(!(Func_group_broad == ""))
@@ -144,6 +147,9 @@ esmd_bl_biomass_latdiff <- esmd_bl_biomass %>%
   filter(!(Lat_difference > 60))
 #esmd_bl_biomass_lat <- esmd_bl_biomass %>%
 #  filter(!(Latitude < 0))
+# removing latitudes < 0 for range edge analyses - focus only on Northern hemi?
+esmd_bl_biomass_latdiff <- esmd_bl_biomass %>%
+  filter(!(Latitude <= 0))
 # removing func groups that are blank - only from functional group test
 esmd_bl_biomass2 <- esmd_bl_biomass %>%
   filter(!(Func_group_broad == ""))
@@ -180,6 +186,9 @@ esmd_flwr_num_latdiff <- esmd_flwr_num %>%
   filter(!(Lat_difference > 60))
 #esmd_flwr_num_lat <- esmd_flwr_num %>%
 #  filter(!(Latitude < 0))
+# removing latitudes < 0 for range edge analyses - focus only on Northern hemi?
+esmd_flwr_num_latdiff <- esmd_flwr_num %>%
+  filter(!(Latitude <= 0))
 # removing func groups that are blank - only from functional group test
 esmd_flwr_num2 <- esmd_flwr_num %>%
   filter(!(Func_group_broad == ""))
@@ -216,6 +225,9 @@ esmd_fruit_num_latdiff <- esmd_fruit_num %>%
   filter(!(Lat_difference > 60))
 #esmd_fruit_num_lat <- esmd_fruit_num %>%
 #  filter(!(Latitude < 0))
+# removing latitudes < 0 for range edge analyses - focus only on Northern hemi?
+esmd_fruit_num_latdiff <- esmd_fruit_num %>%
+  filter(!(Latitude <= 0))
 # removing func groups that are blank
 esmd_fruit_num2 <- esmd_fruit_num %>%
   filter(!(Func_group_broad == ""))
@@ -252,6 +264,9 @@ esmd_fruit_weight_latdiff <- esmd_fruit_weight %>%
   filter(!(Lat_difference > 60))
 #esmd_fruit_weight_lat <- esmd_fruit_weight %>%
 #  filter(!(Latitude < 0))
+# removing latitudes < 0 for range edge analyses - focus only on Northern hemi?
+esmd_fruit_weight_latdiff <- esmd_fruit_weight %>%
+  filter(!(Latitude <= 0))
 # removing func groups that are blank
 esmd_fruit_weight2 <- esmd_fruit_weight %>%
   filter(!(Func_group_broad == ""))
@@ -288,6 +303,9 @@ esmd_growth_latdiff <- esmd_growth %>%
   filter(!(Lat_difference > 60))
 #esmd_growth_lat <- esmd_growth %>%
 #  filter(!(Latitude < 0))
+# removing latitudes < 0 for range edge analyses - focus only on Northern hemi?
+esmd_growth_latdiff <- esmd_growth %>%
+  filter(!(Latitude <= 0))
 # removing func groups that are blank
 esmd_growth2 <- esmd_growth %>%
   filter(!(Func_group_broad == ""))
@@ -324,6 +342,9 @@ esmd_leaf_growth_latdiff <- esmd_leaf_growth %>%
   filter(!(Lat_difference > 60))
 #esmd_leaf_growth_lat <- esmd_leaf_growth %>%
 #  filter(!(Latitude < 0))
+# removing latitudes < 0 for range edge analyses - focus only on Northern hemi?
+esmd_leaf_growth_latdiff <- esmd_leaf_growth %>%
+  filter(!(Latitude <= 0))
 # removing func groups that are blank
 esmd_leaf_growth2 <- esmd_leaf_growth %>%
   filter(!(Func_group_broad == ""))
@@ -360,6 +381,9 @@ esmd_cover_latdiff <- esmd_cover %>%
   filter(!(Lat_difference > 60))
 #esmd_cover_lat <- esmd_cover %>%
 #  filter(!(Latitude < 0))
+# removing latitudes < 0 for range edge analyses - focus only on Northern hemi?
+esmd_cover_latdiff <- esmd_cover %>%
+  filter(!(Latitude <= 0))
 # removing func groups that are blank - only from functional group test
 esmd_cover2 <- esmd_cover %>%
   filter(!(Func_group_broad == ""))
@@ -396,6 +420,9 @@ esmd_ab_n_latdiff <- esmd_ab_n %>%
   filter(!(Lat_difference > 60))
 #esmd_ab_n_lat <- esmd_ab_n %>%
 #  filter(!(Latitude < 0))
+# removing latitudes < 0 for range edge analyses - focus only on Northern hemi?
+esmd_ab_n_latdiff <- esmd_ab_n %>%
+  filter(!(Latitude <= 0))
 # removing func groups that are blank - only from functional group test
 esmd_ab_n2 <- esmd_ab_n %>%
   filter(!(Func_group_broad == ""))
@@ -432,6 +459,9 @@ esmd_bl_n_latdiff <- esmd_bl_n %>%
   filter(!(Lat_difference > 60))
 #esmd_bl_n_lat <- esmd_bl_n %>%
 #  filter(!(Latitude < 0))
+# removing latitudes < 0 for range edge analyses - focus only on Northern hemi?
+esmd_bl_n_latdiff <- esmd_bl_n %>%
+  filter(!(Latitude <= 0))
 # removing func groups that are blank - only from functional group test
 esmd_bl_n2 <- esmd_bl_n %>%
   filter(!(Func_group_broad == ""))
@@ -468,6 +498,9 @@ esmd_spring_latdiff <- esmd_spring %>%
   filter(!(Lat_difference > 60))
 #esmd_spring_lat <- esmd_spring %>%
 #  filter(!(Latitude < 0))
+# removing latitudes < 0 for range edge analyses - focus only on Northern hemi?
+esmd_spring_latdiff <- esmd_spring %>%
+  filter(!(Latitude <= 0))
 # removing func groups that are blank - only from functional group test
 esmd_spring2 <- esmd_spring %>%
   filter(!(Func_group_broad == ""))
@@ -504,6 +537,9 @@ esmd_fall_latdiff <- esmd_fall %>%
   filter(!(Lat_difference > 60))
 #esmd_fall_lat <- esmd_fall %>%
 #  filter(!(Latitude < 0))
+# removing latitudes < 0 for range edge analyses - focus only on Northern hemi?
+esmd_fall_latdiff <- esmd_fall %>%
+  filter(!(Latitude <= 0))
 # removing func groups that are blank - only from functional group test
 esmd_fall2 <- esmd_fall %>%
   filter(!(Func_group_broad == ""))
@@ -540,6 +576,9 @@ esmd_flwr_lifespan_latdiff <- esmd_flwr_lifespan %>%
   filter(!(Lat_difference > 60))
 # esmd_flwr_lifespan_lat <- esmd_flwr_lifespan %>%
 #   filter(!(Latitude < 0))
+# removing latitudes < 0 for range edge analyses - focus only on Northern hemi?
+esmd_flwr_lifespan_latdiff <- esmd_flwr_lifespan %>%
+  filter(!(Latitude <= 0))
 # removing func groups that are blank - only from functional group test
 esmd_flwr_lifespan2 <- esmd_flwr_lifespan %>%
   filter(!(Func_group_broad == ""))
