@@ -642,9 +642,43 @@ res.rma.forbs <- rma.mv(yi, vi, mods=~Func_group-1, random=list(~1|Pub_number/Si
 res.rma.forbs
 
 
-
-
-
+### testing correlation btwn latitude and elevation ###
+# flower number
+cor.test(esmd_flwr_num$Elevation_m,esmd_flwr_num$Abs_Latitude,method = "pearson")
+lm1 <- lm(esmd_flwr_num$Elevation_m~esmd_flwr_num$Abs_Latitude)
+plot(esmd_flwr_num$Elevation_m~esmd_flwr_num$Abs_Latitude)
+abline(lm1)
+summary(lm1)
+# fruit number
+cor.test(esmd_fruit_num$Elevation_m,esmd_fruit_num$Abs_Latitude,method = "pearson")
+lm1 <- lm(esmd_fruit_num$Elevation_m~esmd_fruit_num$Abs_Latitude)
+plot(esmd_fruit_num$Elevation_m~esmd_fruit_num$Abs_Latitude)
+abline(lm1)
+summary(lm1)
+# fruit weight
+cor.test(esmd_fruit_weight$Elevation_m,esmd_fruit_weight$Abs_Latitude,method = "pearson")
+lm1 <- lm(esmd_fruit_weight$Elevation_m~esmd_fruit_weight$Abs_Latitude)
+plot(esmd_fruit_weight$Elevation_m~esmd_fruit_weight$Abs_Latitude)
+abline(lm1)
+summary(lm1)
+# belowground N
+cor.test(esmd_bl_n$Elevation_m,esmd_bl_n$Abs_Latitude,method = "pearson")
+lm1 <- lm(esmd_bl_n$Elevation_m~esmd_bl_n$Abs_Latitude)
+plot(esmd_bl_n$Elevation_m~esmd_bl_n$Abs_Latitude)
+abline(lm1)
+summary(lm1)
+# spring
+cor.test(esmd_spring$Elevation_m,esmd_spring$Abs_Latitude,method = "pearson")
+lm1 <- lm(esmd_spring$Elevation_m~esmd_spring$Abs_Latitude)
+plot(esmd_spring$Elevation_m~esmd_spring$Abs_Latitude)
+abline(lm1)
+summary(lm1)
+# fall
+cor.test(esmd_fall$Elevation_m,esmd_fall$Abs_Latitude,method = "pearson")
+lm1 <- lm(esmd_fall$Elevation_m~esmd_fall$Abs_Latitude)
+plot(esmd_fall$Elevation_m~esmd_fall$Abs_Latitude)
+abline(lm1)
+summary(lm1)
 
 
 ### test analysis using example data
