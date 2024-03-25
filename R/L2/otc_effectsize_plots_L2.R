@@ -157,19 +157,19 @@ esmd_func2 <- data.frame(Var_type_broad = c("Biomass_above","Biomass_above","Bio
                                             "Phen_early","Phen_early","Phen_early","Phen_early","Phen_early","Phen_early","Phen_early",
                                             "Phen_late","Phen_late","Phen_late","Phen_late","Phen_late","Phen_late","Phen_late",
                                             "Phen_flwr_lifespan","Phen_flwr_lifespan","Phen_flwr_lifespan","Phen_flwr_lifespan","Phen_flwr_lifespan","Phen_flwr_lifespan","Phen_flwr_lifespan"),
-                             Func_group_broad = c("Bryophyte","Forb","Graminoid","Lichen","Shrub","Total","Tree",
-                                                  "Bryophyte","Forb","Graminoid","Lichen","Shrub","Total","Tree",
-                                                  "Bryophyte","Forb","Graminoid","Lichen","Shrub","Total","Tree",
-                                                  "Bryophyte","Forb","Graminoid","Lichen","Shrub","Total","Tree",
-                                                  "Bryophyte","Forb","Graminoid","Lichen","Shrub","Total","Tree",
-                                                  "Bryophyte","Forb","Graminoid","Lichen","Shrub","Total","Tree",
-                                                  "Bryophyte","Forb","Graminoid","Lichen","Shrub","Total","Tree",
-                                                  "Bryophyte","Forb","Graminoid","Lichen","Shrub","Total","Tree",
-                                                  "Bryophyte","Forb","Graminoid","Lichen","Shrub","Total","Tree",
-                                                  "Bryophyte","Forb","Graminoid","Lichen","Shrub","Total","Tree",
-                                                  "Bryophyte","Forb","Graminoid","Lichen","Shrub","Total","Tree",
-                                                  "Bryophyte","Forb","Graminoid","Lichen","Shrub","Total","Tree",
-                                                  "Bryophyte","Forb","Graminoid","Lichen","Shrub","Total","Tree"),
+                             Func_group_broad = c("Bryophytes","Forbs","Graminoids","Lichens","Shrubs","Total community","Trees",
+                                                  "Bryophytes","Forbs","Graminoids","Lichens","Shrubs","Total community","Trees",
+                                                  "Bryophytes","Forbs","Graminoids","Lichens","Shrubs","Total community","Trees",
+                                                  "Bryophytes","Forbs","Graminoids","Lichens","Shrubs","Total community","Trees",
+                                                  "Bryophytes","Forbs","Graminoids","Lichens","Shrubs","Total community","Trees",
+                                                  "Bryophytes","Forbs","Graminoids","Lichens","Shrubs","Total community","Trees",
+                                                  "Bryophytes","Forbs","Graminoids","Lichens","Shrubs","Total community","Trees",
+                                                  "Bryophytes","Forbs","Graminoids","Lichens","Shrubs","Total community","Trees",
+                                                  "Bryophytes","Forbs","Graminoids","Lichens","Shrubs","Total community","Trees",
+                                                  "Bryophytes","Forbs","Graminoids","Lichens","Shrubs","Total community","Trees",
+                                                  "Bryophytes","Forbs","Graminoids","Lichens","Shrubs","Total community","Trees",
+                                                  "Bryophytes","Forbs","Graminoids","Lichens","Shrubs","Total community","Trees",
+                                                  "Bryophytes","Forbs","Graminoids","Lichens","Shrubs","Total community","Trees"),
                          sig = c("no","no","yes","no","no","yes","yes",
                                  "no","no","no","no","no","no","no",
                                  "no","no","no","no","no","no","no",
@@ -677,12 +677,13 @@ esmd_lat_trim <- esmd_clean2 %>% # selecting traits/properties that had an effec
            Var_type_broad == "Phen_late" |
            Var_type_broad == "Nitrogen_below" |
            Var_type_broad == "Phen_early")
-png("effect_lat.png", units="in", width=8, height=6, res=300)
-lat_plot <- ggplot(esmd_lat_trim, aes(x = Abs_Latitude, y = yi)) +
-  facet_wrap(.~Var_type_broad, scales="free_y",labeller = as_labeller(var_labels), ncol=2) +
+png("effect_lat.png", units="in", width=8, height=5.5, res=300)
+#lat_plot <- 
+  ggplot(esmd_lat_trim, aes(x = Abs_Latitude, y = yi)) +
+  facet_wrap(.~Var_type_broad, scales="free_y",labeller = as_labeller(var_labels), ncol=3) +
   geom_point(size = 1) +
   geom_smooth(method = 'lm',color="darkred") +
-  labs(x = NULL, y = NULL, title="A") +
+  labs(x = "Absolute latitude (°)", y = "Effect size") +
   theme_bw() +
   #scale_color_manual(values=c("Rep" = "#663333",
   #                            "Phen" = "#222255",
@@ -891,6 +892,14 @@ ggplot(esmd_total_growth, aes(y = reorder(Func_group_broad, -count), x = count))
   geom_bar(stat = "identity") +
   xlab("Total sample size") + 
   ylab(" ") + 
+  scale_y_discrete(labels=c("Pteridophyte" = "Pteridophytes",
+                            "Lichen" = "Lichens",
+                            "Bryophyte" = "Bryophytes",
+                            "Tree" = "Trees",
+                            "Total" = "Total Community",
+                            "Shrub" = "Shrubs",
+                            "Forb" = "Forbs",
+                            "Graminoid" = "Graminoids")) +
   theme_bw() +
   theme(panel.border = element_blank(),
         panel.background = element_blank(),
