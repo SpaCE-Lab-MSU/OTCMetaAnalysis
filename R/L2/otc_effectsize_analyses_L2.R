@@ -642,7 +642,32 @@ res.rma.forbs <- rma.mv(yi, vi, mods=~Func_group-1, random=list(~1|Pub_number/Si
 res.rma.forbs
 
 
+### testing to see if tissue types differ ###
+res.rma.tissue.a.bio <- rma.mv(yi, vi, mods=~Tissue_Type_broad-1, random=list(~1|Pub_number/Site/Genus_Species),data=esmd_ab_biomass)
+res.rma.tissue.a.bio
+count_tissue_a <- esmd_ab_biomass %>%
+  group_by(Tissue_Type_broad) %>%
+  count()
+res.rma.a.n <- rma.mv(yi, vi, mods=~Tissue_Type_broad-1, random=list(~1|Pub_number/Site/Genus_Species),data=esmd_ab_n)
+res.rma.a.n
+count_tissue_n <- esmd_ab_n %>%
+  group_by(Tissue_Type_broad) %>%
+  count()
+
+
 ### testing correlation btwn latitude and elevation ###
+# all data
+esmd_lat_corr <- esmd_clean2 %>%
+  filter(!(Abs_Latitude < 20))
+cor.test(esmd_lat_corr$Elevation_m,esmd_lat_corr$Abs_Latitude,method = "pearson")
+lm1 <- lm(esmd_lat_corr$Elevation_m~esmd_lat_corr$Abs_Latitude)
+png("lat_elev_cor.png", units="in", width=7, height=6, res=300)
+plot(esmd_lat_corr$Elevation_m~esmd_lat_corr$Abs_Latitude,
+     ylab = "Elevation (m)",
+     xlab = "Absolute Latitude (°)")
+abline(lm1)
+dev.off()
+summary(lm1)
 # flower number
 cor.test(esmd_flwr_num$Elevation_m,esmd_flwr_num$Abs_Latitude,method = "pearson")
 lm1 <- lm(esmd_flwr_num$Elevation_m~esmd_flwr_num$Abs_Latitude)
