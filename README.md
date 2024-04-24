@@ -16,7 +16,7 @@ L2: The L2 scripts contain the main code for calculating effect sizes, analyzing
 
 ## Location of data
 
-The clean, L2 data used in analyses and plotting is currently located in the "Data" folder.
+The clean, L2 data used in analyses and plotting is currently located in the "Data" folder - we are planning to make an EDI data repository to host this data.
 
 ## Usage
 
