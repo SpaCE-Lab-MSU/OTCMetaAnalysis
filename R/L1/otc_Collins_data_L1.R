@@ -7,9 +7,9 @@
 
 
 ### Reading in RData files from Collins et al. paper (from their github)
-load(file.path("R/L0/flowerdata.RData"))
-load(file.path("R/L0/fruitdata.RData"))
-load(file.path("R/L0/greenupdata.RData"))
+load(file.path("Data/L0/flowerdata.RData"))
+load(file.path("Data/L0/fruitdata.RData"))
+load(file.path("Data/L0/greenupdata.RData"))
 
 ### Subsetting out data for white mountains and niwot
 # focused on these sites because we have some data from the other sites and don't want to pseudoreplicate
