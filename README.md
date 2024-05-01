@@ -4,6 +4,14 @@
 
 This repository contains R scripts that organize, clean, analyze, and plot data for an open-top chamber (OTC) meta-analysis.
 
+## Location of data
+
+Within the "Data" folder, the L0 folder contains raw data from one study (Collins et al. 2021). 
+
+The L2 folder contains final, clean data used in analyses and plotting. 
+
+We are planning to make an EDI data repository to host this data.
+
 ## Workflow
 
 All code for data cleaning, analyzing, and plotting is located in the "R" folder. This folder contains three main sections:
@@ -15,6 +23,8 @@ L1: The L1 scripts further organize the data. After data was extracted from each
 L2: The L2 scripts contain the main code for calculating effect sizes, analyzing, and plotting the data. [otc_effectsize_analysis_L2.R](https://github.com/SpaCE-Lab-MSU/OTCMetaAnalysis/blob/main/R/L2/otc_effectsize_analyses_L2.R) and [otc_effectsize_plots](https://github.com/SpaCE-Lab-MSU/OTCMetaAnalysis/blob/main/R/L2/otc_effectsize_plots_L2.R) are the main scripts for figure making and analyses.
 
 ## Location of data
+
+Within the Data folder,
 
 The clean, L2 data used in analyses and plotting is currently located in the "Data" folder - we are planning to make an EDI data repository to host this data.
 
