@@ -46,6 +46,13 @@ esmd_clean_allyears <- esmd_clean_allyears %>%
 esmd_clean$Genus_Species[esmd_clean$Genus_Species == "_"] <- ""
 esmd_clean_allyears$Genus_Species[esmd_clean_allyears$Genus_Species == "_"] <- ""
 
+# which species do not have data from BIEN?
+test <- esmd_clean %>%
+  group_by(Genus_Species, Func_group) %>%
+  summarise(has_lat = ifelse(any(!is.na(Max_lat_of_species)), "True", "False")) %>%
+  filter(has_lat == "False") %>%
+  filter(!(Genus_Species == ""))
+
 ## fixing species for random effect
 # if species is blank, then input func type, if not keep species listed
 # main data
@@ -674,7 +681,7 @@ count_tissue_n <- esmd_ab_n %>%
 ### testing correlation btwn latitude and elevation ###
 # all data
 esmd_lat_corr <- esmd_clean2 %>%
-  filter(!(Abs_Latitude < 20))
+  filter(!(Abs_Latitude < 20)) # only 2 studies < 20
 cor.test(esmd_lat_corr$Elevation_m,esmd_lat_corr$Abs_Latitude,method = "pearson")
 lm1 <- lm(esmd_lat_corr$Elevation_m~esmd_lat_corr$Abs_Latitude)
 png("lat_elev_cor.png", units="in", width=7, height=6, res=300)
@@ -720,6 +727,37 @@ lm1 <- lm(esmd_fall$Elevation_m~esmd_fall$Abs_Latitude)
 plot(esmd_fall$Elevation_m~esmd_fall$Abs_Latitude)
 abline(lm1)
 summary(lm1)
+
+
+### testing correlation btwn latitude and amount warmed ###
+# all data
+esmd_lat_warm_corr <- esmd_clean2 %>%
+  filter(!(Abs_Latitude < 20)) # only 2 studies < 20
+cor.test(esmd_lat_warm_corr$Amount_warmed_C,esmd_lat_warm_corr$Abs_Latitude,method = "pearson")
+lm1 <- lm(esmd_lat_warm_corr$Amount_warmed_C~esmd_lat_warm_corr$Abs_Latitude)
+plot(esmd_lat_warm_corr$Amount_warmed_C~esmd_lat_warm_corr$Abs_Latitude,
+     ylab = "Amount warmed",
+     xlab = "Absolute Latitude (°)")
+abline(lm1)
+summary(lm1)
+
+
+### testing correlation btwn latitude and experiment length ###
+# all data
+esmd_lat_length_corr <- esmd_clean2 %>%
+  filter(!(Abs_Latitude < 20)) # only 2 studies < 20
+cor.test(esmd_lat_length_corr$Years_warmed,esmd_lat_length_corr$Abs_Latitude,method = "pearson")
+lm1 <- lm(esmd_lat_length_corr$Years_warmed~esmd_lat_length_corr$Abs_Latitude)
+plot(esmd_lat_length_corr$Years_warmed~esmd_lat_length_corr$Abs_Latitude,
+     ylab = "Years warmed",
+     xlab = "Absolute Latitude (°)")
+abline(lm1)
+summary(lm1)
+
+
+
+
+
 
 
 ### test analysis using example data
