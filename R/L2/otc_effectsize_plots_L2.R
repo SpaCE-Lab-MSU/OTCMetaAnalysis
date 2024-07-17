@@ -439,7 +439,6 @@ esmd_lat_trim <- esmd_clean2 %>% # selecting traits/properties that had an effec
   filter(Var_type_broad == "Flower_num" |
            Var_type_broad == "Fruit_num" |
            Var_type_broad == "Fruit_weight" |
-           Var_type_broad == "Phen_late" |
            Var_type_broad == "Nitrogen_below" |
            Var_type_broad == "Phen_early")
 png("effect_lat.png", units="in", width=8, height=6, res=300)
@@ -540,9 +539,9 @@ dev.off()
 
 ### effect size based on distance from range edge ###
 esmd_lat_diff_trim <- esmd_clean2 %>% # testing if we restrict latitude difference to remove large outlier values
-  filter(!(Lat_difference > 60))
+  filter(!(Latitude <= 0))
 png("effect_latdiff.png", units="in", width=8, height=6, res=300)
-ggplot(esmd_clean2, aes(x = Lat_difference, y = yi)) +
+ggplot(esmd_lat_diff_trim, aes(x = Lat_difference, y = yi)) +
   facet_wrap(.~Var_type_broad, labeller = as_labeller(var_labels), scales="free") +
   geom_point(size = 1) +
   geom_smooth(method = 'lm', color = "darkred") +

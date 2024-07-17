@@ -109,7 +109,7 @@ res.rma.ab.biomass2
 summary(glht(res.rma.ab.biomass2, linfct=cbind(contrMat(rep(1,8), type="Tukey"))), test=adjusted("holm"))
 res.rma.ab.biomass3 <- rma.mv(yi, vi, mods=~Abs_Latitude,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_ab_biomass)
 res.rma.ab.biomass3
-res.rma.ab.biomass4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_ab_biomass)
+res.rma.ab.biomass4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_ab_biomass_latdiff)
 res.rma.ab.biomass4
 res.rma.ab.biomass5 <- rma.mv(yi, vi, mods=~Years_warmed,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_ab_biomass)
 res.rma.ab.biomass5
@@ -130,10 +130,6 @@ res.rma.ab.biomass10
 ## belowground biomass
 esmd_bl_biomass <- esmd_clean2 %>%
   filter(Var_type_broad == "Biomass_below")
-esmd_bl_biomass_latdiff <- esmd_bl_biomass %>%
-  filter(!(Lat_difference > 60))
-#esmd_bl_biomass_lat <- esmd_bl_biomass %>%
-#  filter(!(Latitude < 0))
 # removing latitudes < 0 for range edge analyses - focus only on Northern hemi?
 esmd_bl_biomass_latdiff <- esmd_bl_biomass %>%
   filter(!(Latitude <= 0))
@@ -151,7 +147,7 @@ res.rma.bl.biomass2
 summary(glht(res.rma.bl.biomass2, linfct=cbind(contrMat(rep(1,4), type="Tukey"))), test=adjusted("holm"))
 res.rma.bl.biomass3 <- rma.mv(yi, vi, mods=~Abs_Latitude,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_bl_biomass)
 res.rma.bl.biomass3
-res.rma.bl.biomass4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_bl_biomass)
+res.rma.bl.biomass4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_bl_biomass_latdiff)
 res.rma.bl.biomass4
 res.rma.bl.biomass5 <- rma.mv(yi, vi, mods=~Years_warmed,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_bl_biomass)
 res.rma.bl.biomass5
@@ -193,7 +189,7 @@ res.rma.flwr.num2
 summary(glht(res.rma.flwr.num2, linfct=cbind(contrMat(rep(1,3), type="Tukey"))), test=adjusted("holm"))
 res.rma.flwr.num3 <- rma.mv(yi, vi, mods=~Abs_Latitude,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_flwr_num)
 res.rma.flwr.num3
-res.rma.flwr.num4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_flwr_num)
+res.rma.flwr.num4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_flwr_num_latdiff)
 res.rma.flwr.num4
 res.rma.flwr.num5 <- rma.mv(yi, vi, mods=~Years_warmed,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_flwr_num)
 res.rma.flwr.num5
@@ -235,7 +231,7 @@ res.rma.fruit.num2
 summary(glht(res.rma.fruit.num2, linfct=cbind(contrMat(rep(1,4), type="Tukey"))), test=adjusted("holm"))
 res.rma.fruit.num3 <- rma.mv(yi, vi, mods=~Abs_Latitude,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_fruit_num)
 res.rma.fruit.num3
-res.rma.fruit.num4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_fruit_num)
+res.rma.fruit.num4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_fruit_num_latdiff)
 res.rma.fruit.num4
 res.rma.fruit.num5 <- rma.mv(yi, vi, mods=~Years_warmed,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_fruit_num)
 res.rma.fruit.num5
@@ -277,7 +273,7 @@ res.rma.fruit.weight2
 summary(glht(res.rma.fruit.weight2, linfct=cbind(contrMat(rep(1,3), type="Tukey"))), test=adjusted("holm"))
 res.rma.fruit.weight3 <- rma.mv(yi, vi, mods=~Abs_Latitude,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_fruit_weight)
 res.rma.fruit.weight3
-res.rma.fruit.weight4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_fruit_weight)
+res.rma.fruit.weight4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_fruit_weight_latdiff)
 res.rma.fruit.weight4
 res.rma.fruit.weight5 <- rma.mv(yi, vi, mods=~Years_warmed,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_fruit_weight)
 res.rma.fruit.weight5
@@ -319,7 +315,7 @@ res.rma.growth2
 summary(glht(res.rma.growth2, linfct=cbind(contrMat(rep(1,6), type="Tukey"))), test=adjusted("holm"))
 res.rma.growth3 <- rma.mv(yi, vi, mods=~Abs_Latitude,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_growth)
 res.rma.growth3
-res.rma.growth4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_growth)
+res.rma.growth4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_growth_latdiff)
 res.rma.growth4
 res.rma.growth5 <- rma.mv(yi, vi, mods=~Years_warmed,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_growth)
 res.rma.growth5
@@ -361,7 +357,7 @@ res.rma.leaf.growth2
 summary(glht(res.rma.leaf.growth2, linfct=cbind(contrMat(rep(1,5), type="Tukey"))), test=adjusted("holm"))
 res.rma.leaf.growth3 <- rma.mv(yi, vi, mods=~Abs_Latitude,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_leaf_growth)
 res.rma.leaf.growth3
-res.rma.leaf.growth4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_leaf_growth)
+res.rma.leaf.growth4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_leaf_growth_latdiff)
 res.rma.leaf.growth4
 res.rma.leaf.growth5 <- rma.mv(yi, vi, mods=~Years_warmed,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_leaf_growth)
 res.rma.leaf.growth5
@@ -403,7 +399,7 @@ res.rma.cover2
 summary(glht(res.rma.cover2, linfct=cbind(contrMat(rep(1,7), type="Tukey"))), test=adjusted("holm"))
 res.rma.cover3 <- rma.mv(yi, vi, mods=~Abs_Latitude,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_cover)
 res.rma.cover3
-res.rma.cover4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_cover)
+res.rma.cover4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_cover_latdiff)
 res.rma.cover4
 res.rma.cover5 <- rma.mv(yi, vi, mods=~Years_warmed,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_cover)
 res.rma.cover5
@@ -445,7 +441,7 @@ res.rma.ab.n2
 summary(glht(res.rma.ab.n2, linfct=cbind(contrMat(rep(1,7), type="Tukey"))), test=adjusted("holm"))
 res.rma.ab.n3 <- rma.mv(yi, vi, mods=~Abs_Latitude,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_ab_n)
 res.rma.ab.n3
-res.rma.ab.n4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_ab_n)
+res.rma.ab.n4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_ab_n_latdiff)
 res.rma.ab.n4
 res.rma.ab.n5 <- rma.mv(yi, vi, mods=~Years_warmed,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_ab_n)
 res.rma.ab.n5
@@ -487,7 +483,7 @@ res.rma.bl.n2
 summary(glht(res.rma.bl.n2, linfct=cbind(contrMat(rep(1,4), type="Tukey"))), test=adjusted("holm"))
 res.rma.bl.n3 <- rma.mv(yi, vi, mods=~Abs_Latitude,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_bl_n)
 res.rma.bl.n3
-res.rma.bl.n4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_bl_n)
+res.rma.bl.n4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_bl_n_latdiff)
 res.rma.bl.n4
 res.rma.bl.n5 <- rma.mv(yi, vi, mods=~Years_warmed,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_bl_n)
 res.rma.bl.n5
@@ -529,7 +525,7 @@ res.rma.spring2
 summary(glht(res.rma.spring2, linfct=cbind(contrMat(rep(1,5), type="Tukey"))), test=adjusted("holm"))
 res.rma.spring3 <- rma.mv(yi, vi, mods=~Abs_Latitude,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_spring)
 res.rma.spring3
-res.rma.spring4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_spring)
+res.rma.spring4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_spring_latdiff)
 res.rma.spring4
 res.rma.spring5 <- rma.mv(yi, vi, mods=~Years_warmed,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_spring)
 res.rma.spring5
@@ -571,7 +567,7 @@ res.rma.fall2
 summary(glht(res.rma.fall2, linfct=cbind(contrMat(rep(1,4), type="Tukey"))), test=adjusted("holm"))
 res.rma.fall3 <- rma.mv(yi, vi, mods=~Abs_Latitude,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_fall)
 res.rma.fall3
-res.rma.fall4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_fall)
+res.rma.fall4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_fall_latdiff)
 res.rma.fall4
 res.rma.fall5 <- rma.mv(yi, vi, mods=~Years_warmed,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_fall)
 res.rma.fall5
@@ -613,7 +609,7 @@ res.rma.flwr.lifespan2
 summary(glht(res.rma.flwr.lifespan2, linfct=cbind(contrMat(rep(1,3), type="Tukey"))), test=adjusted("holm"))
 res.rma.flwr.lifespan3 <- rma.mv(yi, vi, mods=~Abs_Latitude,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_flwr_lifespan)
 res.rma.flwr.lifespan3
-res.rma.flwr.lifespan4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_flwr_lifespan)
+res.rma.flwr.lifespan4 <- rma.mv(yi, vi, mods=~Lat_difference,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_flwr_lifespan_latdiff)
 res.rma.flwr.lifespan4
 res.rma.flwr.lifespan5 <- rma.mv(yi, vi, mods=~Years_warmed,random=list(~1|Pub_number/Site/Genus_Species),data=esmd_flwr_lifespan)
 res.rma.flwr.lifespan5
