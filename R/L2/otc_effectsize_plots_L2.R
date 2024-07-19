@@ -538,7 +538,7 @@ dev.off()
 
 
 ### effect size based on distance from range edge ###
-esmd_lat_diff_trim <- esmd_clean2 %>% # testing if we restrict latitude difference to remove large outlier values
+esmd_lat_diff_trim <- esmd_clean2 %>%
   filter(!(Latitude <= 0))
 png("effect_latdiff.png", units="in", width=8, height=6, res=300)
 ggplot(esmd_lat_diff_trim, aes(x = Lat_difference, y = yi)) +

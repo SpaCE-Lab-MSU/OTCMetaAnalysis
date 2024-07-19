@@ -366,14 +366,13 @@ sample_coal$Genus_Species <- paste0(sample_coal$Genus,"_",sample_coal$Species)
 ### make column for latitude difference between max latitude of species + study latitude
 sample_coal <- sample_coal %>%
   mutate(Lat_difference = Max_lat_of_species-Latitude)
-sample_coal$Lat_difference[sample_coal$Lat_difference < 0] <- NA
 
 
 ### reorganize order of column names 
 sample_reorder <- sample_coal[, c("User","Pub_number","Pub_info","Study_year_start","File_name",
                                     "Var_type","Var_type_broad","Value_error","Yunits","Func_group","Func_group_broad","Family",
                                     "Genus","Species","Genus_Species","Native_Status","Amount_warmed_C","Amount_warmed_type","Years_warmed",
-                                    "Year_round_warm","Latitude","Longitude","Max_lat_of_species","Lat_difference","Site","Tissue_Type","Tissue_Type_broad",
+                                    "Year_round_warm","Latitude","Longitude","Max_lat_of_species","Lat_difference","Max_lat_source","Site","Tissue_Type","Tissue_Type_broad",
                                     "Lichen_Moss_Type","Warmed_Mean","Warmed_SD","Warmed_N","Ambient_Mean","Ambient_SD","Ambient_N")]
 
 
