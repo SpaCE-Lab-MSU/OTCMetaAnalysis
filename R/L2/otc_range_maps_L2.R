@@ -8,8 +8,8 @@
 
 # thoughts
 # IUCN spatial data: would be great, but has very few species
-# BIEN: only has range maps for Americas, but occurrence data could work
-# GBIF: make my own estimated northern range limit based on occurrence data
+# BIEN: used occurrence data, but doesn't contain non-vascular spp
+# GBIF: make my own estimated northern range limit based on occurrence data; using for non-vascular spp
 
 
 # clear environment
@@ -23,6 +23,7 @@ library(maps)
 library(rgbif)
 library(maptools)
 library(latticeExtra)
+library(CoordinateCleaner)
 
 # set working directory
 MA_dir<-Sys.getenv("MADIR")
@@ -42,20 +43,26 @@ effect2 <- effect %>%
   filter(!(Genus_Species == "_" | Genus_Species == "Sphagnum_" | Genus_Species == "Draba_" |
              Genus_Species == "Carex_" | Genus_Species == "Oxytropis_" | Genus_Species == "Luzula_" |
              Genus_Species == "Stereocaulon_" | Genus_Species == "Cladonia_" | Genus_Species == "Nephroma_" |
-             Genus_Species == "Peltigera_"))
+             Genus_Species == "Peltigera_" | Genus_Species == "Trifolium_" | Genus_Species == "Antennaria_" |
+             Genus_Species == "Asclepias_" | Genus_Species == "Hieracium_" | Genus_Species == "Poa_"))
 # replace underscore with space
 effect2$Genus_Species<-gsub("_", " ", effect2$Genus_Species, fixed=TRUE)
 # store each species in a list
 species <- as.list(unique(effect2$Genus_Species))
 
-# subset species list into chunks to run through the BIEN occurrence function
+# subset species list into chunks to run through the occurrence functions
 species2 <- species[1:5]
 species3 <- species[6:10]
 species4 <- species[11:15]
 species5 <- species[16:20]
-species6 <- species[21:25]
-species7 <- species[26:30]
-species8 <- species[31:35]
+species6 <- species[21:23]
+species6.1 <- species[24:25]
+species7 <- species[26]
+species7.1 <- species[27:28]
+species7.2 <- species[29:30]
+species8 <- species[31:33]
+species8.1 <- species[34] # error: vector memory limit of 16 Gb reached, see mem.maxVSize()
+species8.2 <- species[35]
 species9 <- species[36:40]
 species10 <- species[41:45]
 species11 <- species[46:50]
@@ -77,15 +84,38 @@ species26 <- species[121:125]
 species27 <- species[126:130]
 species28 <- species[131:135]
 species29 <- species[136:140]
-species30 <- species[141:145]
+species30 <- species[141]
+species30.1 <- species[142]
+species30.2 <- species[143:144]
+species30.3 <- species[145]
 species31 <- species[146:150]
+species31.1 <- species[150]
 species32 <- species[151:155]
 species33 <- species[156:160]
 species34 <- species[161:165]
 species35 <- species[166:170]
-species36 <- species[171:175]
+species36 <- species[171:174]
+species36.1 <- species[175]
 species37 <- species[176:180]
-species38 <- species[181:187]
+species38 <- species[181:185]
+species39 <- species[186:190]
+species40 <- species[191]
+species40.1 <- species[192]
+species40.2 <- species[193]
+species40.3 <- species[194]
+species40.4 <- species[195]
+species41 <- species[196:197]
+species41.1 <- species[198]
+species41.2 <- species[199]
+species41.3 <- species[200]
+species42 <- species[201]
+species42.1 <- species[202]
+species42.2 <- species[203:205]
+species43 <- species[206:208]
+species43.1 <- species[209:210]
+species44 <- species[211:213]
+species44.1 <- species[214:215]
+species44.2 <- species[216:217]
 
 
 ### occurrence data - BIEN ###
@@ -108,7 +138,41 @@ occurrences <- function(spp) {
 }
 # store the results of the function
 # change "species#" and "df_list#" to match the subset of species I want to work with
-df_list37 <- occurrences(spp = species38)
+df_list37 <- occurrences(spp = species37)
+
+
+
+### occurrence data - GBIF ###
+occurrences <- function(spp) {
+  
+  list_of_occ <- list()
+  
+  for(i in 1:length(spp)){
+    key <- name_backbone(spp[[i]])$usageKey
+    gbif_download <- occ_download(pred("taxonKey", key),format = "SIMPLE_CSV")
+    occ_download_wait(gbif_download)
+    d <- occ_download_get(gbif_download) %>%
+      occ_download_import()
+    d <- d %>%
+      filter(!is.na(decimalLongitude)) %>%
+      filter(!is.na(decimalLatitude))
+    flags <- clean_coordinates(x = d,
+                           lon = "decimalLongitude",
+                           lat = "decimalLatitude",
+                           countries = "countryCode",
+                           species = "species",
+                           tests = c("capitals", "centroids",
+                                     "duplicates", "equal", "gbif",
+                                     "institutions", "seas","zeros"))
+    d_cleaned <- d[flags$.summary,]
+    
+    list_of_occ[[i]] <- d_cleaned
+  }
+  return(list_of_occ)
+}
+# store the results of the function
+# change "species#" and "df_list#" to match the subset of species I want to work with
+df_list44.2 <- occurrences(spp = species44.2)
 
 
 
@@ -545,15 +609,28 @@ spplot(SPDF, col.regions = "transparent", colorkey = FALSE,
 
 
 
-
 ### occurrence data - GBIF ###
-taxonKey <- name_backbone("Carex bigelowii")$usageKey
-occ_download(pred("taxonKey", 2722383))
-x <- occ_download_get('0248073-230224095556074') %>%
+library(CoordinateCleaner)
+key <- name_backbone("Carex moorcroftii")$usageKey
+gbif_download <- occ_download(pred("taxonKey", key),format = "SIMPLE_CSV")
+occ_download_wait(gbif_download)
+d <- occ_download_get(gbif_download) %>%
   occ_download_import()
 
-plot(map_fetch(taxonKey = 2722383, bin = "hex", srs="EPSG:3857",
-               hexPerTile = 30, style = "purpleYellow-noborder.poly"))
+d <- d %>%
+  filter(!is.na(decimalLongitude)) %>%
+  filter(!is.na(decimalLatitude))
+
+flags <- clean_coordinates(x = d,
+                           lon = "decimalLongitude",
+                           lat = "decimalLatitude",
+                           countries = "countryCode",
+                           species = "species",
+                           tests = c("capitals", "centroids",
+                                     "duplicates", "equal", "gbif",
+                                     "institutions", "seas","zeros"))
+d_cleaned <- d[flags$.summary,]
+d_flagged <- d[!flags$.summary,]
 
 
 
