@@ -443,10 +443,10 @@ esmd_lat_trim <- esmd_clean2 %>% # selecting traits/properties that had an effec
            Var_type_broad == "Phen_early")
 png("effect_lat.png", units="in", width=8, height=6, res=300)
 ggplot(esmd_lat_trim, aes(x = Abs_Latitude, y = yi)) +
-  facet_wrap(.~Var_type_broad, scales="free",labeller = as_labeller(var_labels), ncol=3) +
+  facet_wrap(.~Var_type_broad, scales="free_y",labeller = as_labeller(var_labels), ncol=3) +
   geom_point(size = 1) +
   geom_smooth(method = 'lm',color="darkred") +
-  labs(x = "Absolute latitude (°)", y = "Effect size") +
+  labs(x = "\nAbsolute latitude (°)", y = "Effect size") +
   theme_bw() +
   theme(panel.border = element_blank(),
         panel.background = element_blank(),
