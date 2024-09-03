@@ -28,7 +28,7 @@ L2: The L2 scripts contain the main code for calculating effect sizes, analyzing
 
 ## Usage
 
-All analyses were conducted using R (R Core Team 2021).
+All analyses were conducted using R (R Core Team 2024).
 
 ## Contributors
 
@@ -37,6 +37,10 @@ PI: Phoebe Zarnetske
 Collaborators: Kara Dobson, Pat Bills, Emily Parker, Jacklyn Alsbro
 
 Prior collaborators: Kileigh Welshofer
+
+## Funding
+
+Funding for this project is provided by Michigan State University and the National Science Foundation, through the Kellogg Biological Station Long-Term Ecological Research site (NSF DEB # 2224712).
 
 ## Contact
 
