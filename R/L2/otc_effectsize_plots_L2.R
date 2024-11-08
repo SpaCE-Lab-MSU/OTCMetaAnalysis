@@ -906,3 +906,62 @@ ggplot() +
 dev.off()
 # no, they both seem to have a good range of latitudes
 # slightly more seasonally warmed studies at higher latitudes, though
+
+
+### trait space in lat/long ###
+# Make a function that plots a given trait's lat and long
+prepare_trait_data <- function(data, world_map) {
+  ggplot(data) +
+    geom_map(
+      data = world_map, map = world_map,
+      aes(long, lat, map_id = region),
+      color = "lightgrey", fill = "darkgrey", size = 0.1
+    ) +
+    geom_point(
+      aes(Longitude, Latitude),
+      color = "steelblue",
+      alpha = 0.7,
+      size = 2.5
+    ) +
+    theme_classic() +
+    labs(x = "Longitude", y = "Latitude") +
+    theme(
+      axis.title.x = element_text(size = 15),
+      axis.title.y = element_text(size = 15),
+      axis.text.x = element_text(size = 14),
+      axis.text.y = element_text(size = 14)
+    ) +
+    facet_wrap(~ Var_type_broad, ncol = 4, labeller = labeller(Var_type_broad = var_labels))
+}
+png("map_traits.png", units="in", width=10, height=8, res=300)
+prepare_trait_data(esmd_clean2, world)
+dev.off()
+
+
+### amount of warming across lat/long ###
+amount_warmed_map <- function(data, world_map) {
+  ggplot(data) +
+    geom_map(
+      data = world_map, map = world_map,
+      aes(long, lat, map_id = region),
+      color = "lightgrey", fill = "darkgrey", size = 0.1
+    ) +
+    geom_point(
+      aes(Longitude, Latitude, color = Amount_warmed_C),
+      alpha = 0.7,
+      size = 2.5
+    ) +
+    scale_color_gradient(low = "yellow", high = "red") +
+    theme_classic() +
+    labs(x = "Longitude", y = "Latitude") +
+    theme(
+      axis.title.x = element_text(size = 15),
+      axis.title.y = element_text(size = 15),
+      axis.text.x = element_text(size = 14),
+      axis.text.y = element_text(size = 14)
+    )
+}
+png("map_amountwarmed.png", units="in", width=10, height=6, res=300)
+amount_warmed_map(esmd_clean2, world)
+dev.off()
+
