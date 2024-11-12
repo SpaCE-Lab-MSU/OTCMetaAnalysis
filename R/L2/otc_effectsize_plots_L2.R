@@ -938,6 +938,38 @@ prepare_trait_data(esmd_clean2, world)
 dev.off()
 
 
+### functional types in lat/long ###
+# Make a function that plots all functional types lat/long
+esmd_rem <- esmd_clean2 %>%
+  filter(!(Func_group_broad == ""))
+prepare_trait_data <- function(data, world_map) {
+  ggplot(data) +
+    geom_map(
+      data = world_map, map = world_map,
+      aes(long, lat, map_id = region),
+      color = "lightgrey", fill = "darkgrey", size = 0.1
+    ) +
+    geom_point(
+      aes(Longitude, Latitude),
+      color = "steelblue",
+      alpha = 0.7,
+      size = 2
+    ) +
+    theme_classic() +
+    labs(x = "Longitude", y = "Latitude") +
+    theme(
+      axis.title.x = element_text(size = 13),
+      axis.title.y = element_text(size = 13),
+      axis.text.x = element_text(size = 12),
+      axis.text.y = element_text(size = 12)
+    ) +
+    facet_wrap(~ Func_group_broad, ncol = 4)
+}
+png("map_traits.png", units="in", width=8, height=4.5, res=300)
+prepare_trait_data(esmd_rem, world)
+dev.off()
+
+
 ### amount of warming across lat/long ###
 amount_warmed_map <- function(data, world_map) {
   ggplot(data) +
