@@ -5,10 +5,10 @@
 # DATA OUTPUT:    Effect size plots
 # DATE:           Sep 2022; Jan 2023; July 2023
 
-# clear environment
+### clear environment
 rm(list = ls())
 
-# Load packages
+### Load packages
 library(tidyverse)
 library(metafor)
 library(plotrix)
@@ -16,15 +16,103 @@ library(maps)
 library(ggpubr)
 library(ggpattern)
 
-# set working directory
+### set working directory
 MA_dir<-Sys.getenv("MADIR")
 
-# read in data
+### read in data
+# raw data/effect sizes
 esmd_clean <- read.csv(file.path(MA_dir,"L2/otc_effect_sizes_L2.csv")) # year-limited (main dataset)
 esmd_clean_allyears <- read.csv(file.path(MA_dir,"L2/otc_data_cleaned_allyears_L2.csv")) # data for all years
 world <- map_data("world")
 
-# clean labels for plotting
+# model predictions for regression lines
+amount_warmed_ab_biomass <- readRDS(file.path(MA_dir,"L2/ amount_warmed_model_ab_biomass.rds"))
+amount_warmed_bl_biomass <- readRDS(file.path(MA_dir,"L2/ amount_warmed_model_bl_biomass.rds"))
+amount_warmed_ab_n <- readRDS(file.path(MA_dir,"L2/ amount_warmed_model_ab_n.rds"))
+amount_warmed_bl_n <- readRDS(file.path(MA_dir,"L2/ amount_warmed_model_bl_n.rds"))
+amount_warmed_cover <- readRDS(file.path(MA_dir,"L2/ amount_warmed_model_cover.rds"))
+amount_warmed_growth <- readRDS(file.path(MA_dir,"L2/ amount_warmed_model_growth.rds"))
+amount_warmed_leaf_growth <- readRDS(file.path(MA_dir,"L2/ amount_warmed_model_leaf_growth.rds"))
+amount_warmed_flwr_num <- readRDS(file.path(MA_dir,"L2/ amount_warmed_model_flwr_num.rds"))
+amount_warmed_fruit_num <- readRDS(file.path(MA_dir,"L2/ amount_warmed_model_fruit_num.rds"))
+amount_warmed_fruit_weight <- readRDS(file.path(MA_dir,"L2/ amount_warmed_model_fruit_weight.rds"))
+amount_warmed_spring <- readRDS(file.path(MA_dir,"L2/ amount_warmed_model_spring.rds"))
+amount_warmed_flwr_lifespan <- readRDS(file.path(MA_dir,"L2/ amount_warmed_model_flwr_lifespan.rds"))
+amount_warmed_fall <- readRDS(file.path(MA_dir,"L2/ amount_warmed_model_fall.rds"))
+
+lat_ab_biomass <- readRDS(file.path(MA_dir,"L2/ lat_model_ab_biomass.rds"))
+lat_bl_biomass <- readRDS(file.path(MA_dir,"L2/ lat_model_bl_biomass.rds"))
+lat_ab_n <- readRDS(file.path(MA_dir,"L2/ lat_model_ab_n.rds"))
+lat_bl_n <- readRDS(file.path(MA_dir,"L2/ lat_model_bl_n.rds"))
+lat_cover <- readRDS(file.path(MA_dir,"L2/ lat_model_cover.rds"))
+lat_growth <- readRDS(file.path(MA_dir,"L2/ lat_model_growth.rds"))
+lat_leaf_growth <- readRDS(file.path(MA_dir,"L2/ lat_model_leaf_growth.rds"))
+lat_flwr_num <- readRDS(file.path(MA_dir,"L2/ lat_model_flwr_num.rds"))
+lat_fruit_num <- readRDS(file.path(MA_dir,"L2/ lat_model_fruit_num.rds"))
+lat_fruit_weight <- readRDS(file.path(MA_dir,"L2/ lat_model_fruit_weight.rds"))
+lat_spring <- readRDS(file.path(MA_dir,"L2/ lat_model_spring.rds"))
+lat_flwr_lifespan <- readRDS(file.path(MA_dir,"L2/ lat_model_flwr_lifespan.rds"))
+lat_fall <- readRDS(file.path(MA_dir,"L2/ lat_model_fall.rds"))
+
+lat_diff_ab_biomass <- readRDS(file.path(MA_dir,"L2/ lat_diff_model_ab_biomass.rds"))
+lat_diff_bl_biomass <- readRDS(file.path(MA_dir,"L2/ lat_diff_model_bl_biomass.rds"))
+lat_diff_ab_n <- readRDS(file.path(MA_dir,"L2/ lat_diff_model_ab_n.rds"))
+lat_diff_bl_n <- readRDS(file.path(MA_dir,"L2/ lat_diff_model_bl_n.rds"))
+lat_diff_cover <- readRDS(file.path(MA_dir,"L2/ lat_diff_model_cover.rds"))
+lat_diff_growth <- readRDS(file.path(MA_dir,"L2/ lat_diff_model_growth.rds"))
+lat_diff_leaf_growth <- readRDS(file.path(MA_dir,"L2/ lat_diff_model_leaf_growth.rds"))
+lat_diff_flwr_num <- readRDS(file.path(MA_dir,"L2/ lat_diff_model_flwr_num.rds"))
+lat_diff_fruit_num <- readRDS(file.path(MA_dir,"L2/ lat_diff_model_fruit_num.rds"))
+lat_diff_fruit_weight <- readRDS(file.path(MA_dir,"L2/ lat_diff_model_fruit_weight.rds"))
+lat_diff_spring <- readRDS(file.path(MA_dir,"L2/ lat_diff_model_spring.rds"))
+lat_diff_flwr_lifespan <- readRDS(file.path(MA_dir,"L2/ lat_diff_model_flwr_lifespan.rds"))
+lat_diff_fall <- readRDS(file.path(MA_dir,"L2/ lat_diff_model_fall.rds"))
+
+years_w_ab_biomass <- readRDS(file.path(MA_dir,"L2/ years_w_model_ab_biomass.rds"))
+years_w_bl_biomass <- readRDS(file.path(MA_dir,"L2/ years_w_model_bl_biomass.rds"))
+years_w_ab_n <- readRDS(file.path(MA_dir,"L2/ years_w_model_ab_n.rds"))
+years_w_bl_n <- readRDS(file.path(MA_dir,"L2/ years_w_model_bl_n.rds"))
+years_w_cover <- readRDS(file.path(MA_dir,"L2/ years_w_model_cover.rds"))
+years_w_growth <- readRDS(file.path(MA_dir,"L2/ years_w_model_growth.rds"))
+years_w_leaf_growth <- readRDS(file.path(MA_dir,"L2/ years_w_model_leaf_growth.rds"))
+years_w_flwr_num <- readRDS(file.path(MA_dir,"L2/ years_w_model_flwr_num.rds"))
+years_w_fruit_num <- readRDS(file.path(MA_dir,"L2/ years_w_model_fruit_num.rds"))
+years_w_fruit_weight <- readRDS(file.path(MA_dir,"L2/ years_w_model_fruit_weight.rds"))
+years_w_spring <- readRDS(file.path(MA_dir,"L2/ years_w_model_spring.rds"))
+years_w_flwr_lifespan <- readRDS(file.path(MA_dir,"L2/ years_w_model_flwr_lifespan.rds"))
+years_w_fall <- readRDS(file.path(MA_dir,"L2/ years_w_model_fall.rds"))
+
+mat_ab_biomass <- readRDS(file.path(MA_dir,"L2/ mat_model_ab_biomass.rds"))
+mat_bl_biomass <- readRDS(file.path(MA_dir,"L2/ mat_model_bl_biomass.rds"))
+mat_ab_n <- readRDS(file.path(MA_dir,"L2/ mat_model_ab_n.rds"))
+mat_bl_n <- readRDS(file.path(MA_dir,"L2/ mat_model_bl_n.rds"))
+mat_cover <- readRDS(file.path(MA_dir,"L2/ mat_model_cover.rds"))
+mat_growth <- readRDS(file.path(MA_dir,"L2/ mat_model_growth.rds"))
+mat_leaf_growth <- readRDS(file.path(MA_dir,"L2/ mat_model_leaf_growth.rds"))
+mat_flwr_num <- readRDS(file.path(MA_dir,"L2/ mat_model_flwr_num.rds"))
+mat_fruit_num <- readRDS(file.path(MA_dir,"L2/ mat_model_fruit_num.rds"))
+mat_fruit_weight <- readRDS(file.path(MA_dir,"L2/ mat_model_fruit_weight.rds"))
+mat_spring <- readRDS(file.path(MA_dir,"L2/ mat_model_spring.rds"))
+mat_flwr_lifespan <- readRDS(file.path(MA_dir,"L2/ mat_model_flwr_lifespan.rds"))
+mat_fall <- readRDS(file.path(MA_dir,"L2/ mat_model_fall.rds"))
+
+map_ab_biomass <- readRDS(file.path(MA_dir,"L2/ map_model_ab_biomass.rds"))
+map_bl_biomass <- readRDS(file.path(MA_dir,"L2/ map_model_bl_biomass.rds"))
+map_ab_n <- readRDS(file.path(MA_dir,"L2/ map_model_ab_n.rds"))
+map_bl_n <- readRDS(file.path(MA_dir,"L2/ map_model_bl_n.rds"))
+map_cover <- readRDS(file.path(MA_dir,"L2/ map_model_cover.rds"))
+map_growth <- readRDS(file.path(MA_dir,"L2/ map_model_growth.rds"))
+map_leaf_growth <- readRDS(file.path(MA_dir,"L2/ map_model_leaf_growth.rds"))
+map_flwr_num <- readRDS(file.path(MA_dir,"L2/ map_model_flwr_num.rds"))
+map_fruit_num <- readRDS(file.path(MA_dir,"L2/ map_model_fruit_num.rds"))
+map_fruit_weight <- readRDS(file.path(MA_dir,"L2/ map_model_fruit_weight.rds"))
+map_spring <- readRDS(file.path(MA_dir,"L2/ map_model_spring.rds"))
+map_flwr_lifespan <- readRDS(file.path(MA_dir,"L2/ map_model_flwr_lifespan.rds"))
+map_fall <- readRDS(file.path(MA_dir,"L2/ map_model_fall.rds"))
+
+
+
+### clean labels for plotting
 var_labels <- c("Phen_flwr_lifespan" = "Flower lifespan",
                             "Phen_early" = "Spring phenophases",
                             "Nitrogen_above" = "Aboveground N",
@@ -435,6 +523,7 @@ dev.off()
 
 
 ### effect size based on latitude of study ###
+## using raw data
 esmd_lat_trim <- esmd_clean2 %>% # selecting traits/properties that had an effect
   filter(Var_type_broad == "Flower_num" |
            Var_type_broad == "Fruit_num" |
@@ -457,6 +546,120 @@ ggplot(esmd_lat_trim, aes(x = Abs_Latitude, y = yi)) +
         axis.line = element_line(colour = "black"),
         axis.title.x = element_text(size=15),
         axis.title.y = element_text(size=15),
+        legend.position="none",
+        strip.text = element_text(face = "bold", size=11))
+dev.off()
+
+## using model estimates
+plot_data_lat <- data.frame(Abs_Latitude = esmd_lat_trim$Abs_Latitude, 
+                            Var_type_broad = esmd_lat_trim$Var_type_broad,
+                            yi = esmd_lat_trim$yi)
+plot_data_lat$model_preds <- NA
+plot_data_lat$ci_lower <- NA
+plot_data_lat$ci_upper <- NA
+# merging model estimates for the regression lines with raw data for the points
+plot_data_lat$model_preds[plot_data_lat$Var_type_broad == "Flower_num"] <- lat_flwr_num$pred
+plot_data_lat$ci_lower[plot_data_lat$Var_type_broad == "Flower_num"] <- lat_flwr_num$ci.lb
+plot_data_lat$ci_upper[plot_data_lat$Var_type_broad == "Flower_num"] <- lat_flwr_num$ci.ub
+plot_data_lat$model_preds[plot_data_lat$Var_type_broad == "Fruit_num"] <- lat_fruit_num$pred
+plot_data_lat$ci_lower[plot_data_lat$Var_type_broad == "Fruit_num"] <- lat_fruit_num$ci.lb
+plot_data_lat$ci_upper[plot_data_lat$Var_type_broad == "Fruit_num"] <- lat_fruit_num$ci.ub
+plot_data_lat$model_preds[plot_data_lat$Var_type_broad == "Fruit_weight"] <- lat_fruit_weight$pred
+plot_data_lat$ci_lower[plot_data_lat$Var_type_broad == "Fruit_weight"] <- lat_fruit_weight$ci.lb
+plot_data_lat$ci_upper[plot_data_lat$Var_type_broad == "Fruit_weight"] <- lat_fruit_weight$ci.ub
+plot_data_lat$model_preds[plot_data_lat$Var_type_broad == "Nitrogen_below"] <- lat_bl_n$pred
+plot_data_lat$ci_lower[plot_data_lat$Var_type_broad == "Nitrogen_below"] <- lat_bl_n$ci.lb
+plot_data_lat$ci_upper[plot_data_lat$Var_type_broad == "Nitrogen_below"] <- lat_bl_n$ci.ub
+plot_data_lat$model_preds[plot_data_lat$Var_type_broad == "Phen_early"] <- lat_spring$pred
+plot_data_lat$ci_lower[plot_data_lat$Var_type_broad == "Phen_early"] <- lat_spring$ci.lb
+plot_data_lat$ci_upper[plot_data_lat$Var_type_broad == "Phen_early"] <- lat_spring$ci.ub
+# plot
+png("effect_lat.png", units="in", width=8, height=6, res=300)
+ggplot(plot_data_lat, aes(x = Abs_Latitude)) +
+  facet_wrap(.~Var_type_broad, scales="free_y",labeller = as_labeller(var_labels), ncol=3) +
+  geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper), alpha = 0.6, fill = "grey") +
+  geom_point(aes(y = yi),size = 1) +
+  geom_line(aes(y = model_preds),size=1,color="darkred") +
+  labs(x = "\nAbsolute latitude (°)", y = "Effect size") +
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        panel.background = element_blank(),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        plot.title = element_text(size=15),
+        axis.text = element_text(size=14),
+        axis.line = element_line(colour = "black"),
+        axis.title.x = element_text(size=15),
+        axis.title.y = element_text(size=15),
+        legend.position="none",
+        strip.text = element_text(face = "bold", size=11))
+dev.off()
+
+## for supplement: all traits
+plot_data_lat <- data.frame(Abs_Latitude = esmd_clean2$Abs_Latitude, 
+                            Var_type_broad = esmd_clean2$Var_type_broad,
+                            yi = esmd_clean2$yi)
+plot_data_lat$model_preds <- NA
+plot_data_lat$ci_lower <- NA
+plot_data_lat$ci_upper <- NA
+# merging model estimates for the regression lines with raw data for the points
+plot_data_lat$model_preds[plot_data_lat$Var_type_broad == "Biomass_above"] <- lat_ab_biomass$pred
+plot_data_lat$ci_lower[plot_data_lat$Var_type_broad == "Biomass_above"] <- lat_ab_biomass$ci.lb
+plot_data_lat$ci_upper[plot_data_lat$Var_type_broad == "Biomass_above"] <- lat_ab_biomass$ci.ub
+plot_data_lat$model_preds[plot_data_lat$Var_type_broad == "Biomass_below"] <- lat_bl_biomass$pred
+plot_data_lat$ci_lower[plot_data_lat$Var_type_broad == "Biomass_below"] <- lat_bl_biomass$ci.lb
+plot_data_lat$ci_upper[plot_data_lat$Var_type_broad == "Biomass_below"] <- lat_bl_biomass$ci.ub
+plot_data_lat$model_preds[plot_data_lat$Var_type_broad == "Percent_cover"] <- lat_cover$pred
+plot_data_lat$ci_lower[plot_data_lat$Var_type_broad == "Percent_cover"] <- lat_cover$ci.lb
+plot_data_lat$ci_upper[plot_data_lat$Var_type_broad == "Percent_cover"] <- lat_cover$ci.ub
+plot_data_lat$model_preds[plot_data_lat$Var_type_broad == "Growth"] <- lat_growth$pred
+plot_data_lat$ci_lower[plot_data_lat$Var_type_broad == "Growth"] <- lat_growth$ci.lb
+plot_data_lat$ci_upper[plot_data_lat$Var_type_broad == "Growth"] <- lat_growth$ci.ub
+plot_data_lat$model_preds[plot_data_lat$Var_type_broad == "Leaf_growth"] <- lat_leaf_growth$pred
+plot_data_lat$ci_lower[plot_data_lat$Var_type_broad == "Leaf_growth"] <- lat_leaf_growth$ci.lb
+plot_data_lat$ci_upper[plot_data_lat$Var_type_broad == "Leaf_growth"] <- lat_leaf_growth$ci.ub
+plot_data_lat$model_preds[plot_data_lat$Var_type_broad == "Flower_num"] <- lat_flwr_num$pred
+plot_data_lat$ci_lower[plot_data_lat$Var_type_broad == "Flower_num"] <- lat_flwr_num$ci.lb
+plot_data_lat$ci_upper[plot_data_lat$Var_type_broad == "Flower_num"] <- lat_flwr_num$ci.ub
+plot_data_lat$model_preds[plot_data_lat$Var_type_broad == "Fruit_num"] <- lat_fruit_num$pred
+plot_data_lat$ci_lower[plot_data_lat$Var_type_broad == "Fruit_num"] <- lat_fruit_num$ci.lb
+plot_data_lat$ci_upper[plot_data_lat$Var_type_broad == "Fruit_num"] <- lat_fruit_num$ci.ub
+plot_data_lat$model_preds[plot_data_lat$Var_type_broad == "Fruit_weight"] <- lat_fruit_weight$pred
+plot_data_lat$ci_lower[plot_data_lat$Var_type_broad == "Fruit_weight"] <- lat_fruit_weight$ci.lb
+plot_data_lat$ci_upper[plot_data_lat$Var_type_broad == "Fruit_weight"] <- lat_fruit_weight$ci.ub
+plot_data_lat$model_preds[plot_data_lat$Var_type_broad == "Nitrogen_below"] <- lat_bl_n$pred
+plot_data_lat$ci_lower[plot_data_lat$Var_type_broad == "Nitrogen_below"] <- lat_bl_n$ci.lb
+plot_data_lat$ci_upper[plot_data_lat$Var_type_broad == "Nitrogen_below"] <- lat_bl_n$ci.ub
+plot_data_lat$model_preds[plot_data_lat$Var_type_broad == "Nitrogen_above"] <- lat_ab_n$pred
+plot_data_lat$ci_lower[plot_data_lat$Var_type_broad == "Nitrogen_above"] <- lat_ab_n$ci.lb
+plot_data_lat$ci_upper[plot_data_lat$Var_type_broad == "Nitrogen_above"] <- lat_ab_n$ci.ub
+plot_data_lat$model_preds[plot_data_lat$Var_type_broad == "Phen_early"] <- lat_spring$pred
+plot_data_lat$ci_lower[plot_data_lat$Var_type_broad == "Phen_early"] <- lat_spring$ci.lb
+plot_data_lat$ci_upper[plot_data_lat$Var_type_broad == "Phen_early"] <- lat_spring$ci.ub
+plot_data_lat$model_preds[plot_data_lat$Var_type_broad == "Phen_late"] <- lat_fall$pred
+plot_data_lat$ci_lower[plot_data_lat$Var_type_broad == "Phen_late"] <- lat_fall$ci.lb
+plot_data_lat$ci_upper[plot_data_lat$Var_type_broad == "Phen_late"] <- lat_fall$ci.ub
+plot_data_lat$model_preds[plot_data_lat$Var_type_broad == "Phen_flwr_lifespan"] <- lat_flwr_lifespan$pred
+plot_data_lat$ci_lower[plot_data_lat$Var_type_broad == "Phen_flwr_lifespan"] <- lat_flwr_lifespan$ci.lb
+plot_data_lat$ci_upper[plot_data_lat$Var_type_broad == "Phen_flwr_lifespan"] <- lat_flwr_lifespan$ci.ub
+# plot
+png("effect_lat_supp.png", units="in", width=10, height=7.5, res=300)
+ggplot(plot_data_lat, aes(x = Abs_Latitude)) +
+  facet_wrap(.~Var_type_broad, scales="free",labeller = as_labeller(var_labels), ncol=4) +
+  geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper), alpha = 0.6, fill = "grey") +
+  geom_point(aes(y = yi),size = 1) +
+  geom_line(aes(y = model_preds),size=1,color="darkred") +
+  labs(x = "\nAbsolute latitude (°)", y = "Effect size") +
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        panel.background = element_blank(),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        plot.title = element_text(size=15),
+        axis.text = element_text(size=14),
+        axis.line = element_line(colour = "black"),
+        axis.title.x = element_text(size=16),
+        axis.title.y = element_text(size=16),
         legend.position="none",
         strip.text = element_text(face = "bold", size=11))
 dev.off()
@@ -502,6 +705,7 @@ dev.off()
 
 
 ### effect size based on mean annual temperature ###
+## using raw data
 png("effect_temp.png", units="in", width=8, height=6, res=300)
 ggplot(esmd_clean2, aes(x = Mean_annual_temp, y = yi)) +
   facet_wrap(.~Var_type_broad, scales="free",labeller = as_labeller(var_labels)) +
@@ -517,9 +721,79 @@ ggplot(esmd_clean2, aes(x = Mean_annual_temp, y = yi)) +
         strip.text = element_text(face = "bold", size=10))
 dev.off()
 
+## using model estimates
+plot_data_mat <- data.frame(Mean_annual_temp = esmd_clean2$Mean_annual_temp, 
+                            Var_type_broad = esmd_clean2$Var_type_broad,
+                            yi = esmd_clean2$yi)
+plot_data_mat$model_preds <- NA
+plot_data_mat$ci_lower <- NA
+plot_data_mat$ci_upper <- NA
+# merging model estimates for the regression lines with raw data for the points
+plot_data_mat$model_preds[plot_data_mat$Var_type_broad == "Biomass_above"] <- mat_ab_biomass$pred
+plot_data_mat$ci_lower[plot_data_mat$Var_type_broad == "Biomass_above"] <- mat_ab_biomass$ci.lb
+plot_data_mat$ci_upper[plot_data_mat$Var_type_broad == "Biomass_above"] <- mat_ab_biomass$ci.ub
+plot_data_mat$model_preds[plot_data_mat$Var_type_broad == "Biomass_below"] <- mat_bl_biomass$pred
+plot_data_mat$ci_lower[plot_data_mat$Var_type_broad == "Biomass_below"] <- mat_bl_biomass$ci.lb
+plot_data_mat$ci_upper[plot_data_mat$Var_type_broad == "Biomass_below"] <- mat_bl_biomass$ci.ub
+plot_data_mat$model_preds[plot_data_mat$Var_type_broad == "Percent_cover"] <- mat_cover$pred
+plot_data_mat$ci_lower[plot_data_mat$Var_type_broad == "Percent_cover"] <- mat_cover$ci.lb
+plot_data_mat$ci_upper[plot_data_mat$Var_type_broad == "Percent_cover"] <- mat_cover$ci.ub
+plot_data_mat$model_preds[plot_data_mat$Var_type_broad == "Growth"] <- mat_growth$pred
+plot_data_mat$ci_lower[plot_data_mat$Var_type_broad == "Growth"] <- mat_growth$ci.lb
+plot_data_mat$ci_upper[plot_data_mat$Var_type_broad == "Growth"] <- mat_growth$ci.ub
+plot_data_mat$model_preds[plot_data_mat$Var_type_broad == "Leaf_growth"] <- mat_leaf_growth$pred
+plot_data_mat$ci_lower[plot_data_mat$Var_type_broad == "Leaf_growth"] <- mat_leaf_growth$ci.lb
+plot_data_mat$ci_upper[plot_data_mat$Var_type_broad == "Leaf_growth"] <- mat_leaf_growth$ci.ub
+plot_data_mat$model_preds[plot_data_mat$Var_type_broad == "Flower_num"] <- mat_flwr_num$pred
+plot_data_mat$ci_lower[plot_data_mat$Var_type_broad == "Flower_num"] <- mat_flwr_num$ci.lb
+plot_data_mat$ci_upper[plot_data_mat$Var_type_broad == "Flower_num"] <- mat_flwr_num$ci.ub
+plot_data_mat$model_preds[plot_data_mat$Var_type_broad == "Fruit_num"] <- mat_fruit_num$pred
+plot_data_mat$ci_lower[plot_data_mat$Var_type_broad == "Fruit_num"] <- mat_fruit_num$ci.lb
+plot_data_mat$ci_upper[plot_data_mat$Var_type_broad == "Fruit_num"] <- mat_fruit_num$ci.ub
+plot_data_mat$model_preds[plot_data_mat$Var_type_broad == "Fruit_weight"] <- mat_fruit_weight$pred
+plot_data_mat$ci_lower[plot_data_mat$Var_type_broad == "Fruit_weight"] <- mat_fruit_weight$ci.lb
+plot_data_mat$ci_upper[plot_data_mat$Var_type_broad == "Fruit_weight"] <- mat_fruit_weight$ci.ub
+plot_data_mat$model_preds[plot_data_mat$Var_type_broad == "Nitrogen_below"] <- mat_bl_n$pred
+plot_data_mat$ci_lower[plot_data_mat$Var_type_broad == "Nitrogen_below"] <- mat_bl_n$ci.lb
+plot_data_mat$ci_upper[plot_data_mat$Var_type_broad == "Nitrogen_below"] <- mat_bl_n$ci.ub
+plot_data_mat$model_preds[plot_data_mat$Var_type_broad == "Nitrogen_above"] <- mat_ab_n$pred
+plot_data_mat$ci_lower[plot_data_mat$Var_type_broad == "Nitrogen_above"] <- mat_ab_n$ci.lb
+plot_data_mat$ci_upper[plot_data_mat$Var_type_broad == "Nitrogen_above"] <- mat_ab_n$ci.ub
+plot_data_mat$model_preds[plot_data_mat$Var_type_broad == "Phen_early"] <- mat_spring$pred
+plot_data_mat$ci_lower[plot_data_mat$Var_type_broad == "Phen_early"] <- mat_spring$ci.lb
+plot_data_mat$ci_upper[plot_data_mat$Var_type_broad == "Phen_early"] <- mat_spring$ci.ub
+plot_data_mat$model_preds[plot_data_mat$Var_type_broad == "Phen_late"] <- mat_fall$pred
+plot_data_mat$ci_lower[plot_data_mat$Var_type_broad == "Phen_late"] <- mat_fall$ci.lb
+plot_data_mat$ci_upper[plot_data_mat$Var_type_broad == "Phen_late"] <- mat_fall$ci.ub
+plot_data_mat$model_preds[plot_data_mat$Var_type_broad == "Phen_flwr_lifespan"] <- mat_flwr_lifespan$pred
+plot_data_mat$ci_lower[plot_data_mat$Var_type_broad == "Phen_flwr_lifespan"] <- mat_flwr_lifespan$ci.lb
+plot_data_mat$ci_upper[plot_data_mat$Var_type_broad == "Phen_flwr_lifespan"] <- mat_flwr_lifespan$ci.ub
+# plot
+png("effect_mat_supp.png", units="in", width=10, height=7.5, res=300)
+ggplot(plot_data_mat, aes(x = Mean_annual_temp)) +
+  facet_wrap(.~Var_type_broad, scales="free",labeller = as_labeller(var_labels), ncol=4) +
+  geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper), alpha = 0.6, fill = "grey") +
+  geom_point(aes(y = yi),size = 1) +
+  geom_line(aes(y = model_preds),size=1,color="darkred") +
+  labs(x = "\nMean annual temperature (°C)", y = "Effect size") +
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        panel.background = element_blank(),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        plot.title = element_text(size=15),
+        axis.text = element_text(size=14),
+        axis.line = element_line(colour = "black"),
+        axis.title.x = element_text(size=16),
+        axis.title.y = element_text(size=16),
+        legend.position="none",
+        strip.text = element_text(face = "bold", size=11))
+dev.off()
+
 
 
 ### effect size based on mean annual precipitation ###
+## using raw data
 png("effect_precip.png", units="in", width=8, height=6, res=300)
 ggplot(esmd_clean2, aes(x = Mean_annual_precip, y = yi)) +
   facet_wrap(.~Var_type_broad, scales="free",labeller = as_labeller(var_labels)) +
@@ -535,9 +809,79 @@ ggplot(esmd_clean2, aes(x = Mean_annual_precip, y = yi)) +
         strip.text = element_text(face = "bold", size=10))
 dev.off()
 
+## using model estimates
+plot_data_map <- data.frame(Mean_annual_precip = esmd_clean2$Mean_annual_precip, 
+                            Var_type_broad = esmd_clean2$Var_type_broad,
+                            yi = esmd_clean2$yi)
+plot_data_map$model_preds <- NA
+plot_data_map$ci_lower <- NA
+plot_data_map$ci_upper <- NA
+# merging model estimates for the regression lines with raw data for the points
+plot_data_map$model_preds[plot_data_map$Var_type_broad == "Biomass_above"] <- map_ab_biomass$pred
+plot_data_map$ci_lower[plot_data_map$Var_type_broad == "Biomass_above"] <- map_ab_biomass$ci.lb
+plot_data_map$ci_upper[plot_data_map$Var_type_broad == "Biomass_above"] <- map_ab_biomass$ci.ub
+plot_data_map$model_preds[plot_data_map$Var_type_broad == "Biomass_below"] <- map_bl_biomass$pred
+plot_data_map$ci_lower[plot_data_map$Var_type_broad == "Biomass_below"] <- map_bl_biomass$ci.lb
+plot_data_map$ci_upper[plot_data_map$Var_type_broad == "Biomass_below"] <- map_bl_biomass$ci.ub
+plot_data_map$model_preds[plot_data_map$Var_type_broad == "Percent_cover"] <- map_cover$pred
+plot_data_map$ci_lower[plot_data_map$Var_type_broad == "Percent_cover"] <- map_cover$ci.lb
+plot_data_map$ci_upper[plot_data_map$Var_type_broad == "Percent_cover"] <- map_cover$ci.ub
+plot_data_map$model_preds[plot_data_map$Var_type_broad == "Growth"] <- map_growth$pred
+plot_data_map$ci_lower[plot_data_map$Var_type_broad == "Growth"] <- map_growth$ci.lb
+plot_data_map$ci_upper[plot_data_map$Var_type_broad == "Growth"] <- map_growth$ci.ub
+plot_data_map$model_preds[plot_data_map$Var_type_broad == "Leaf_growth"] <- map_leaf_growth$pred
+plot_data_map$ci_lower[plot_data_map$Var_type_broad == "Leaf_growth"] <- map_leaf_growth$ci.lb
+plot_data_map$ci_upper[plot_data_map$Var_type_broad == "Leaf_growth"] <- map_leaf_growth$ci.ub
+plot_data_map$model_preds[plot_data_map$Var_type_broad == "Flower_num"] <- map_flwr_num$pred
+plot_data_map$ci_lower[plot_data_map$Var_type_broad == "Flower_num"] <- map_flwr_num$ci.lb
+plot_data_map$ci_upper[plot_data_map$Var_type_broad == "Flower_num"] <- map_flwr_num$ci.ub
+plot_data_map$model_preds[plot_data_map$Var_type_broad == "Fruit_num"] <- map_fruit_num$pred
+plot_data_map$ci_lower[plot_data_map$Var_type_broad == "Fruit_num"] <- map_fruit_num$ci.lb
+plot_data_map$ci_upper[plot_data_map$Var_type_broad == "Fruit_num"] <- map_fruit_num$ci.ub
+plot_data_map$model_preds[plot_data_map$Var_type_broad == "Fruit_weight"] <- map_fruit_weight$pred
+plot_data_map$ci_lower[plot_data_map$Var_type_broad == "Fruit_weight"] <- map_fruit_weight$ci.lb
+plot_data_map$ci_upper[plot_data_map$Var_type_broad == "Fruit_weight"] <- map_fruit_weight$ci.ub
+plot_data_map$model_preds[plot_data_map$Var_type_broad == "Nitrogen_below"] <- map_bl_n$pred
+plot_data_map$ci_lower[plot_data_map$Var_type_broad == "Nitrogen_below"] <- map_bl_n$ci.lb
+plot_data_map$ci_upper[plot_data_map$Var_type_broad == "Nitrogen_below"] <- map_bl_n$ci.ub
+plot_data_map$model_preds[plot_data_map$Var_type_broad == "Nitrogen_above"] <- map_ab_n$pred
+plot_data_map$ci_lower[plot_data_map$Var_type_broad == "Nitrogen_above"] <- map_ab_n$ci.lb
+plot_data_map$ci_upper[plot_data_map$Var_type_broad == "Nitrogen_above"] <- map_ab_n$ci.ub
+plot_data_map$model_preds[plot_data_map$Var_type_broad == "Phen_early"] <- map_spring$pred
+plot_data_map$ci_lower[plot_data_map$Var_type_broad == "Phen_early"] <- map_spring$ci.lb
+plot_data_map$ci_upper[plot_data_map$Var_type_broad == "Phen_early"] <- map_spring$ci.ub
+plot_data_map$model_preds[plot_data_map$Var_type_broad == "Phen_late"] <- map_fall$pred
+plot_data_map$ci_lower[plot_data_map$Var_type_broad == "Phen_late"] <- map_fall$ci.lb
+plot_data_map$ci_upper[plot_data_map$Var_type_broad == "Phen_late"] <- map_fall$ci.ub
+plot_data_map$model_preds[plot_data_map$Var_type_broad == "Phen_flwr_lifespan"] <- map_flwr_lifespan$pred
+plot_data_map$ci_lower[plot_data_map$Var_type_broad == "Phen_flwr_lifespan"] <- map_flwr_lifespan$ci.lb
+plot_data_map$ci_upper[plot_data_map$Var_type_broad == "Phen_flwr_lifespan"] <- map_flwr_lifespan$ci.ub
+# plot
+png("effect_map_supp.png", units="in", width=10, height=7.5, res=300)
+ggplot(plot_data_map, aes(x = Mean_annual_precip)) +
+  facet_wrap(.~Var_type_broad, scales="free",labeller = as_labeller(var_labels), ncol=4) +
+  geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper), alpha = 0.6, fill = "grey") +
+  geom_point(aes(y = yi),size = 1) +
+  geom_line(aes(y = model_preds),size=1,color="darkred") +
+  labs(x = "\nMean annual precipitation (mm)", y = "Effect size") +
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        panel.background = element_blank(),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        plot.title = element_text(size=15),
+        axis.text = element_text(size=14),
+        axis.line = element_line(colour = "black"),
+        axis.title.x = element_text(size=16),
+        axis.title.y = element_text(size=16),
+        legend.position="none",
+        strip.text = element_text(face = "bold", size=11))
+dev.off()
+
 
 
 ### effect size based on distance from range edge ###
+## using raw data
 esmd_lat_diff_trim <- esmd_clean2 %>%
   filter(!(Latitude <= 0))
 png("effect_latdiff.png", units="in", width=8, height=6, res=300)
@@ -555,9 +899,81 @@ ggplot(esmd_lat_diff_trim, aes(x = Lat_difference, y = yi)) +
         strip.text = element_text(face = "bold", size=10))
 dev.off()
 
+## using model estimates
+plot_data_lat_diff <- data.frame(Lat_difference = esmd_lat_diff_trim$Lat_difference, 
+                            Var_type_broad = esmd_lat_diff_trim$Var_type_broad,
+                            yi = esmd_lat_diff_trim$yi)
+plot_data_lat_diff <- plot_data_lat_diff %>%
+  filter(!(is.na(Lat_difference)))
+plot_data_lat_diff$model_preds <- NA
+plot_data_lat_diff$ci_lower <- NA
+plot_data_lat_diff$ci_upper <- NA
+# merging model estimates for the regression lines with raw data for the points
+plot_data_lat_diff$model_preds[plot_data_lat_diff$Var_type_broad == "Biomass_above"] <- lat_diff_ab_biomass$pred
+plot_data_lat_diff$ci_lower[plot_data_lat_diff$Var_type_broad == "Biomass_above"] <- lat_diff_ab_biomass$ci.lb
+plot_data_lat_diff$ci_upper[plot_data_lat_diff$Var_type_broad == "Biomass_above"] <- lat_diff_ab_biomass$ci.ub
+plot_data_lat_diff$model_preds[plot_data_lat_diff$Var_type_broad == "Biomass_below"] <- lat_diff_bl_biomass$pred
+plot_data_lat_diff$ci_lower[plot_data_lat_diff$Var_type_broad == "Biomass_below"] <- lat_diff_bl_biomass$ci.lb
+plot_data_lat_diff$ci_upper[plot_data_lat_diff$Var_type_broad == "Biomass_below"] <- lat_diff_bl_biomass$ci.ub
+plot_data_lat_diff$model_preds[plot_data_lat_diff$Var_type_broad == "Percent_cover"] <- lat_diff_cover$pred
+plot_data_lat_diff$ci_lower[plot_data_lat_diff$Var_type_broad == "Percent_cover"] <- lat_diff_cover$ci.lb
+plot_data_lat_diff$ci_upper[plot_data_lat_diff$Var_type_broad == "Percent_cover"] <- lat_diff_cover$ci.ub
+plot_data_lat_diff$model_preds[plot_data_lat_diff$Var_type_broad == "Growth"] <- lat_diff_growth$pred
+plot_data_lat_diff$ci_lower[plot_data_lat_diff$Var_type_broad == "Growth"] <- lat_diff_growth$ci.lb
+plot_data_lat_diff$ci_upper[plot_data_lat_diff$Var_type_broad == "Growth"] <- lat_diff_growth$ci.ub
+plot_data_lat_diff$model_preds[plot_data_lat_diff$Var_type_broad == "Leaf_growth"] <- lat_diff_leaf_growth$pred
+plot_data_lat_diff$ci_lower[plot_data_lat_diff$Var_type_broad == "Leaf_growth"] <- lat_diff_leaf_growth$ci.lb
+plot_data_lat_diff$ci_upper[plot_data_lat_diff$Var_type_broad == "Leaf_growth"] <- lat_diff_leaf_growth$ci.ub
+plot_data_lat_diff$model_preds[plot_data_lat_diff$Var_type_broad == "Flower_num"] <- lat_diff_flwr_num$pred
+plot_data_lat_diff$ci_lower[plot_data_lat_diff$Var_type_broad == "Flower_num"] <- lat_diff_flwr_num$ci.lb
+plot_data_lat_diff$ci_upper[plot_data_lat_diff$Var_type_broad == "Flower_num"] <- lat_diff_flwr_num$ci.ub
+plot_data_lat_diff$model_preds[plot_data_lat_diff$Var_type_broad == "Fruit_num"] <- lat_diff_fruit_num$pred
+plot_data_lat_diff$ci_lower[plot_data_lat_diff$Var_type_broad == "Fruit_num"] <- lat_diff_fruit_num$ci.lb
+plot_data_lat_diff$ci_upper[plot_data_lat_diff$Var_type_broad == "Fruit_num"] <- lat_diff_fruit_num$ci.ub
+plot_data_lat_diff$model_preds[plot_data_lat_diff$Var_type_broad == "Fruit_weight"] <- lat_diff_fruit_weight$pred
+plot_data_lat_diff$ci_lower[plot_data_lat_diff$Var_type_broad == "Fruit_weight"] <- lat_diff_fruit_weight$ci.lb
+plot_data_lat_diff$ci_upper[plot_data_lat_diff$Var_type_broad == "Fruit_weight"] <- lat_diff_fruit_weight$ci.ub
+plot_data_lat_diff$model_preds[plot_data_lat_diff$Var_type_broad == "Nitrogen_below"] <- lat_diff_bl_n$pred
+plot_data_lat_diff$ci_lower[plot_data_lat_diff$Var_type_broad == "Nitrogen_below"] <- lat_diff_bl_n$ci.lb
+plot_data_lat_diff$ci_upper[plot_data_lat_diff$Var_type_broad == "Nitrogen_below"] <- lat_diff_bl_n$ci.ub
+plot_data_lat_diff$model_preds[plot_data_lat_diff$Var_type_broad == "Nitrogen_above"] <- lat_diff_ab_n$pred
+plot_data_lat_diff$ci_lower[plot_data_lat_diff$Var_type_broad == "Nitrogen_above"] <- lat_diff_ab_n$ci.lb
+plot_data_lat_diff$ci_upper[plot_data_lat_diff$Var_type_broad == "Nitrogen_above"] <- lat_diff_ab_n$ci.ub
+plot_data_lat_diff$model_preds[plot_data_lat_diff$Var_type_broad == "Phen_early"] <- lat_diff_spring$pred
+plot_data_lat_diff$ci_lower[plot_data_lat_diff$Var_type_broad == "Phen_early"] <- lat_diff_spring$ci.lb
+plot_data_lat_diff$ci_upper[plot_data_lat_diff$Var_type_broad == "Phen_early"] <- lat_diff_spring$ci.ub
+plot_data_lat_diff$model_preds[plot_data_lat_diff$Var_type_broad == "Phen_late"] <- lat_diff_fall$pred
+plot_data_lat_diff$ci_lower[plot_data_lat_diff$Var_type_broad == "Phen_late"] <- lat_diff_fall$ci.lb
+plot_data_lat_diff$ci_upper[plot_data_lat_diff$Var_type_broad == "Phen_late"] <- lat_diff_fall$ci.ub
+plot_data_lat_diff$model_preds[plot_data_lat_diff$Var_type_broad == "Phen_flwr_lifespan"] <- lat_diff_flwr_lifespan$pred
+plot_data_lat_diff$ci_lower[plot_data_lat_diff$Var_type_broad == "Phen_flwr_lifespan"] <- lat_diff_flwr_lifespan$ci.lb
+plot_data_lat_diff$ci_upper[plot_data_lat_diff$Var_type_broad == "Phen_flwr_lifespan"] <- lat_diff_flwr_lifespan$ci.ub
+# plot
+png("effect_lat_diff_supp.png", units="in", width=10, height=7.5, res=300)
+ggplot(plot_data_lat_diff, aes(x = Lat_difference)) +
+  facet_wrap(.~Var_type_broad, scales="free",labeller = as_labeller(var_labels), ncol=4) +
+  geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper), alpha = 0.6, fill = "grey") +
+  geom_point(aes(y = yi),size = 1) +
+  geom_line(aes(y = model_preds),size=1,color="darkred") +
+  labs(x = "\nDistance from range edge (°)", y = "Effect size") +
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        panel.background = element_blank(),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        plot.title = element_text(size=15),
+        axis.text = element_text(size=14),
+        axis.line = element_line(colour = "black"),
+        axis.title.x = element_text(size=16),
+        axis.title.y = element_text(size=16),
+        legend.position="none",
+        strip.text = element_text(face = "bold", size=11))
+dev.off()
+
 
 
 ### effect size based on amount warmed ###
+## using raw data
 esmd_amount <- esmd_clean2 %>%
   filter(!(Amount_warmed_type == "" |
              Amount_warmed_type == "Entire_average" |
@@ -577,9 +993,81 @@ ggplot(esmd_amount, aes(x = Amount_warmed_C, y = yi)) +
         strip.text = element_text(face = "bold", size=10))
 dev.off()
 
+## using model estimates
+plot_data_amount_warmed <- data.frame(Amount_warmed_C = esmd_clean2$Amount_warmed_C, 
+                                 Var_type_broad = esmd_clean2$Var_type_broad,
+                                 yi = esmd_clean2$yi)
+plot_data_amount_warmed <- plot_data_amount_warmed %>%
+  filter(!(is.na(Amount_warmed_C)))
+plot_data_amount_warmed$model_preds <- NA
+plot_data_amount_warmed$ci_lower <- NA
+plot_data_amount_warmed$ci_upper <- NA
+# merging model estimates for the regression lines with raw data for the points
+plot_data_amount_warmed$model_preds[plot_data_amount_warmed$Var_type_broad == "Biomass_above"] <- amount_warmed_ab_biomass$pred
+plot_data_amount_warmed$ci_lower[plot_data_amount_warmed$Var_type_broad == "Biomass_above"] <- amount_warmed_ab_biomass$ci.lb
+plot_data_amount_warmed$ci_upper[plot_data_amount_warmed$Var_type_broad == "Biomass_above"] <- amount_warmed_ab_biomass$ci.ub
+plot_data_amount_warmed$model_preds[plot_data_amount_warmed$Var_type_broad == "Biomass_below"] <- amount_warmed_bl_biomass$pred
+plot_data_amount_warmed$ci_lower[plot_data_amount_warmed$Var_type_broad == "Biomass_below"] <- amount_warmed_bl_biomass$ci.lb
+plot_data_amount_warmed$ci_upper[plot_data_amount_warmed$Var_type_broad == "Biomass_below"] <- amount_warmed_bl_biomass$ci.ub
+plot_data_amount_warmed$model_preds[plot_data_amount_warmed$Var_type_broad == "Percent_cover"] <- amount_warmed_cover$pred
+plot_data_amount_warmed$ci_lower[plot_data_amount_warmed$Var_type_broad == "Percent_cover"] <- amount_warmed_cover$ci.lb
+plot_data_amount_warmed$ci_upper[plot_data_amount_warmed$Var_type_broad == "Percent_cover"] <- amount_warmed_cover$ci.ub
+plot_data_amount_warmed$model_preds[plot_data_amount_warmed$Var_type_broad == "Growth"] <- amount_warmed_growth$pred
+plot_data_amount_warmed$ci_lower[plot_data_amount_warmed$Var_type_broad == "Growth"] <- amount_warmed_growth$ci.lb
+plot_data_amount_warmed$ci_upper[plot_data_amount_warmed$Var_type_broad == "Growth"] <- amount_warmed_growth$ci.ub
+plot_data_amount_warmed$model_preds[plot_data_amount_warmed$Var_type_broad == "Leaf_growth"] <- amount_warmed_leaf_growth$pred
+plot_data_amount_warmed$ci_lower[plot_data_amount_warmed$Var_type_broad == "Leaf_growth"] <- amount_warmed_leaf_growth$ci.lb
+plot_data_amount_warmed$ci_upper[plot_data_amount_warmed$Var_type_broad == "Leaf_growth"] <- amount_warmed_leaf_growth$ci.ub
+plot_data_amount_warmed$model_preds[plot_data_amount_warmed$Var_type_broad == "Flower_num"] <- amount_warmed_flwr_num$pred
+plot_data_amount_warmed$ci_lower[plot_data_amount_warmed$Var_type_broad == "Flower_num"] <- amount_warmed_flwr_num$ci.lb
+plot_data_amount_warmed$ci_upper[plot_data_amount_warmed$Var_type_broad == "Flower_num"] <- amount_warmed_flwr_num$ci.ub
+plot_data_amount_warmed$model_preds[plot_data_amount_warmed$Var_type_broad == "Fruit_num"] <- amount_warmed_fruit_num$pred
+plot_data_amount_warmed$ci_lower[plot_data_amount_warmed$Var_type_broad == "Fruit_num"] <- amount_warmed_fruit_num$ci.lb
+plot_data_amount_warmed$ci_upper[plot_data_amount_warmed$Var_type_broad == "Fruit_num"] <- amount_warmed_fruit_num$ci.ub
+plot_data_amount_warmed$model_preds[plot_data_amount_warmed$Var_type_broad == "Fruit_weight"] <- amount_warmed_fruit_weight$pred
+plot_data_amount_warmed$ci_lower[plot_data_amount_warmed$Var_type_broad == "Fruit_weight"] <- amount_warmed_fruit_weight$ci.lb
+plot_data_amount_warmed$ci_upper[plot_data_amount_warmed$Var_type_broad == "Fruit_weight"] <- amount_warmed_fruit_weight$ci.ub
+plot_data_amount_warmed$model_preds[plot_data_amount_warmed$Var_type_broad == "Nitrogen_below"] <- amount_warmed_bl_n$pred
+plot_data_amount_warmed$ci_lower[plot_data_amount_warmed$Var_type_broad == "Nitrogen_below"] <- amount_warmed_bl_n$ci.lb
+plot_data_amount_warmed$ci_upper[plot_data_amount_warmed$Var_type_broad == "Nitrogen_below"] <- amount_warmed_bl_n$ci.ub
+plot_data_amount_warmed$model_preds[plot_data_amount_warmed$Var_type_broad == "Nitrogen_above"] <- amount_warmed_ab_n$pred
+plot_data_amount_warmed$ci_lower[plot_data_amount_warmed$Var_type_broad == "Nitrogen_above"] <- amount_warmed_ab_n$ci.lb
+plot_data_amount_warmed$ci_upper[plot_data_amount_warmed$Var_type_broad == "Nitrogen_above"] <- amount_warmed_ab_n$ci.ub
+plot_data_amount_warmed$model_preds[plot_data_amount_warmed$Var_type_broad == "Phen_early"] <- amount_warmed_spring$pred
+plot_data_amount_warmed$ci_lower[plot_data_amount_warmed$Var_type_broad == "Phen_early"] <- amount_warmed_spring$ci.lb
+plot_data_amount_warmed$ci_upper[plot_data_amount_warmed$Var_type_broad == "Phen_early"] <- amount_warmed_spring$ci.ub
+plot_data_amount_warmed$model_preds[plot_data_amount_warmed$Var_type_broad == "Phen_late"] <- amount_warmed_fall$pred
+plot_data_amount_warmed$ci_lower[plot_data_amount_warmed$Var_type_broad == "Phen_late"] <- amount_warmed_fall$ci.lb
+plot_data_amount_warmed$ci_upper[plot_data_amount_warmed$Var_type_broad == "Phen_late"] <- amount_warmed_fall$ci.ub
+plot_data_amount_warmed$model_preds[plot_data_amount_warmed$Var_type_broad == "Phen_flwr_lifespan"] <- amount_warmed_flwr_lifespan$pred
+plot_data_amount_warmed$ci_lower[plot_data_amount_warmed$Var_type_broad == "Phen_flwr_lifespan"] <- amount_warmed_flwr_lifespan$ci.lb
+plot_data_amount_warmed$ci_upper[plot_data_amount_warmed$Var_type_broad == "Phen_flwr_lifespan"] <- amount_warmed_flwr_lifespan$ci.ub
+# plot
+png("effect_amount_warmed_supp.png", units="in", width=10, height=7.5, res=300)
+ggplot(plot_data_amount_warmed, aes(x = Amount_warmed_C)) +
+  facet_wrap(.~Var_type_broad, scales="free",labeller = as_labeller(var_labels), ncol=4) +
+  geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper), alpha = 0.6, fill = "grey") +
+  geom_point(aes(y = yi),size = 1) +
+  geom_line(aes(y = model_preds),size=1,color="darkred") +
+  labs(x = "\nAmount warmed (°C)", y = "Effect size") +
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        panel.background = element_blank(),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        plot.title = element_text(size=15),
+        axis.text = element_text(size=14),
+        axis.line = element_line(colour = "black"),
+        axis.title.x = element_text(size=16),
+        axis.title.y = element_text(size=16),
+        legend.position="none",
+        strip.text = element_text(face = "bold", size=11))
+dev.off()
+
 
 
 ### effect size based on # months warmed ###
+## using raw data
 esmd_months_poster <- esmd_clean2 %>%
   filter(Var_type_broad == "Fruit_num" |
            Var_type_broad == "Leaf_Growth" |
@@ -598,6 +1086,77 @@ ggplot(esmd_clean2, aes(x = Years_warmed, y = yi)) +
         axis.title.y = element_text(size=15),
         legend.position="none",
         strip.text = element_text(face = "bold", size=10))
+dev.off()
+
+## using model estimates
+plot_data_years_w <- data.frame(Years_warmed = esmd_clean2$Years_warmed, 
+                                 Var_type_broad = esmd_clean2$Var_type_broad,
+                                 yi = esmd_clean2$yi)
+plot_data_years_w <- plot_data_years_w %>%
+  filter(!(is.na(Years_warmed)))
+plot_data_years_w$model_preds <- NA
+plot_data_years_w$ci_lower <- NA
+plot_data_years_w$ci_upper <- NA
+# merging model estimates for the regression lines with raw data for the points
+plot_data_years_w$model_preds[plot_data_years_w$Var_type_broad == "Biomass_above"] <- years_w_ab_biomass$pred
+plot_data_years_w$ci_lower[plot_data_years_w$Var_type_broad == "Biomass_above"] <- years_w_ab_biomass$ci.lb
+plot_data_years_w$ci_upper[plot_data_years_w$Var_type_broad == "Biomass_above"] <- years_w_ab_biomass$ci.ub
+plot_data_years_w$model_preds[plot_data_years_w$Var_type_broad == "Biomass_below"] <- years_w_bl_biomass$pred
+plot_data_years_w$ci_lower[plot_data_years_w$Var_type_broad == "Biomass_below"] <- years_w_bl_biomass$ci.lb
+plot_data_years_w$ci_upper[plot_data_years_w$Var_type_broad == "Biomass_below"] <- years_w_bl_biomass$ci.ub
+plot_data_years_w$model_preds[plot_data_years_w$Var_type_broad == "Percent_cover"] <- years_w_cover$pred
+plot_data_years_w$ci_lower[plot_data_years_w$Var_type_broad == "Percent_cover"] <- years_w_cover$ci.lb
+plot_data_years_w$ci_upper[plot_data_years_w$Var_type_broad == "Percent_cover"] <- years_w_cover$ci.ub
+plot_data_years_w$model_preds[plot_data_years_w$Var_type_broad == "Growth"] <- years_w_growth$pred
+plot_data_years_w$ci_lower[plot_data_years_w$Var_type_broad == "Growth"] <- years_w_growth$ci.lb
+plot_data_years_w$ci_upper[plot_data_years_w$Var_type_broad == "Growth"] <- years_w_growth$ci.ub
+plot_data_years_w$model_preds[plot_data_years_w$Var_type_broad == "Leaf_growth"] <- years_w_leaf_growth$pred
+plot_data_years_w$ci_lower[plot_data_years_w$Var_type_broad == "Leaf_growth"] <- years_w_leaf_growth$ci.lb
+plot_data_years_w$ci_upper[plot_data_years_w$Var_type_broad == "Leaf_growth"] <- years_w_leaf_growth$ci.ub
+plot_data_years_w$model_preds[plot_data_years_w$Var_type_broad == "Flower_num"] <- years_w_flwr_num$pred
+plot_data_years_w$ci_lower[plot_data_years_w$Var_type_broad == "Flower_num"] <- years_w_flwr_num$ci.lb
+plot_data_years_w$ci_upper[plot_data_years_w$Var_type_broad == "Flower_num"] <- years_w_flwr_num$ci.ub
+plot_data_years_w$model_preds[plot_data_years_w$Var_type_broad == "Fruit_num"] <- years_w_fruit_num$pred
+plot_data_years_w$ci_lower[plot_data_years_w$Var_type_broad == "Fruit_num"] <- years_w_fruit_num$ci.lb
+plot_data_years_w$ci_upper[plot_data_years_w$Var_type_broad == "Fruit_num"] <- years_w_fruit_num$ci.ub
+plot_data_years_w$model_preds[plot_data_years_w$Var_type_broad == "Fruit_weight"] <- years_w_fruit_weight$pred
+plot_data_years_w$ci_lower[plot_data_years_w$Var_type_broad == "Fruit_weight"] <- years_w_fruit_weight$ci.lb
+plot_data_years_w$ci_upper[plot_data_years_w$Var_type_broad == "Fruit_weight"] <- years_w_fruit_weight$ci.ub
+plot_data_years_w$model_preds[plot_data_years_w$Var_type_broad == "Nitrogen_below"] <- years_w_bl_n$pred
+plot_data_years_w$ci_lower[plot_data_years_w$Var_type_broad == "Nitrogen_below"] <- years_w_bl_n$ci.lb
+plot_data_years_w$ci_upper[plot_data_years_w$Var_type_broad == "Nitrogen_below"] <- years_w_bl_n$ci.ub
+plot_data_years_w$model_preds[plot_data_years_w$Var_type_broad == "Nitrogen_above"] <- years_w_ab_n$pred
+plot_data_years_w$ci_lower[plot_data_years_w$Var_type_broad == "Nitrogen_above"] <- years_w_ab_n$ci.lb
+plot_data_years_w$ci_upper[plot_data_years_w$Var_type_broad == "Nitrogen_above"] <- years_w_ab_n$ci.ub
+plot_data_years_w$model_preds[plot_data_years_w$Var_type_broad == "Phen_early"] <- years_w_spring$pred
+plot_data_years_w$ci_lower[plot_data_years_w$Var_type_broad == "Phen_early"] <- years_w_spring$ci.lb
+plot_data_years_w$ci_upper[plot_data_years_w$Var_type_broad == "Phen_early"] <- years_w_spring$ci.ub
+plot_data_years_w$model_preds[plot_data_years_w$Var_type_broad == "Phen_late"] <- years_w_fall$pred
+plot_data_years_w$ci_lower[plot_data_years_w$Var_type_broad == "Phen_late"] <- years_w_fall$ci.lb
+plot_data_years_w$ci_upper[plot_data_years_w$Var_type_broad == "Phen_late"] <- years_w_fall$ci.ub
+plot_data_years_w$model_preds[plot_data_years_w$Var_type_broad == "Phen_flwr_lifespan"] <- years_w_flwr_lifespan$pred
+plot_data_years_w$ci_lower[plot_data_years_w$Var_type_broad == "Phen_flwr_lifespan"] <- years_w_flwr_lifespan$ci.lb
+plot_data_years_w$ci_upper[plot_data_years_w$Var_type_broad == "Phen_flwr_lifespan"] <- years_w_flwr_lifespan$ci.ub
+# plot
+png("effect_years_w_supp.png", units="in", width=10, height=7.5, res=300)
+ggplot(plot_data_years_w, aes(x = Years_warmed)) +
+  facet_wrap(.~Var_type_broad, scales="free",labeller = as_labeller(var_labels), ncol=4) +
+  geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper), alpha = 0.6, fill = "grey") +
+  geom_point(aes(y = yi),size = 1) +
+  geom_line(aes(y = model_preds),size=1,color="darkred") +
+  labs(x = "Number of years warmed", y = "Effect size") +
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        panel.background = element_blank(),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        plot.title = element_text(size=15),
+        axis.text = element_text(size=14),
+        axis.line = element_line(colour = "black"),
+        axis.title.x = element_text(size=16),
+        axis.title.y = element_text(size=16),
+        legend.position="none",
+        strip.text = element_text(face = "bold", size=11))
 dev.off()
 
 
