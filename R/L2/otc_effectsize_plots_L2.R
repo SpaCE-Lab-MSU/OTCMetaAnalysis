@@ -184,7 +184,7 @@ esmd_est_mean <- data.frame(Var_type_broad = c("Biomass_above","Biomass_below","
                             CI_lower = c(0.1167,0.2862,-0.2391,-0.2829,0.2974,0.5220,0.4091,-0.5735,-0.6531,-0.0406,-0.2586,-0.0363,-0.1936),
                             sig = c("yes","yes","no","no","yes","yes","yes","yes","no","no","yes","no","no"))
 
-png("effect.png", units="in", width=8, height=6, res=300)
+png("Figure2.png", units="in", width=8, height=6, res=300)
 ggplot(esmd_est_mean, aes(y = reorder(Var_type_broad, -avg, FUN=mean), x = avg)) +
   #facet_wrap(.~Var_type) +
   geom_vline(xintercept = 0, color = "red", linetype = "dashed", cex = 1, alpha = 0.7) +
@@ -315,7 +315,7 @@ esmd_func$Var_type_broad <- factor(esmd_func$Var_type_broad,
                                              "Leaf_growth","Nitrogen_above","Phen_early","Phen_late",
                                              "Phen_flwr_lifespan"))
 
-png("effect_func.png", units="in", width=8, height=8, res=300)
+png("Figure5.png", units="in", width=8, height=8, res=300)
 ggplot(esmd_func2, aes(y = Func_group_broad, x = avg)) +
   facet_wrap(.~Var_type_broad, scales="free_x", labeller = as_labeller(var_labels)) +
   geom_vline(xintercept = 0, color = "red", linetype = "dashed", cex = 1, alpha = 0.7) +
@@ -496,7 +496,7 @@ esmd_yearround2$Var_type_broad <- factor(esmd_yearround2$Var_type_broad,
                                                  "Nitrogen_above",
                                                  "Fruit_num", "Phen_late"))
 
-png("effect_yearround_all.png", units="in", width=8, height=6, res=300)
+png("Figure4.png", units="in", width=8, height=6, res=300)
 ggplot(esmd_yearround2, aes(y = Year_round_warm, x = avg)) +
   facet_wrap(.~Var_type_broad, labeller = as_labeller(var_labels)) +
   geom_vline(xintercept = 0, color = "red", linetype = "dashed", cex = 1, alpha = 0.7) +
@@ -530,7 +530,7 @@ esmd_lat_trim <- esmd_clean2 %>% # selecting traits/properties that had an effec
            Var_type_broad == "Fruit_weight" |
            Var_type_broad == "Nitrogen_below" |
            Var_type_broad == "Phen_early")
-png("effect_lat.png", units="in", width=8, height=6, res=300)
+png("Figure3.png", units="in", width=8, height=6, res=300)
 ggplot(esmd_lat_trim, aes(x = Abs_Latitude, y = yi)) +
   facet_wrap(.~Var_type_broad, scales="free_y",labeller = as_labeller(var_labels), ncol=3) +
   geom_point(size = 1) +
@@ -574,7 +574,7 @@ plot_data_lat$model_preds[plot_data_lat$Var_type_broad == "Phen_early"] <- lat_s
 plot_data_lat$ci_lower[plot_data_lat$Var_type_broad == "Phen_early"] <- lat_spring$ci.lb
 plot_data_lat$ci_upper[plot_data_lat$Var_type_broad == "Phen_early"] <- lat_spring$ci.ub
 # plot
-png("effect_lat.png", units="in", width=8, height=6, res=300)
+png("Figure3.png", units="in", width=8, height=6, res=500)
 ggplot(plot_data_lat, aes(x = Abs_Latitude)) +
   facet_wrap(.~Var_type_broad, scales="free_y",labeller = as_labeller(var_labels), ncol=3) +
   geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper), alpha = 0.6, fill = "grey") +
